@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicación Aumentativa y Alternativa (CAA) · Manos con Mucho que Contar</title>
+<meta name="description" content="Recursos gratuitos de Comunicación Aumentativa y Alternativa para familias: modelado, prerrequisitos para usar un comunicador y alfabetización.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤲</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+    --coral: #2A9D8F; --border: rgba(26,58,56,0.10); --radius: 20px;
+    --c-prerrequisitos: #FEF1D6; --t-prerrequisitos: #9A5B00;
+    --c-modelado: #D4F0EC; --t-modelado: #1A6E63;
+    --c-alfabetizacion: #E8E0F5; --t-alfabetizacion: #5A3A9A;
+    --c-familias: #FDE8EE; --t-familias: #A02A55;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; scroll-behavior: smooth; }
+  a:focus-visible, button:focus-visible { outline: 3px solid #E9A400; outline-offset: 3px; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(245,250,250,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--coral); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .logo-text span { display: block; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 400; color: var(--ink3); text-transform: uppercase; }
+  nav ul { list-style: none; display: flex; gap: 1.5rem; align-items: center; }
+  nav ul a { text-decoration: none; color: var(--ink2); font-size: 14px; font-weight: 500; transition: color .2s; }
+  nav ul a:hover, nav ul a.active { color: var(--coral); }
+  nav ul a.active { font-weight: 700; }
+  .txt-movil { display: none; } .txt-desktop { display: inline; }
+
+  .hero-wrap { background: linear-gradient(160deg, #D4F0EC 0%, #E8F4F2 60%, #F0FAF8 100%); border-bottom: 1px solid var(--border); }
+  .hero { padding: 5rem 2rem 4rem; max-width: 900px; margin: 0 auto; text-align: center; }
+  .kicker { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--coral); background: white; padding: 6px 14px; border-radius: 100px; margin-bottom: 1.2rem; }
+  .hero h1 { font-family: 'Fraunces', serif; font-size: clamp(2.2rem, 5.5vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.4rem; }
+  .hero h1 em { font-style: italic; color: var(--coral); }
+  .hero p { font-size: 1.1rem; color: var(--ink2); max-width: 620px; margin: 0 auto 2rem; line-height: 1.65; }
+  .btn-primary { display: inline-block; padding: 14px 32px; background: var(--coral); color: white; font-weight: 700; border-radius: 100px; text-decoration: none; transition: all .3s; }
+  .btn-primary:hover { background: #21867A; }
+
+  .section { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 1.9rem; text-align: center; margin-bottom: .6rem; }
+  .section-sub { text-align: center; color: var(--ink2); max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.6; }
+
+  /* Claves del modelado */
+  .claves { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+  .clave { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; }
+  .clave .n { width: 40px; height: 40px; border-radius: 12px; background: var(--bg2); color: var(--coral); font-family: 'Fraunces', serif; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .clave h3 { font-size: 1.1rem; margin-bottom: .5rem; }
+  .clave p { color: var(--ink2); line-height: 1.6; font-size: .95rem; }
+
+  /* Caminos */
+  .caminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+  .camino { text-align: left; border: 2px solid transparent; border-radius: var(--radius); padding: 1.5rem; cursor: pointer; font-family: inherit; color: var(--ink); transition: transform .2s, border-color .2s; }
+  .camino:hover { transform: translateY(-4px); }
+  .camino[aria-pressed="true"] { border-color: currentColor; }
+  .camino .emoji { font-size: 1.8rem; display: block; margin-bottom: .6rem; }
+  .camino strong { display: block; font-size: 1.05rem; margin-bottom: .3rem; }
+  .camino span.d { font-size: .9rem; line-height: 1.5; opacity: .85; }
+  .camino[data-area="prerrequisitos"] { background: var(--c-prerrequisitos); color: var(--t-prerrequisitos); }
+  .camino[data-area="modelado"] { background: var(--c-modelado); color: var(--t-modelado); }
+  .camino[data-area="alfabetizacion"] { background: var(--c-alfabetizacion); color: var(--t-alfabetizacion); }
+  .camino[data-area="familias"] { background: var(--c-familias); color: var(--t-familias); }
+  .camino strong, .camino span.d { color: var(--ink); }
+  .ver-todo { display: block; margin: -1.5rem auto 2.5rem; background: none; border: none; color: var(--coral); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all .3s; display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+  a.card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+  .card-thumb { height: 170px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .area-badge { position: absolute; top: 15px; left: 15px; padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: white; }
+  .soon { position: absolute; top: 15px; right: 15px; padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; background: var(--ink); color: white; }
+  .card.proximamente { opacity: .72; }
+  .card-body { padding: 1.5rem; flex-grow: 1; }
+  .card-body h3 { margin-bottom: .4rem; }
+  .card-body p { color: var(--ink2); line-height: 1.55; font-size: .95rem; }
+  .card-footer { padding: 1.1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--ink3); text-transform: uppercase; }
+
+  .bg-prerrequisitos { background: var(--c-prerrequisitos); } .tx-prerrequisitos { color: var(--t-prerrequisitos); }
+  .bg-modelado { background: var(--c-modelado); } .tx-modelado { color: var(--t-modelado); }
+  .bg-alfabetizacion { background: var(--c-alfabetizacion); } .tx-alfabetizacion { color: var(--t-alfabetizacion); }
+  .bg-familias { background: var(--c-familias); } .tx-familias { color: var(--t-familias); }
+
+  .mito { background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .mito-box { max-width: 780px; margin: 0 auto; text-align: center; }
+  .mito-box .q { font-family: 'Fraunces', serif; font-style: italic; font-size: 1.5rem; color: var(--ink3); text-decoration: line-through; text-decoration-thickness: 2px; margin-bottom: 1rem; }
+  .mito-box .a { font-size: 1.1rem; line-height: 1.7; color: var(--ink); }
+
+  .footer-inner { padding: 3.5rem 2rem; text-align: center; border-top: 1px solid var(--border); background: white; }
+  .footer-inner p { color: var(--ink2); }
+  .arasaac { margin: 1.5rem auto 0; max-width: 680px; font-size: 12px; line-height: 1.6; color: var(--ink3); }
+  .arasaac a { color: var(--ink2); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    .txt-movil { display: inline; } .txt-desktop { display: none; }
+    nav ul { gap: .7rem; } nav ul a { font-size: 13px; }
+    .logo-text { font-size: 13px; }
+    .section { padding: 2.5rem 1rem; }
+    .hero { padding: 3rem 1.5rem 2.5rem; }
+    .grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">🤲</div>
+    <div class="logo-text">Manos con Mucho que Contar<span>by Inma Merino Rus</span></div>
+  </a>
+  <ul>
+    <li><a href="index.html#actividades">Actividades</a></li>
+    <li><a href="caa.html" class="active" aria-current="page"><span class="txt-desktop">Comunicación (CAA)</span><span class="txt-movil">CAA</span></a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+    <li><a href="sobre-mi.html">Sobre mí</a></li>
+  </ul>
+</nav>
+
+<header class="hero-wrap">
+  <div class="hero">
+    <span class="kicker">Comunicación Aumentativa y Alternativa</span>
+    <h1>Todos tenemos <em>mucho que contar</em></h1>
+    <p>Recursos gratuitos para acompañar a niños y niñas que se comunican, o empiezan a hacerlo, con pictogramas, tableros o comunicadores. Pensados para que las familias puedan usarlos en casa, en el día a día.</p>
+    <a href="#recursos" class="btn-primary">Ver recursos</a>
+  </div>
+</header>
+
+<main>
+  <section class="section" aria-labelledby="t-claves">
+    <h2 class="section-title" id="t-claves">Antes de empezar: cómo modelar</h2>
+    <p class="section-sub">Los niños aprenden a hablar escuchando a los demás hablar durante miles de horas. Con la CAA pasa lo mismo: necesitan vernos usar su sistema.</p>
+    <div class="claves">
+      <div class="clave"><div class="n">1</div><h3>Señala mientras hablas</h3><p>Di la frase completa en voz alta y señala en el tablero una o dos palabras clave: «¿Quieres <b>MÁS</b> agua?».</p></div>
+      <div class="clave"><div class="n">2</div><h3>No exijas, ofrece</h3><p>No pidas «dímelo con el tablero» para darle algo. Modela sin esperar respuesta: la presión frena la comunicación.</p></div>
+      <div class="clave"><div class="n">3</div><h3>Pocas palabras, muchas veces</h3><p>Elige 1 o 2 palabras útiles (MÁS, OTRA VEZ, NO, YA) y úsalas en todas las rutinas de la semana.</p></div>
+      <div class="clave"><div class="n">4</div><h3>Siempre a mano</h3><p>El tablero o comunicador va con el niño a todas partes: la mesa, el baño, el parque. Si no está, no puede usarlo.</p></div>
+    </div>
+  </section>
+
+  <section class="mito section" aria-label="Mito sobre la CAA">
+    <div class="mito-box">
+      <p class="q">«Si usa un comunicador, no va a hablar»</p>
+      <p class="a">Es al revés. La evidencia muestra que la CAA <b>no frena el habla</b> y en muchos niños la favorece. Le da una forma de comunicarse ahora, mientras el lenguaje oral sigue desarrollándose.</p>
+    </div>
+  </section>
+
+  <section class="section" id="recursos" aria-labelledby="t-recursos">
+    <h2 class="section-title" id="t-recursos">¿Por dónde empezamos?</h2>
+    <p class="section-sub">Elige el momento en el que está tu hijo o tu alumno.</p>
+    <div class="caminos" id="caminos">
+      <button class="camino" data-area="prerrequisitos" aria-pressed="false"><span class="emoji" aria-hidden="true">🌱</span><strong>Antes del comunicador</strong><span class="d">Causa-efecto, atención conjunta, elegir entre dos, del objeto al pictograma.</span></button>
+      <button class="camino" data-area="modelado" aria-pressed="false"><span class="emoji" aria-hidden="true">🗣️</span><strong>Modelado</strong><span class="d">Tableros por rutinas y palabra núcleo de la semana para usar en casa.</span></button>
+      <button class="camino" data-area="alfabetizacion" aria-pressed="false"><span class="emoji" aria-hidden="true">🔤</span><strong>Alfabetización</strong><span class="d">Lectura compartida, abecedario accesible y escritura emergente.</span></button>
+      <button class="camino" data-area="familias" aria-pressed="false"><span class="emoji" aria-hidden="true">🏡</span><strong>Para familias</strong><span class="d">Guías cortas, primeros pasos y respuestas a las dudas más frecuentes.</span></button>
+    </div>
+    <button class="ver-todo" id="ver-todo" hidden>Ver todos los recursos</button>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer class="footer-inner">
+  <p>Hecho con 🤲 por <strong>Inma Merino Rus</strong> · AL & Logopeda</p>
+  <p class="arasaac">Los símbolos pictográficos utilizados son propiedad del Gobierno de Aragón y han sido creados por Sergio Palao para <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a>, que los distribuye bajo Licencia Creative Commons BY-NC-SA.</p>
+</footer>
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   RECURSOS CAA
+   Para añadir uno: copia una línea y cambia los datos.
+   - area: prerrequisitos | modelado | alfabetizacion | familias
+   - url: ruta del archivo (recomendado: carpeta caa/)
+   - imagen: URL de la imagen (opcional; si no hay, se usa el emoji)
+   - proximamente: true  → se muestra como "Próximamente" y no se puede abrir
+   ────────────────────────────────────────────────────────────── */
+var recursos = [
+  { titulo: "Causa y efecto", descripcion: "Toca la pantalla y pasa algo. El primer paso para descubrir que mis acciones tienen respuesta.", area: "prerrequisitos", emoji: "✨", url: "caa/causa_efecto.html", proximamente: true },
+  { titulo: "Elijo entre dos", descripcion: "Elecciones reales con dos opciones para trabajar la intención comunicativa.", area: "prerrequisitos", emoji: "👉", url: "caa/elijo_entre_dos.html", proximamente: true },
+  { titulo: "Del objeto al pictograma", descripcion: "Emparejar objeto, foto y pictograma para entender que un símbolo representa algo.", area: "prerrequisitos", emoji: "🧩", url: "caa/objeto_pictograma.html", proximamente: true },
+  { titulo: "Tableros por rutinas", descripcion: "Tableros de vocabulario para comer, bañarse, jugar o ir al parque. Con voz y para imprimir.", area: "modelado", emoji: "🍽️", url: "caa/tableros_rutinas.html", proximamente: true },
+  { titulo: "Palabra de la semana", descripcion: "Un reto semanal con una palabra núcleo e ideas para modelarla en casa.", area: "modelado", emoji: "⭐", url: "caa/palabra_semana.html", proximamente: true },
+  { titulo: "Lectura compartida", descripcion: "Cuentos para leer juntos con un tablero para comentar la historia.", area: "alfabetizacion", emoji: "📖", url: "caa/lectura_compartida.html", proximamente: true },
+  { titulo: "Abecedario accesible", descripcion: "Teclado de letras grande, con voz y con opción de barrido para escribir.", area: "alfabetizacion", emoji: "🔤", url: "caa/abecedario.html", proximamente: true },
+  { titulo: "Primeros pasos con la CAA", descripcion: "Guía de una página para familias que empiezan: qué es, cómo se usa y qué esperar.", area: "familias", emoji: "🧭", url: "caa/primeros_pasos.html", proximamente: true },
+  { titulo: "Mitos y dudas frecuentes", descripcion: "¿Va a dejar de hablar? ¿Es demasiado pequeño? Respuestas claras y basadas en la evidencia.", area: "familias", emoji: "💡", url: "caa/mitos.html", proximamente: true }
+];
+
+var areaConfig = {
+  prerrequisitos: "Antes del comunicador",
+  modelado: "Modelado",
+  alfabetizacion: "Alfabetización",
+  familias: "Familias"
+};
+
+var filtro = null;
+
+function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+
+function render() {
+  var lista = recursos.filter(function (r) { return !filtro || r.area === filtro; });
+  document.getElementById("grid").innerHTML = lista.map(function (r) {
+    var thumb = r.imagen
+      ? '<img src="' + esc(r.imagen) + '" alt="" loading="lazy">'
+      : '<span aria-hidden="true">' + (r.emoji || "💬") + '</span>';
+    var inner =
+      '<div class="card-thumb bg-' + r.area + '">' + thumb +
+        '<span class="area-badge tx-' + r.area + '">' + areaConfig[r.area] + '</span>' +
+        (r.proximamente ? '<span class="soon">Próximamente</span>' : '') +
+      '</div>' +
+      '<div class="card-body"><h3>' + esc(r.titulo) + '</h3><p>' + esc(r.descripcion) + '</p></div>' +
+      '<div class="card-footer"><span>Inma Merino Rus</span><span>' + (r.proximamente ? 'En preparación' : 'Gratis') + '</span></div>';
+    return r.proximamente
+      ? '<div class="card proximamente" aria-disabled="true">' + inner + '</div>'
+      : '<a class="card" href="' + esc(r.url) + '">' + inner + '</a>';
+  }).join("");
+}
+
+document.getElementById("caminos").addEventListener("click", function (e) {
+  var b = e.target.closest(".camino"); if (!b) return;
+  var area = b.dataset.area;
+  filtro = (filtro === area) ? null : area;
+  document.querySelectorAll(".camino").forEach(function (x) {
+    x.setAttribute("aria-pressed", x.dataset.area === filtro ? "true" : "false");
+  });
+  document.getElementById("ver-todo").hidden = !filtro;
+  render();
+});
+
+document.getElementById("ver-todo").addEventListener("click", function () {
+  filtro = null;
+  document.querySelectorAll(".camino").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+  this.hidden = true;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

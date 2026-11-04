@@ -115,6 +115,21 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 .ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
 .ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
 
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
 /* ── Aviso para adultos ── */
 .consejo {
   background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
@@ -296,6 +311,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   /* ── Pictogramas ARASAAC ── */
   var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
   var pendientes = {};
   function buscar(tipo, p) {
     return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
@@ -304,6 +320,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   }
   function pictoId(p) {
     p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
     if (cache[p] != null) return Promise.resolve(cache[p]);
     if (pendientes[p]) return pendientes[p];
     pendientes[p] = buscar('bestsearch', p)
@@ -316,13 +333,15 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   function ponerPicto(cont, it) {
     if (!cont || it.sinPicto) return;
-    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(it.b || it.t);
-    prom.then(function (id) {
-      if (id == null) return;
-      var img = new Image(); img.alt = ''; img.decoding = 'async';
-      img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
-      img.src = pictoUrl(id);
-    });
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
   }
 
   function celda(it, clase) {
@@ -381,6 +400,93 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
       })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
     }
   }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
 
   /* ═══ Barrido ═══ */
   var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
@@ -446,7 +552,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     clearInterval(scan.timer);
     if (!scan.activo || aj.acceso !== 'barrido') return;
     scan.timer = setInterval(function () {
-      if (document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
       avanzar();
     }, aj.velocidad);
   }
@@ -454,7 +560,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
 
   document.addEventListener('keydown', function (e) {
-    if (!scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
     if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
       e.preventDefault();
       if (e.repeat) return;
@@ -464,11 +570,11 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     }
   });
   document.addEventListener('pointerdown', function (e) {
-    if (!scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
     e.preventDefault(); seleccionar();
   });
   document.addEventListener('click', function (e) {
-    if (!scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
     e.preventDefault(); e.stopPropagation();
   }, true);
 
@@ -508,6 +614,9 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
         '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
       '<div class="ajuste"><span class="lbl">Vista</span>' +
         '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
       '<div id="caa-aj-extra"></div>' +
       '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
       '</div>';
@@ -530,6 +639,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
       var b = e.target.closest('.seg[data-k] button');
       if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
       if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
     });
     m.addEventListener('change', function (e) {
       if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
@@ -568,6 +678,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   window.CAA = {
     init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
     sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
     get ajustes() { return aj; },
     alCambiar: function (f) { oyentes.push(f); }

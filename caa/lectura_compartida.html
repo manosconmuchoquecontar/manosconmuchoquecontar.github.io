@@ -115,6 +115,21 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 .ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
 .ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
 
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
 /* ── Aviso para adultos ── */
 .consejo {
   background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
@@ -148,7 +163,55 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   .libro p { color: var(--ink2); font-size: 14px; line-height: 1.45; }
 
   /* Lector */
-  #lector { display: flex; flex-direction: column; gap: .8rem; padding: .8rem; max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 64px); }
+  #lector { display: flex; flex-direction: column; gap: .8rem; padding: .8rem .8rem 3rem; max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 64px); }
+
+  /* Mis cuentos */
+  .sec-mis { margin-top: 2.6rem; }
+  .libro-mio { position: relative; }
+  .libro .portada img { width: 100%; height: 100%; object-fit: cover; }
+  .libro .portada .img-picto img { max-height: 140px; }
+  .acciones-libro { display: flex; gap: .4rem; padding: 0 1.2rem 1.1rem; flex-wrap: wrap; }
+  .acciones-libro button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; }
+  .libro-nuevo { border: 3px dashed rgba(42,157,143,.45); background: rgba(42,157,143,.05); border-radius: 22px; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; font-weight: 800; font-size: 1.1rem; color: var(--teal-d); }
+  .libro-nuevo span { font-size: 3rem; }
+  .acc-mis { display: flex; justify-content: center; gap: .6rem; margin: -1rem 0 2rem; flex-wrap: wrap; }
+  .ilustracion img { max-height: 34vh; max-width: 90%; border-radius: 18px; object-fit: contain; }
+  .ilustracion .img-picto { display: inline-flex; width: clamp(120px, 26vh, 240px); height: clamp(120px, 26vh, 240px); align-items: center; justify-content: center; }
+  .ilustracion .img-picto img { max-height: 100%; max-width: 100%; border-radius: 0; }
+
+  /* Editor */
+  #editor { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 6rem; }
+  .ed-bloque { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 1.3rem; margin-bottom: 1.2rem; }
+  body.caa-contraste .ed-bloque { background: #000; }
+  .ed-bloque h3 { font-size: 1.15rem; color: var(--teal-d); margin-bottom: .3rem; }
+  .ed-bloque .ayuda { font-size: 14px; color: var(--ink2); margin-bottom: .9rem; line-height: 1.5; }
+  .campo { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .9rem; }
+  .campo label { font-weight: 800; font-size: 13px; }
+  .campo input, .campo textarea, .ed-in { padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--border); font: inherit; font-size: 15px; background: white; color: #1A3A38; }
+  .campo textarea { min-height: 70px; resize: vertical; font-family: 'Fredoka', sans-serif; font-size: 18px; }
+  .colores { display: flex; gap: .4rem; }
+  .colores button { width: 34px; height: 34px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 1.5px var(--border); }
+  .colores button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--teal); }
+  .picker { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+  .picker .prev { width: 76px; height: 76px; border-radius: 14px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; overflow: hidden; flex-shrink: 0; }
+  .picker .prev img { width: 100%; height: 100%; object-fit: contain; }
+  .picker .prev img.foto { object-fit: cover; }
+  .picker input[type=text] { flex: 1; min-width: 170px; }
+  .picker button, .mini-btn { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 8px 12px; font-weight: 800; font-size: 13px; white-space: nowrap; }
+  .vocab-ed { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .6rem; }
+  .vocab-ed .v { display: grid; grid-template-columns: 46px 1fr; grid-template-rows: auto auto; gap: 4px 8px; align-items: center; background: var(--bg); border-radius: 14px; padding: 8px; }
+  .vocab-ed .v .pv { grid-row: 1 / 3; width: 46px; height: 46px; border-radius: 10px; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; overflow: hidden; }
+  .vocab-ed .v .pv img { max-width: 100%; max-height: 100%; }
+  .vocab-ed .v input, .vocab-ed .v select { padding: 6px 8px; border-radius: 8px; border: 1.5px solid var(--border); font: inherit; font-size: 13px; width: 100%; }
+  .pag-ed { border: 2px solid var(--border); border-radius: 18px; padding: 1rem; margin-bottom: 1rem; background: var(--bg); }
+  .pag-ed .cab { display: flex; align-items: center; gap: .4rem; margin-bottom: .8rem; }
+  .pag-ed .cab b { flex: 1; font-family: 'Fredoka', sans-serif; font-size: 1.1rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .3rem; }
+  .chips button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 5px 11px; font-weight: 700; font-size: 13px; }
+  .chips button[aria-pressed="true"] { background: var(--teal); color: white; border-color: var(--teal); }
+  .chips.pistas button[aria-pressed="true"] { background: #FFE9A8; color: #5C4A12; border-color: #E9A400; }
+  .chips .vacio { font-size: 13px; color: var(--ink3); }
+  .barra-ed { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--border); padding: .7rem 1rem 2.6rem; display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; }
   .pagina-wrap { flex: 1; display: grid; grid-template-columns: auto 1fr auto; gap: .8rem; align-items: center; min-height: 0; }
   .flecha-pag { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--border); background: white; font-size: 28px; font-weight: 800; }
   .flecha-pag:disabled { opacity: .25; }
@@ -165,11 +228,28 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   .num-pag { position: absolute; bottom: 10px; right: 16px; font-size: 13px; font-weight: 700; color: var(--ink3); }
 
   .ctrl { display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }
-  .tablero-com { display: flex; flex-direction: column; gap: .5rem; }
-  .tablero-com .scan-fila { display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; }
-  .tablero-com .picto { height: clamp(78px, 13vh, 120px); padding: 4px; border-radius: 12px; }
-  .tablero-com .picto .img .emoji { font-size: clamp(24px, 5vh, 42px); }
-  .tablero-com h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); }
+  .tablero-com { display: grid; grid-template-columns: 6fr 4fr; gap: 1rem; align-items: start; }
+  .bloque { display: flex; flex-direction: column; gap: .45rem; }
+  .bloque h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); display: flex; gap: .4rem; align-items: center; }
+  .bloque h3 small { font-weight: 700; text-transform: none; letter-spacing: 0; }
+  .bloque .scan-fila { display: grid; gap: .45rem; border-radius: 14px; }
+  .nucleo .scan-fila { grid-template-columns: repeat(6, 1fr); }
+  .franja .scan-fila { grid-template-columns: repeat(4, 1fr); }
+  .franja { background: rgba(42,157,143,.07); border-radius: 18px; padding: .5rem; margin-top: -.5rem; }
+  .tablero-com .picto { height: clamp(72px, 11.5vh, 112px); padding: 4px; border-radius: 12px; font-size: clamp(11px, 1.4vw, 15px); }
+  .tablero-com .picto .img .emoji { font-size: clamp(22px, 4.6vh, 40px); }
+  .picto.sugerida { box-shadow: 0 0 0 4px #FFB800; animation: sugerida 1.6s ease-in-out infinite; }
+  @keyframes sugerida { 50% { box-shadow: 0 0 0 7px rgba(255,184,0,.45); } }
+  .pista { align-self: center; font-weight: 800; font-size: 14px; color: var(--ink2); background: #FFF6D6; border: 1.5px solid #F2D27A; padding: 8px 14px; border-radius: 100px; }
+  .pista b { color: #7A5A00; text-transform: uppercase; }
+  #btn-pistas[aria-pressed="true"] { background: #FFF1C2; border-color: #E9A400; }
+  @media (max-width: 760px) {
+    .tablero-com { grid-template-columns: 1fr; gap: .6rem; }
+    .franja { margin-top: 0; }
+    .tablero-com .picto { height: 64px; }
+    .tablero-com .picto .txt { font-size: 10px; }
+    .tablero-com .picto .img .emoji { font-size: 24px; }
+  }
   @media (max-width: 640px) {
     .pagina-wrap { grid-template-columns: 1fr 1fr; }
     .pagina { grid-column: 1 / -1; order: -1; }
@@ -181,11 +261,50 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 <body>
 
 <section id="biblioteca">
-  <h2 class="titulo-sec">📚 Elige un cuento</h2>
+  <h2 class="titulo-sec">📚 Cuentos de la web</h2>
   <p class="sub">Cuentos cortos y repetitivos para leer juntos. Debajo de cada página hay un tablero para <b>comentar la historia</b>: tú modelas («¡oh!», «me gusta», «otra vez») y le das la oportunidad de participar.</p>
   <div class="libros" id="libros"></div>
   <div class="consejo">
     <b>Cómo leer con CAA:</b> lee despacio, señalando las palabras con el dedo. Haz pausas en la frase que se repite («¡más, más, más!») para que pueda «decirla» con el tablero. Comenta cada página con un pictograma: «¡Oh! El gato está <b>cansado</b>». La meta no es que responda bien, sino que <b>disfrute</b> y vea a alguien usar su sistema mientras lee.
+  </div>
+  <div class="sec-mis">
+    <h2 class="titulo-sec" id="mis-cuentos">✏️ Mis cuentos</h2>
+    <p class="sub">Crea cuentos con sus personajes favoritos, sus fotos o su día a día. Se guardan <b>solo en este dispositivo</b>. Para pasarlos a otro dispositivo o enviárselos a su logopeda, usa «Descargar» e «Importar».</p>
+    <div class="libros" id="mis-libros"></div>
+    <div class="acc-mis">
+      <button class="btn" id="btn-importar">⬆ Importar un cuento</button>
+      <input type="file" id="f-importar" accept=".json,application/json" hidden>
+    </div>
+  </div>
+</section>
+
+
+<section id="editor" hidden>
+  <div class="ed-bloque">
+    <h3>1. El cuento</h3>
+    <div class="campo"><label for="ed-titulo">Título</label><input id="ed-titulo" maxlength="60" placeholder="Por ejemplo: La sirena que quería más"></div>
+    <div class="campo"><label for="ed-resumen">Resumen (opcional)</label><input id="ed-resumen" maxlength="120" placeholder="Una frase que explique de qué va"></div>
+    <div class="campo"><label>Color de la portada</label><div class="colores" id="ed-colores"></div></div>
+    <div class="campo"><label>Imagen de la portada</label><div id="ed-portada"></div></div>
+  </div>
+
+  <div class="ed-bloque">
+    <h3>2. Palabras del cuento (hasta 8)</h3>
+    <p class="ayuda">Son las que aparecen a la derecha del tablero mientras se lee: personajes, lugares, objetos o acciones importantes. El pictograma se busca solo en ARASAAC; <b>toca el dibujo para elegir otro</b>. Las palabras para comentar (sí, no, más, me gusta…) ya están siempre puestas.</p>
+    <div class="vocab-ed" id="ed-vocab"></div>
+  </div>
+
+  <div class="ed-bloque">
+    <h3>3. Páginas</h3>
+    <p class="ayuda"><b>Consejo:</b> frases cortas y una frase que se repita en varias páginas («¿Dónde está? ¡No!»). En cada página puedes elegir qué palabras llevan pictograma encima y cuáles se iluminan en el tablero para modelar.</p>
+    <div id="ed-paginas"></div>
+    <button class="btn btn-s" id="ed-add-pag">＋ Añadir página</button>
+  </div>
+
+  <div class="barra-ed">
+    <button class="btn" id="ed-cancelar">✕ Cancelar</button>
+    <button class="btn" id="ed-probar">👀 Probar</button>
+    <button class="btn btn-p" id="ed-guardar">💾 Guardar cuento</button>
   </div>
 </section>
 
@@ -203,6 +322,8 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     <button class="btn btn-p" id="leer">🔊 Leer página</button>
     <button class="btn" id="mayus">Aa</button>
     <button class="btn" id="cerrar">📚 Otros cuentos</button>
+    <button class="btn" id="btn-pistas" aria-pressed="true" title="Ilumina las palabras que encajan en cada página">💡 Pistas</button>
+    <span class="pista" id="pista" aria-live="polite"></span>
   </div>
   <div class="tablero-com" id="tablero"></div>
 </section>
@@ -264,6 +385,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   /* ── Pictogramas ARASAAC ── */
   var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
   var pendientes = {};
   function buscar(tipo, p) {
     return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
@@ -272,6 +394,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   }
   function pictoId(p) {
     p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
     if (cache[p] != null) return Promise.resolve(cache[p]);
     if (pendientes[p]) return pendientes[p];
     pendientes[p] = buscar('bestsearch', p)
@@ -284,13 +407,15 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   function ponerPicto(cont, it) {
     if (!cont || it.sinPicto) return;
-    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(it.b || it.t);
-    prom.then(function (id) {
-      if (id == null) return;
-      var img = new Image(); img.alt = ''; img.decoding = 'async';
-      img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
-      img.src = pictoUrl(id);
-    });
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
   }
 
   function celda(it, clase) {
@@ -349,6 +474,93 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
       })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
     }
   }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
 
   /* ═══ Barrido ═══ */
   var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
@@ -414,7 +626,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     clearInterval(scan.timer);
     if (!scan.activo || aj.acceso !== 'barrido') return;
     scan.timer = setInterval(function () {
-      if (document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
       avanzar();
     }, aj.velocidad);
   }
@@ -422,7 +634,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
   function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
 
   document.addEventListener('keydown', function (e) {
-    if (!scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
     if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
       e.preventDefault();
       if (e.repeat) return;
@@ -432,11 +644,11 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     }
   });
   document.addEventListener('pointerdown', function (e) {
-    if (!scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
     e.preventDefault(); seleccionar();
   });
   document.addEventListener('click', function (e) {
-    if (!scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
     e.preventDefault(); e.stopPropagation();
   }, true);
 
@@ -476,6 +688,9 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
         '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
       '<div class="ajuste"><span class="lbl">Vista</span>' +
         '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
       '<div id="caa-aj-extra"></div>' +
       '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
       '</div>';
@@ -498,6 +713,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
       var b = e.target.closest('.seg[data-k] button');
       if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
       if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
     });
     m.addEventListener('change', function (e) {
       if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
@@ -536,6 +752,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 
   window.CAA = {
     init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
     sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
     get ajustes() { return aj; },
     alCambiar: function (f) { oyentes.push(f); }
@@ -546,80 +763,150 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 <script>
 CAA.init({ titulo: 'Lectura compartida' });
 
-/* Formato: {palabra} = palabra clave con pictograma · {texto|búsqueda} si la búsqueda es distinta */
+/* ════════════════════════════════════════════════════════════════
+   CÓMO AÑADIR UN CUENTO NUEVO
+   Copia un bloque { ... } completo, pégalo antes del  ];  final
+   (separado por una coma) y cambia:
+   - titulo, color de portada, emoji de portada y resumen
+   - vocab: 8 palabras propias del cuento (aparecen a la derecha)
+       { t: 'palabra', e: 'emoji', k: 'cosa' }   k = persona | accion | cosa | describe | social | no | pregunta | lugar
+       b: 'búsqueda' solo si el pictograma se busca con otra palabra
+   - paginas: [ 'emoji', 'texto', [palabras que se iluminan] ]
+       En el texto, {palabra} lleva pictograma encima.
+       {Lola|niña} muestra «Lola» con el pictograma de «niña».
+       Las palabras que se iluminan pueden ser del núcleo (sí, no, más…)
+       o del vocabulario del cuento.
+   ════════════════════════════════════════════════════════════════ */
 var CUENTOS = [
   { titulo: '¡Más, más, más!', color: '#FFE9C7', portada: '🐱', resumen: 'Leo el gato siempre quiere más… hasta que está cansado.',
+    vocab: [
+      { t: 'gato', e: '🐱', k: 'cosa' }, { t: 'leche', e: '🥛', k: 'cosa' }, { t: 'pelota', e: '🧶', k: 'cosa' }, { t: 'cosquillas', e: '🤗', k: 'cosa' },
+      { t: 'mamá', e: '👩', k: 'persona' }, { t: 'jugar', e: '🎲', k: 'accion' }, { t: 'cansado', e: '😴', k: 'describe' }, { t: 'dormir', e: '💤', k: 'accion' }
+    ],
     paginas: [
-      ['🐱', 'Este es {Leo|gato}. Leo es un {gato}.'],
-      ['🥛', 'Leo {bebe|beber} {leche}. ¿{Más}? ¡Más, más, más!'],
-      ['🧶', 'Leo {juega|jugar} con la {pelota}. ¿{Más}? ¡Más, más, más!'],
-      ['🤗', 'Mamá le hace {cosquillas}. ¿{Más}? ¡Más, más, más!'],
-      ['😴', 'Leo está {cansado}. ¿Más? ¡{No}! ¡{Ya}!'],
-      ['💤', 'Leo {duerme|dormir}. Buenas noches, Leo. {Fin}.']
+      ['🐱', 'Este es {Leo|gato}. Leo es un {gato}.', ['gato', 'mirar']],
+      ['🥛', 'Leo {bebe|beber} {leche}. ¿{Más}? ¡Más, más, más!', ['más', 'leche']],
+      ['🧶', 'Leo {juega|jugar} con la {pelota}. ¿{Más}? ¡Más, más, más!', ['más', 'jugar', 'pelota']],
+      ['🤗', '{Mamá} le hace {cosquillas}. ¿{Más}? ¡Más, más, más!', ['más', 'cosquillas', 'mamá']],
+      ['😴', 'Leo está {cansado}. ¿Más? ¡{No}! ¡{Ya}!', ['no', 'cansado']],
+      ['💤', 'Leo {duerme|dormir}. Buenas noches, Leo. {Fin}.', ['dormir', 'fin', 'otra vez']]
     ] },
   { titulo: '¿Dónde está Pato?', color: '#D4F0EC', portada: '🦆', resumen: 'Pato se ha escondido. ¿Lo buscamos?',
+    vocab: [
+      { t: 'pato', e: '🦆', k: 'cosa' }, { t: 'esconder', b: 'esconderse', e: '🙈', k: 'accion' }, { t: 'buscar', e: '🔍', k: 'accion' }, { t: 'caja', e: '📦', k: 'cosa' },
+      { t: 'cama', e: '🛏️', k: 'cosa' }, { t: 'bañera', e: '🛁', k: 'cosa' }, { t: 'árbol', e: '🌳', k: 'cosa' }, { t: 'piscina', e: '🏊', k: 'cosa' }
+    ],
     paginas: [
-      ['🦆', '{Pato} se {esconde|esconderse}. ¿{Dónde} está?'],
-      ['📦', '¿Está en la {caja}? ¡{No}!'],
-      ['🛏️', '¿Está en la {cama}? ¡{No}!'],
-      ['🛁', '¿Está en la {bañera}? ¡{No}!'],
-      ['🌳', '¿Está en el {árbol}? ¡{No}!'],
-      ['🏊', '¿Está en la {piscina}? ¡{Sí}! ¡Aquí está Pato!'],
-      ['🔁', '¿Jugamos {otra vez}?']
+      ['🦆', '{Pato} se {esconde|esconderse}. ¿{Dónde} está?', ['¿dónde?', 'pato', 'buscar']],
+      ['📦', '¿Está en la {caja}? ¡{No}!', ['no', 'caja']],
+      ['🛏️', '¿Está en la {cama}? ¡{No}!', ['no', 'cama']],
+      ['🛁', '¿Está en la {bañera}? ¡{No}!', ['no', 'bañera']],
+      ['🌳', '¿Está en el {árbol}? ¡{No}!', ['no', 'árbol']],
+      ['🏊', '¿Está en la {piscina}? ¡{Sí}! ¡{Aquí} está Pato!', ['sí', 'aquí', 'piscina']],
+      ['🔁', '¿Jugamos {otra vez}?', ['otra vez', 'sí', 'no']]
     ] },
   { titulo: 'Me gusta, no me gusta', color: '#FDE8EE', portada: '👧', resumen: 'Lola prueba comidas. Unas le encantan y otras… ¡puaj!',
+    vocab: [
+      { t: 'niña', e: '👧', k: 'persona' }, { t: 'fresa', e: '🍓', k: 'cosa' }, { t: 'limón', e: '🍋', k: 'cosa' }, { t: 'helado', e: '🍦', k: 'cosa' },
+      { t: 'brócoli', e: '🥦', k: 'cosa' }, { t: 'chocolate', e: '🍫', k: 'cosa' }, { t: 'rico', e: '😋', k: 'describe' }, { t: '¡puaj!', b: 'asco', e: '🤢', k: 'social', d: 'puaj' }
+    ],
     paginas: [
-      ['👧', '{Lola|niña} tiene {hambre}.'],
-      ['🍓', '¿{Fresas|fresa}? ¡{Me gusta|gustar}!'],
-      ['🍋', '¿{Limón}? ¡{No} me gusta! ¡Puaj!'],
-      ['🍦', '¿{Helado}? ¡{Me gusta|gustar}!'],
-      ['🥦', '¿{Brócoli}? ¡{No} me gusta! ¡Puaj!'],
-      ['🍫', '¿{Chocolate}? ¡Me gusta {mucho}!'],
-      ['👉', 'Y a {ti|tú}, ¿{qué} te gusta?']
+      ['👧', '{Lola|niña} tiene {hambre}.', ['niña', 'mirar']],
+      ['🍓', '¿{Fresas|fresa}? ¡{Me gusta|gustar}!', ['me gusta', 'fresa', 'rico']],
+      ['🍋', '¿{Limón}? ¡{No} me gusta! ¡Puaj!', ['no', 'me gusta', '¡puaj!']],
+      ['🍦', '¿{Helado}? ¡{Me gusta|gustar}!', ['me gusta', 'helado', 'rico']],
+      ['🥦', '¿{Brócoli}? ¡{No} me gusta! ¡Puaj!', ['no', 'me gusta', '¡puaj!']],
+      ['🍫', '¿{Chocolate}? ¡Me gusta {mucho}!', ['me gusta', 'más', 'chocolate']],
+      ['👉', 'Y a {ti|tú}, ¿{qué} te gusta?', ['me gusta', '¿qué?']]
     ] }
 ];
 
-var COMENTARIOS = [
-  { t: '¡oh!', b: 'sorpresa', e: '😮', k: 'social', d: 'oh' }, { t: 'me gusta', b: 'gustar', e: '👍', k: 'accion' },
-  { t: 'no', e: '🚫', k: 'no' }, { t: 'más', e: '➕', k: 'describe' }, { t: 'pasar página', b: 'pasar página', e: '📄', k: 'accion', accion: 'pasar' },
-  { t: 'divertido', e: '😆', k: 'describe' }, { t: 'triste', e: '😢', k: 'describe' }, { t: 'mirar', e: '👀', k: 'accion' },
-  { t: '¿qué?', b: 'qué', e: '❓', k: 'pregunta', d: 'qué' }, { t: 'otra vez', e: '🔁', k: 'describe', accion: 'otra' }
+/* Núcleo para comentar: IGUAL y en el MISMO SITIO en todos los cuentos */
+var NUCLEO = [
+  [{ t: 'sí', e: '✅', k: 'social' }, { t: 'no', e: '🚫', k: 'no' }, { t: 'me gusta', b: 'gustar', e: '👍', k: 'accion' },
+   { t: 'más', e: '➕', k: 'describe' }, { t: 'otra vez', e: '🔁', k: 'describe', accion: 'otra' }, { t: '¡oh!', b: 'sorpresa', e: '😮', k: 'social', d: 'oh' }],
+  [{ t: 'mirar', e: '👀', k: 'accion' }, { t: '¿qué?', b: 'qué', e: '❓', k: 'pregunta', d: 'qué' }, { t: '¿dónde?', b: 'dónde', e: '📍', k: 'pregunta', d: 'dónde' },
+   { t: 'aquí', e: '👇', k: 'lugar' }, { t: 'pasar página', b: 'pasar página', e: '📄', k: 'accion', accion: 'pasar' }, { t: 'fin', e: '🔚', k: 'no' }]
 ];
 
 var libro = null, pag = 0, mayus = !!CAA.leer('caa-lectura-may');
+var pistas = CAA.leer('caa-lectura-pistas'); if (pistas === null) pistas = true;
 
+/* Una ilustración puede ser: emoji · 'picto:palabra' (ARASAAC) · imagen 'data:...' (foto o dibujo) */
+function ponerIlus(el, v) {
+  el.innerHTML = '';
+  v = v || '📖';
+  if (v.indexOf('data:') === 0) { var i = new Image(); i.alt = ''; i.src = v; i.className = 'foto'; el.appendChild(i); }
+  else if (v.indexOf('picto:') === 0) {
+    var w = document.createElement('span'); w.className = 'img-picto'; w.textContent = '🖼️'; el.appendChild(w);
+    CAA.ponerPicto(w, { t: v.slice(6) });
+  }
+  else el.textContent = v;
+}
+function tarjetaLibro(l, alAbrir) {
+  var b = document.createElement('button'); b.className = 'libro';
+  b.innerHTML = '<div class="portada" style="background:' + CAA.esc(l.color || '#E8E0F5') + '" aria-hidden="true"></div>' +
+    '<div class="info"><h3>' + CAA.esc(l.titulo) + '</h3><p>' + CAA.esc(l.resumen || '') + '</p></div>';
+  ponerIlus(b.querySelector('.portada'), l.portada);
+  b.onclick = alAbrir;
+  return b;
+}
 function pintarBiblioteca() {
-  var c = document.getElementById('libros');
-  CUENTOS.forEach(function (l, i) {
-    var b = document.createElement('button'); b.className = 'libro';
-    b.innerHTML = '<div class="portada" style="background:' + l.color + '" aria-hidden="true">' + l.portada + '</div>' +
-      '<div class="info"><h3>' + CAA.esc(l.titulo) + '</h3><p>' + CAA.esc(l.resumen) + '</p></div>';
-    b.onclick = function () { abrir(i); };
-    c.appendChild(b);
-  });
+  var c = document.getElementById('libros'); c.innerHTML = '';
+  CUENTOS.forEach(function (l, i) { c.appendChild(tarjetaLibro(l, function () { abrirLibro(l, 'biblioteca'); })); });
+  pintarMisCuentos();
+}
+function celdaLectura(it) {
+  var c = CAA.celda(it);
+  c.dataset.t = it.t;
+  c.onclick = function () {
+    CAA.hablar(it.d || it.t);
+    if (it.accion === 'pasar') setTimeout(function () { ir(1); }, 900);
+    if (it.accion === 'otra' && pag === libro.paginas.length) setTimeout(function () { pag = 0; pintarPagina(); }, 900);
+  };
+  return c;
 }
 function pintarTablero() {
-  var t = document.getElementById('tablero');
-  t.innerHTML = '<h3>Comentamos el cuento</h3>';
-  var f1 = document.createElement('div'), f2 = document.createElement('div');
-  f1.className = f2.className = 'scan-fila';
-  COMENTARIOS.forEach(function (it, i) {
-    var c = CAA.celda(it);
-    c.onclick = function () {
-      CAA.hablar(it.d || it.t);
-      if (it.accion === 'pasar') setTimeout(function () { ir(1); }, 900);
-      if (it.accion === 'otra' && pag === libro.paginas.length) setTimeout(function () { pag = 0; pintarPagina(); }, 900);
-    };
-    (i < 5 ? f1 : f2).appendChild(c);
+  var t = document.getElementById('tablero'); t.innerHTML = '';
+  var nuc = document.createElement('div'); nuc.className = 'bloque nucleo';
+  nuc.innerHTML = '<h3>Comentamos <small>· siempre igual</small></h3>';
+  NUCLEO.forEach(function (fila) {
+    var f = document.createElement('div'); f.className = 'scan-fila';
+    fila.forEach(function (it) { f.appendChild(celdaLectura(it)); });
+    nuc.appendChild(f);
   });
-  t.appendChild(f1); t.appendChild(f2);
+  var fr = document.createElement('div'); fr.className = 'bloque franja';
+  fr.innerHTML = '<h3>Palabras del cuento</h3>';
+  for (var i = 0; i < 2; i++) {
+    var f = document.createElement('div'); f.className = 'scan-fila';
+    libro.vocab.slice(i * 4, i * 4 + 4).forEach(function (it) { f.appendChild(celdaLectura(it)); });
+    fr.appendChild(f);
+  }
+  t.appendChild(nuc); t.appendChild(fr);
 }
+function marcarSugeridas() {
+  var lista = pag === 0 ? ['mirar'] : (libro.paginas[pag - 1][2] || []);
+  document.querySelectorAll('#tablero .picto').forEach(function (c) {
+    c.classList.toggle('sugerida', pistas && lista.indexOf(c.dataset.t) >= 0);
+  });
+  var p = document.getElementById('pista');
+  p.hidden = !pistas || !lista.length;
+  p.innerHTML = '💡 Modela: ' + lista.map(function (x) { return '<b>' + CAA.esc(x) + '</b>'; }).join(' · ');
+}
+document.getElementById('btn-pistas').onclick = function () {
+  pistas = !pistas; CAA.guardar('caa-lectura-pistas', pistas);
+  this.setAttribute('aria-pressed', pistas); marcarSugeridas();
+};
+document.getElementById('btn-pistas').setAttribute('aria-pressed', pistas);
 
-function abrir(i) {
-  libro = CUENTOS[i]; pag = 0;
-  document.getElementById('biblioteca').hidden = true;
-  document.getElementById('lector').hidden = false;
-  pintarPagina(); window.scrollTo(0, 0);
+var origen = 'biblioteca';
+function mostrar(id) {
+  ['biblioteca', 'editor', 'lector'].forEach(function (x) { document.getElementById(x).hidden = x !== id; });
+  window.scrollTo(0, 0); CAA.scan.reiniciar();
+}
+function abrirLibro(l, desde) {
+  libro = l; pag = 0; origen = desde || 'biblioteca';
+  pintarTablero(); mostrar('lector'); pintarPagina();
 }
 function partes(txt) {
   // Mantiene los signos (¿ ? ¡ ! . ,) pegados a su palabra
@@ -635,7 +922,7 @@ function textoPlano(txt) { return txt.replace(/\{([^}|]+)(?:\|[^}]+)?\}/g, '$1')
 function pintarPagina() {
   var portada = pag === 0, total = libro.paginas.length;
   var datos = portada ? [libro.portada, libro.titulo] : libro.paginas[pag - 1];
-  document.getElementById('ilus').textContent = datos[0];
+  ponerIlus(document.getElementById('ilus'), datos[0]);
   var t = document.getElementById('texto'); t.innerHTML = ''; t.classList.toggle('may', mayus);
   if (portada) {
     t.innerHTML = '<span class="pal"><span class="w" style="font-size:1.3em;font-weight:600">' + CAA.esc(libro.titulo) + '</span></span>';
@@ -652,6 +939,7 @@ function pintarPagina() {
   document.getElementById('num').textContent = portada ? 'Portada' : pag + ' / ' + total;
   document.getElementById('prev').disabled = pag === 0;
   document.getElementById('next').disabled = pag === total;
+  marcarSugeridas();
   leerPagina();
   CAA.scan.reiniciar();
 }
@@ -672,14 +960,259 @@ document.getElementById('leer').onclick = leerPagina;
 document.getElementById('mayus').onclick = function () { mayus = !mayus; CAA.guardar('caa-lectura-may', mayus); document.getElementById('texto').classList.toggle('may', mayus); };
 document.getElementById('cerrar').onclick = function () {
   speechSynthesis && speechSynthesis.cancel();
-  document.getElementById('lector').hidden = true; document.getElementById('biblioteca').hidden = false; CAA.scan.reiniciar();
+  mostrar(origen);
 };
 document.addEventListener('keydown', function (e) {
   if (document.getElementById('lector').hidden || CAA.ajustes.acceso !== 'tactil') return;
   if (e.key === 'ArrowRight') ir(1); if (e.key === 'ArrowLeft') ir(-1);
 });
 
-pintarBiblioteca(); pintarTablero();
+
+/* ════════════════ MIS CUENTOS (creador) ════════════════ */
+var MIS = CAA.leer('caa-mis-cuentos') || [];
+var COLORES = ['#FFE9C7', '#D4F0EC', '#FDE8EE', '#E8E0F5', '#DCEEFF', '#EEF5D8'];
+var TIPOS = [['cosa', 'Cosa / lugar'], ['persona', 'Persona / personaje'], ['accion', 'Acción'], ['describe', 'Cómo es']];
+var borrador = null;
+
+function guardarMis() {
+  try { localStorage.setItem('caa-mis-cuentos', JSON.stringify(MIS)); return true; }
+  catch (e) { alert('No queda espacio en este dispositivo. Prueba a usar menos fotos o fotos más pequeñas, o borra algún cuento.'); return false; }
+}
+function norm(w) { return w.toLowerCase().replace(/[¿?¡!.,;:«»"()]/g, '').trim(); }
+function partirPunt(tok) { var m = tok.match(/^([¿¡«"(]*)(.*?)([.,;:!?»")]*)$/); return m ? [m[1], m[2], m[3]] : ['', tok, '']; }
+
+/* Convierte un cuento del creador al formato del lector */
+function aLibro(c) {
+  return {
+    titulo: c.titulo || 'Sin título', color: c.color, portada: c.portada, resumen: c.resumen || '',
+    vocab: c.vocab.filter(function (v) { return v.t; }).map(function (v) { return { t: v.t, e: '', k: v.k || 'cosa' }; }),
+    paginas: c.paginas.filter(function (p) { return (p.texto || '').trim(); }).map(function (p) {
+      var txt = p.texto.replace(/[{}|]/g, '').split(/\s+/).map(function (tok) {
+        var q = partirPunt(tok);
+        return q[1] && p.claves.indexOf(norm(q[1])) >= 0 ? q[0] + '{' + q[1] + '}' + q[2] : tok;
+      }).join(' ');
+      return [p.ilus || '📖', txt, p.pistas || []];
+    })
+  };
+}
+
+function pintarMisCuentos() {
+  var c = document.getElementById('mis-libros'); c.innerHTML = '';
+  var nuevo = document.createElement('button'); nuevo.className = 'libro-nuevo';
+  nuevo.innerHTML = '<span aria-hidden="true">✏️</span>Crear un cuento nuevo';
+  nuevo.onclick = function () { editar(null); };
+  c.appendChild(nuevo);
+  MIS.forEach(function (m, i) {
+    var w = document.createElement('div'); w.className = 'libro libro-mio';
+    var t = tarjetaLibro(m, function () { abrirLibro(aLibro(m), 'biblioteca'); });
+    t.style.boxShadow = 'none';
+    w.appendChild(t);
+    var a = document.createElement('div'); a.className = 'acciones-libro';
+    a.innerHTML = '<button data-a="leer">📖 Leer</button><button data-a="editar">✏️ Editar</button><button data-a="bajar">⬇ Descargar</button><button data-a="borrar">🗑️</button>';
+    a.onclick = function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.a === 'leer') abrirLibro(aLibro(m), 'biblioteca');
+      if (b.dataset.a === 'editar') editar(i);
+      if (b.dataset.a === 'bajar') descargar(m);
+      if (b.dataset.a === 'borrar' && confirm('¿Borrar «' + m.titulo + '»? No se puede deshacer.')) { MIS.splice(i, 1); guardarMis(); pintarMisCuentos(); }
+    };
+    w.appendChild(a); c.appendChild(w);
+  });
+}
+
+function descargar(m) {
+  var blob = new Blob([JSON.stringify(m)], { type: 'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = (m.titulo || 'cuento').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-') + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+document.getElementById('btn-importar').onclick = function () { document.getElementById('f-importar').click(); };
+document.getElementById('f-importar').onchange = function () {
+  var f = this.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    try {
+      var c = JSON.parse(r.result);
+      if (!c || !Array.isArray(c.paginas) || !Array.isArray(c.vocab)) throw 0;
+      c.id = Date.now(); MIS.push(c);
+      if (guardarMis()) { pintarMisCuentos(); alert('Cuento «' + c.titulo + '» importado.'); }
+    } catch (e) { alert('Este archivo no es un cuento válido.'); }
+  };
+  r.readAsText(f); this.value = '';
+};
+
+/* ── Reducir fotos para que quepan en el dispositivo ── */
+function reducirFoto(file, max) {
+  return new Promise(function (ok, ko) {
+    var r = new FileReader();
+    r.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, max / Math.max(img.width, img.height));
+        var cv = document.createElement('canvas'); cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+        var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+        ok(cv.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = ko; img.src = r.result;
+    };
+    r.onerror = ko; r.readAsDataURL(file);
+  });
+}
+
+/* ── Selector de imagen: emoji, pictograma o foto ── */
+function selectorIlus(valor, cambiar) {
+  var w = document.createElement('div'); w.className = 'picker';
+  w.innerHTML = '<div class="prev" aria-hidden="true"></div>' +
+    '<input type="text" class="ed-in" placeholder="Palabra para buscar pictograma (p. ej. sirena) o un emoji">' +
+    '<button type="button" data-a="usar">🔍 Usar</button>' +
+    '<button type="button" data-a="foto">📷 Foto o dibujo</button>' +
+    '<button type="button" data-a="quitar" aria-label="Quitar imagen">✕</button>' +
+    '<input type="file" accept="image/*" hidden>';
+  var prev = w.querySelector('.prev'), inp = w.querySelector('input[type=text]'), file = w.querySelector('input[type=file]');
+  function pintar(v) { ponerIlus(prev, v || '➕'); }
+  if (valor && valor.indexOf('picto:') === 0) inp.value = valor.slice(6);
+  else if (valor && valor.indexOf('data:') !== 0) inp.value = valor;
+  pintar(valor);
+  prev.title = 'Si es un pictograma, toca para elegir otro'; prev.style.cursor = 'pointer';
+  prev.addEventListener('click', function () { var k = prev.querySelector('[data-picto-key]'); if (k) CAA.elegirPicto(k.dataset.pictoKey); });
+  function usar() {
+    var t = inp.value.trim(); if (!t) return;
+    var v = /[a-záéíóúüñ]/i.test(t) ? 'picto:' + t.toLowerCase() : t;
+    cambiar(v); pintar(v);
+  }
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); usar(); } });
+  w.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.a === 'usar') usar();
+    if (b.dataset.a === 'foto') file.click();
+    if (b.dataset.a === 'quitar') { inp.value = ''; cambiar(''); pintar(''); }
+  });
+  file.onchange = function () {
+    var f = file.files[0]; if (!f) return;
+    reducirFoto(f, 640).then(function (src) { cambiar(src); pintar(src); inp.value = ''; });
+    file.value = '';
+  };
+  return w;
+}
+
+/* ── Editor ── */
+var editIndex = null;
+function editar(i) {
+  editIndex = i;
+  borrador = i === null ? {
+    id: Date.now(), titulo: '', resumen: '', color: COLORES[MIS.length % COLORES.length], portada: '',
+    vocab: [], paginas: [{ ilus: '', texto: '', claves: [], pistas: [] }]
+  } : JSON.parse(JSON.stringify(MIS[i]));
+  while (borrador.vocab.length < 8) borrador.vocab.push({ t: '', k: 'cosa' });
+  pintarEditor(); mostrar('editor');
+}
+function pintarEditor() {
+  var t = document.getElementById('ed-titulo'), r = document.getElementById('ed-resumen');
+  t.value = borrador.titulo; r.value = borrador.resumen;
+  t.oninput = function () { borrador.titulo = t.value; };
+  r.oninput = function () { borrador.resumen = r.value; };
+  var cs = document.getElementById('ed-colores'); cs.innerHTML = '';
+  COLORES.forEach(function (c) {
+    var b = document.createElement('button'); b.type = 'button'; b.style.background = c; b.setAttribute('aria-label', 'Color');
+    b.setAttribute('aria-pressed', c === borrador.color ? 'true' : 'false');
+    b.onclick = function () { borrador.color = c; pintarEditor(); };
+    cs.appendChild(b);
+  });
+  var po = document.getElementById('ed-portada'); po.innerHTML = '';
+  po.appendChild(selectorIlus(borrador.portada, function (v) { borrador.portada = v; }));
+  pintarVocab(); pintarPaginasEd();
+}
+function pintarVocab() {
+  var c = document.getElementById('ed-vocab'); c.innerHTML = '';
+  borrador.vocab.forEach(function (v, i) {
+    var d = document.createElement('div'); d.className = 'v';
+    d.innerHTML = '<span class="pv" aria-hidden="true"></span><input class="t" maxlength="24" placeholder="Palabra ' + (i + 1) + '" aria-label="Palabra ' + (i + 1) + '"><select aria-label="Tipo de palabra">' +
+      TIPOS.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join('') + '</select>';
+    var inp = d.querySelector('input'), sel = d.querySelector('select'), pv = d.querySelector('.pv');
+    inp.value = v.t; sel.value = v.k || 'cosa';
+    function prev() { pv.textContent = ''; if (v.t) CAA.ponerPicto(pv, { t: v.t }); }
+    prev();
+    inp.oninput = function () { v.t = inp.value.trim().toLowerCase(); };
+    inp.onchange = function () { prev(); refrescos.forEach(function (f) { f(); }); };
+    sel.onchange = function () { v.k = sel.value; };
+    pv.title = 'Toca para elegir otro pictograma'; pv.style.cursor = 'pointer';
+    pv.onclick = function () { if (v.t) CAA.elegirPicto(v.t); };
+    c.appendChild(d);
+  });
+}
+var refrescos = [];
+var NUCLEO_PLANO = NUCLEO[0].concat(NUCLEO[1]).map(function (x) { return x.t; });
+function pintarPaginasEd() {
+  var c = document.getElementById('ed-paginas'); c.innerHTML = ''; refrescos = [];
+  borrador.paginas.forEach(function (p, i) {
+    var d = document.createElement('div'); d.className = 'pag-ed';
+    d.innerHTML = '<div class="cab"><b>Página ' + (i + 1) + '</b>' +
+      '<button class="mini-btn" data-a="arriba" aria-label="Subir página">↑</button><button class="mini-btn" data-a="abajo" aria-label="Bajar página">↓</button>' +
+      '<button class="mini-btn" data-a="borrar" aria-label="Borrar página">🗑️</button></div>' +
+      '<div class="campo"><label>Imagen</label><div class="sel"></div></div>' +
+      '<div class="campo"><label>Texto</label><textarea maxlength="160" placeholder="Por ejemplo: ¿Está la sirena en la cueva? ¡No!"></textarea></div>' +
+      '<div class="campo"><label>Pictograma encima de… <small style="font-weight:600;color:var(--ink3)">(toca las palabras importantes)</small></label><div class="chips claves"></div></div>' +
+      '<div class="campo" style="margin:0"><label>Se iluminan en el tablero (para modelar)</label><div class="chips pistas"></div></div>';
+    d.querySelector('.sel').appendChild(selectorIlus(p.ilus, function (v) { p.ilus = v; }));
+    var ta = d.querySelector('textarea'); ta.value = p.texto;
+    var chC = d.querySelector('.chips.claves'), chP = d.querySelector('.chips.pistas');
+    function pintarChips() {
+      var palabras = []; p.texto.split(/\s+/).forEach(function (tok) { var w = norm(partirPunt(tok)[1]); if (w && palabras.indexOf(w) < 0) palabras.push(w); });
+      p.claves = p.claves.filter(function (w) { return palabras.indexOf(w) >= 0; });
+      chC.innerHTML = palabras.length ? '' : '<span class="vacio">Escribe el texto primero</span>';
+      palabras.forEach(function (w) {
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = w;
+        b.setAttribute('aria-pressed', p.claves.indexOf(w) >= 0 ? 'true' : 'false');
+        b.onclick = function () { var k = p.claves.indexOf(w); if (k >= 0) p.claves.splice(k, 1); else p.claves.push(w); pintarChips(); };
+        chC.appendChild(b);
+      });
+      var opciones = NUCLEO_PLANO.concat(borrador.vocab.map(function (v) { return v.t; }).filter(Boolean));
+      p.pistas = p.pistas.filter(function (w) { return opciones.indexOf(w) >= 0; });
+      chP.innerHTML = '';
+      opciones.forEach(function (w) {
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = w;
+        b.setAttribute('aria-pressed', p.pistas.indexOf(w) >= 0 ? 'true' : 'false');
+        b.onclick = function () { var k = p.pistas.indexOf(w); if (k >= 0) p.pistas.splice(k, 1); else p.pistas.push(w); pintarChips(); };
+        chP.appendChild(b);
+      });
+    }
+    var tmr; ta.oninput = function () { p.texto = ta.value; clearTimeout(tmr); tmr = setTimeout(pintarChips, 350); };
+    pintarChips(); refrescos.push(pintarChips);
+    d.querySelector('.cab').onclick = function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      var P = borrador.paginas;
+      if (b.dataset.a === 'arriba' && i > 0) { P.splice(i - 1, 0, P.splice(i, 1)[0]); pintarPaginasEd(); }
+      if (b.dataset.a === 'abajo' && i < P.length - 1) { P.splice(i + 1, 0, P.splice(i, 1)[0]); pintarPaginasEd(); }
+      if (b.dataset.a === 'borrar' && P.length > 1 && confirm('¿Borrar la página ' + (i + 1) + '?')) { P.splice(i, 1); pintarPaginasEd(); }
+    };
+    c.appendChild(d);
+  });
+}
+document.getElementById('ed-add-pag').onclick = function () {
+  borrador.paginas.push({ ilus: '', texto: '', claves: [], pistas: [] }); pintarPaginasEd();
+  var ps = document.querySelectorAll('.pag-ed'); ps[ps.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+function validar() {
+  if (!borrador.titulo.trim()) { alert('Ponle un título al cuento.'); document.getElementById('ed-titulo').focus(); return false; }
+  if (!borrador.paginas.some(function (p) { return (p.texto || '').trim(); })) { alert('Escribe el texto de al menos una página.'); return false; }
+  return true;
+}
+document.getElementById('ed-probar').onclick = function () { if (validar()) abrirLibro(aLibro(borrador), 'editor'); };
+document.getElementById('ed-guardar').onclick = function () {
+  if (!validar()) return;
+  var limpio = JSON.parse(JSON.stringify(borrador));
+  limpio.vocab = limpio.vocab.filter(function (v) { return v.t; });
+  if (editIndex === null) MIS.push(limpio); else MIS[editIndex] = limpio;
+  if (!guardarMis()) { if (editIndex === null) MIS.pop(); return; }
+  pintarMisCuentos(); mostrar('biblioteca');
+  document.getElementById('mis-cuentos').scrollIntoView({ behavior: 'smooth' });
+};
+document.getElementById('ed-cancelar').onclick = function () {
+  if (confirm('¿Salir sin guardar los cambios?')) { mostrar('biblioteca'); }
+};
+pintarBiblioteca();
+if (location.hash === '#crear') editar(null);
 </script>
 </body>
 </html>

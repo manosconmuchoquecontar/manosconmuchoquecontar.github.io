@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buzón de sugerencias · Manos con Mucho que Contar</title>
+<meta name="description" content="Cuéntanos qué recurso te gustaría que creáramos o qué podríamos mejorar.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📮</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
+}
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  .wrap { max-width: 720px; margin: 0 auto; padding: 2rem 1.1rem 5rem; }
+  .cabecera { background: white; border-radius: 22px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; }
+  .cabecera .franja { height: 10px; background: var(--teal); }
+  .cabecera .dentro { padding: 1.5rem 1.6rem; }
+  .cabecera h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); margin-bottom: .5rem; }
+  .cabecera p { color: var(--ink2); line-height: 1.6; }
+  .cabecera .oblig { color: #C4372B; font-size: 13px; font-weight: 700; margin-top: .6rem; }
+  .preg { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; transition: border-color .2s; }
+  .preg:focus-within { border-color: var(--teal); box-shadow: inset 4px 0 0 var(--teal); }
+  .preg.error { border-color: #C4372B; }
+  .preg > label, .preg > legend { font-weight: 800; font-size: 1.02rem; display: block; margin-bottom: .3rem; }
+  .preg .req { color: #C4372B; }
+  .preg .nota { font-size: 13px; color: var(--ink3); margin-bottom: .8rem; line-height: 1.5; }
+  fieldset.preg { border: 1px solid var(--border); min-width: 0; }
+  fieldset.preg > legend { float: left; width: 100%; padding: 0; margin-bottom: .8rem; }
+  fieldset.preg > legend + * { clear: both; }
+  .preg > label.check { display: flex; font-weight: 600; font-size: 14px; margin: 0; }
+  .opciones-r { display: flex; flex-direction: column; gap: .5rem; }
+  .opciones-r label { display: flex; align-items: center; gap: .7rem; font-size: 15px; cursor: pointer; padding: 4px 0; }
+  .opciones-r input { width: 20px; height: 20px; accent-color: var(--teal); }
+  .preg select, .preg input[type=text], .preg input[type=email], .preg textarea {
+    width: 100%; padding: 11px 2px; border: none; border-bottom: 2px solid var(--border); font: inherit; font-size: 16px; background: transparent; color: var(--ink); border-radius: 0;
+  }
+  .preg select { border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 12px; background: white; }
+  .preg textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+  .preg input:focus, .preg textarea:focus { outline: none; border-bottom-color: var(--teal); }
+  .contador { text-align: right; font-size: 12px; color: var(--ink3); margin-top: 4px; }
+  .msg-error { color: #C4372B; font-size: 13px; font-weight: 700; margin-top: .5rem; display: none; }
+  .preg.error .msg-error { display: block; }
+  .aviso-datos { background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 14px; padding: .9rem 1rem; font-size: 14px; line-height: 1.5; color: #5C4A12; margin-bottom: .8rem; }
+  .check { display: flex; gap: .7rem; align-items: flex-start; font-size: 14px; line-height: 1.5; cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--teal); flex-shrink: 0; }
+  .enviar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.2rem; }
+  .trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  #gracias { text-align: center; }
+  #gracias .grande { font-size: 4.5rem; }
+  #gracias h2 { font-size: 1.8rem; margin: .6rem 0; color: var(--teal-d); }
+  #gracias p { color: var(--ink2); line-height: 1.6; margin-bottom: 1.2rem; }
+  body.caa-contraste .cabecera, body.caa-contraste .preg { background: #000; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <form id="form" novalidate>
+    <div class="cabecera">
+      <div class="franja"></div>
+      <div class="dentro">
+        <h1 class="fredoka">📮 Buzón de sugerencias</h1>
+        <p>¿Echas en falta algún recurso? ¿Hay algo que mejorarías o que no funciona bien? Cuéntamelo. Leo todas las propuestas y me ayudan a decidir qué crear después.</p>
+        <p style="margin-top:.5rem">Tus respuestas <b>solo las veo yo</b>: no se publican en ningún sitio.</p>
+        <p class="oblig">* Obligatorio</p>
+      </div>
+    </div>
+
+    <fieldset class="preg" id="p-quien">
+      <legend>¿Quién eres? <span class="req">*</span></legend>
+      <div class="opciones-r">
+        <label><input type="radio" name="quien" value="Familia"> Familia</label>
+        <label><input type="radio" name="quien" value="Docente"> Docente (AL, PT, tutor/a…)</label>
+        <label><input type="radio" name="quien" value="Logopeda u otro especialista"> Logopeda u otro especialista</label>
+        <label><input type="radio" name="quien" value="Otro"> Otro</label>
+      </div>
+      <p class="msg-error">Elige una opción.</p>
+    </fieldset>
+
+    <fieldset class="preg" id="p-tipo">
+      <legend>¿Qué quieres proponer? <span class="req">*</span></legend>
+      <div class="opciones-r">
+        <label><input type="radio" name="tipo" value="Un recurso nuevo"> ✨ Un recurso nuevo</label>
+        <label><input type="radio" name="tipo" value="Mejorar un recurso"> 🛠️ Mejorar un recurso que ya existe</label>
+        <label><input type="radio" name="tipo" value="Algo no funciona"> 🐞 Algo no funciona bien</label>
+        <label><input type="radio" name="tipo" value="Otra cosa"> 💬 Otra cosa</label>
+      </div>
+      <p class="msg-error">Elige una opción.</p>
+    </fieldset>
+
+    <div class="preg" id="p-recurso" hidden>
+      <label for="recurso">¿Qué recurso?</label>
+      <select id="recurso">
+        <option value="">— Elige uno —</option>
+        <optgroup label="Comunicación (CAA)">
+          <option>Causa y efecto</option><option>Elijo entre dos</option><option>Del objeto al pictograma</option>
+          <option>Tableros por rutinas</option><option>Palabra de la semana</option><option>Lectura compartida</option>
+          <option>Creador de cuentos</option><option>Abecedario accesible</option><option>Primeros pasos con la CAA</option>
+          <option>Mitos y dudas frecuentes</option>
+        </optgroup>
+        <optgroup label="Otros"><option>Otra actividad de la web</option><option>La web en general</option></optgroup>
+      </select>
+    </div>
+
+    <div class="preg" id="p-texto">
+      <label for="texto">Cuéntame tu idea <span class="req">*</span></label>
+      <p class="nota">Cuanto más concreta, mejor. Por ejemplo: «Un tablero para la rutina de ir al médico» o «En el abecedario, que se pueda poner letra ligada».</p>
+      <textarea id="texto" maxlength="1500" placeholder="Escribe aquí…"></textarea>
+      <div class="contador"><span id="cuenta">0</span> / 1500</div>
+      <p class="msg-error">Escribe tu propuesta (al menos unas palabras).</p>
+    </div>
+
+    <div class="preg">
+      <label for="email">Tu correo (opcional)</label>
+      <p class="nota">Solo si quieres que te responda o te avise cuando esté listo. No lo usaré para nada más.</p>
+      <input type="email" id="email" maxlength="120" placeholder="nombre@correo.com" autocomplete="email">
+      <p class="msg-error">Ese correo no parece correcto.</p>
+    </div>
+
+    <div class="preg" id="p-acepto">
+      <div class="aviso-datos">🔒 <b>Por favor, no escribas nombres de niños ni datos de salud</b> (diagnósticos, informes…). No hacen falta para entender tu propuesta.</div>
+      <label class="check"><input type="checkbox" id="acepto"> <span>Entiendo que mi propuesta y, si lo he escrito, mi correo los recibe Inma Merino Rus solo para mejorar esta web. <span class="req">*</span></span></label>
+      <p class="msg-error">Marca la casilla para poder enviar.</p>
+    </div>
+
+    <div class="trampa" aria-hidden="true"><label>No rellenar <input type="text" id="web" tabindex="-1" autocomplete="off"></label></div>
+
+    <div class="enviar">
+      <button type="submit" class="btn btn-p" id="btn-enviar">📮 Enviar</button>
+      <button type="reset" class="btn" style="background:transparent;border:none;color:var(--teal);font-weight:700">Borrar formulario</button>
+    </div>
+    <p class="msg-error" id="error-envio" style="display:none;margin-top:1rem"></p>
+  </form>
+
+  <section id="gracias" class="cabecera" hidden>
+    <div class="franja"></div>
+    <div class="dentro">
+      <div class="grande pop">💌</div>
+      <h2>¡Gracias por tu propuesta!</h2>
+      <p>La he recibido. Las ideas que más se repiten son las primeras que preparo.</p>
+      <button class="btn btn-s" id="otra">Enviar otra sugerencia</button>
+      <a class="btn" href="../caa.html" style="margin-left:.4rem">Volver a los recursos</a>
+    </div>
+  </section>
+</main>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  function elegirVoz() {
+    var vs = speechSynthesis.getVoices();
+    voz = vs.find(function (v) { return v.lang === 'es-ES' && /google|mónica|monica|lucia|elvira/i.test(v.name); }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) ||
+          vs.find(function (v) { return /^es/i.test(v.lang); }) || null;
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'es-ES'; u.rate = 0.85; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+    });
+    m.addEventListener('change', function (e) {
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  function init(o) {
+    o = o || {};
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<button class="btn-ajustes" aria-label="Ajustes de accesibilidad" title="Ajustes">⚙️</button>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', panel.abrir);
+    CAA.abrirAjustes = panel.abrir;
+    aplicar();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+/* ════════════════════════════════════════════════════════════
+   PEGA AQUÍ la dirección de tu Apps Script (termina en /exec).
+   Mientras esté vacía, el formulario avisa de que el buzón no está activo.
+   ════════════════════════════════════════════════════════════ */
+var URL_SCRIPT = '';
+
+CAA.init({ titulo: 'Buzón de sugerencias', barrido: false });
+
+var form = document.getElementById('form');
+var texto = document.getElementById('texto');
+var tipoSel = function () { var r = form.querySelector('input[name=tipo]:checked'); return r ? r.value : ''; };
+var quienSel = function () { var r = form.querySelector('input[name=quien]:checked'); return r ? r.value : ''; };
+
+texto.addEventListener('input', function () { document.getElementById('cuenta').textContent = texto.value.length; marcar('p-texto', false); });
+form.addEventListener('change', function (e) {
+  if (e.target.name === 'tipo') {
+    document.getElementById('p-recurso').hidden = !/Mejorar|no funciona/.test(tipoSel());
+    marcar('p-tipo', false);
+  }
+  if (e.target.name === 'quien') marcar('p-quien', false);
+  if (e.target.id === 'acepto') marcar('p-acepto', false);
+});
+/* Si se llega desde un recurso con ?recurso=Nombre, se rellena solo */
+(function () {
+  var r = new URLSearchParams(location.search).get('recurso');
+  if (r) { var sel = document.getElementById('recurso'); [].forEach.call(sel.options, function (o) { if (o.text === r) sel.value = o.text; }); }
+})();
+
+function marcar(id, mal) { var el = document.getElementById(id); if (el) el.classList.toggle('error', mal); }
+function validar() {
+  var ok = true, primero = null;
+  function f(id, cond) { marcar(id, !cond); if (!cond) { ok = false; primero = primero || document.getElementById(id); } }
+  f('p-quien', !!quienSel());
+  f('p-tipo', !!tipoSel());
+  f('p-texto', texto.value.trim().length >= 5);
+  var em = document.getElementById('email').value.trim();
+  var pe = document.getElementById('email').closest('.preg'); pe.classList.toggle('error', !!em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em));
+  if (pe.classList.contains('error')) { ok = false; primero = primero || pe; }
+  f('p-acepto', document.getElementById('acepto').checked);
+  if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return ok;
+}
+
+form.addEventListener('reset', function () {
+  setTimeout(function () { document.getElementById('cuenta').textContent = '0'; document.getElementById('p-recurso').hidden = true; form.querySelectorAll('.error').forEach(function (x) { x.classList.remove('error'); }); }, 0);
+});
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+  var err = document.getElementById('error-envio'); err.style.display = 'none';
+  if (!validar()) return;
+  if (document.getElementById('web').value) { mostrarGracias(); return; }   // trampa anti-spam
+  if (!URL_SCRIPT) {
+    err.textContent = 'El buzón todavía no está activo. Vuelve a intentarlo dentro de unos días. ¡Gracias!';
+    err.style.display = 'block'; return;
+  }
+  var datos = {
+    quien: quienSel(), tipo: tipoSel(),
+    recurso: document.getElementById('p-recurso').hidden ? '' : document.getElementById('recurso').value,
+    texto: texto.value.trim().slice(0, 1500),
+    email: document.getElementById('email').value.trim().slice(0, 120),
+    desde: document.referrer || ''
+  };
+  var b = document.getElementById('btn-enviar'); b.disabled = true; b.textContent = 'Enviando…';
+  fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) })
+    .then(function () { mostrarGracias(); })
+    .catch(function () {
+      err.textContent = 'No se ha podido enviar. Comprueba la conexión a internet e inténtalo otra vez.';
+      err.style.display = 'block';
+    })
+    .finally(function () { b.disabled = false; b.textContent = '📮 Enviar'; });
+});
+function mostrarGracias() {
+  form.hidden = true; document.getElementById('gracias').hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' }); CAA.sonido('exito');
+}
+document.getElementById('otra').onclick = function () {
+  form.reset(); form.hidden = false; document.getElementById('gracias').hidden = true; window.scrollTo(0, 0);
+};
+</script>
+</body>
+</html>

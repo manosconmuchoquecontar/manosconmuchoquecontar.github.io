@@ -202,6 +202,9 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
     <p class="sub" style="margin:0">Haz fotos de objetos que use cada día (su vaso, su pelota, su cuchara…) y escribe su nombre. Se guardan solo en este dispositivo.</p>
     <form class="form-foto" id="form-foto">
       <input type="file" id="archivo" accept="image/*" capture="environment" aria-label="Elegir foto">
+      <select id="art-foto" aria-label="Artículo" style="padding:11px 14px;border-radius:100px;border:1.5px solid var(--border);font:inherit;font-weight:700;background:white">
+        <option value="el">el</option><option value="la">la</option><option value="los">los</option><option value="las">las</option>
+      </select>
       <input type="text" id="nombre-foto" placeholder="¿Qué es? (p. ej. vaso)" aria-label="Nombre del objeto">
       <button class="btn btn-s" type="submit">＋ Guardar</button>
     </form>
@@ -576,13 +579,26 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 CAA.init({ titulo: 'Del objeto al pictograma' });
 
 var OBJETOS = [
-  { t: 'vaso', e: '🥛' }, { t: 'cuchara', e: '🥄' }, { t: 'pelota', e: '⚽' }, { t: 'coche', e: '🚗' },
-  { t: 'zapato', e: '👟' }, { t: 'manzana', e: '🍎' }, { t: 'plátano', e: '🍌' }, { t: 'libro', e: '📖' },
-  { t: 'cama', e: '🛏️' }, { t: 'gato', e: '🐱' }, { t: 'perro', e: '🐶' }, { t: 'casa', e: '🏠' },
-  { t: 'sol', e: '☀️' }, { t: 'llave', e: '🔑' }, { t: 'reloj', e: '⏰' }, { t: 'globo', e: '🎈' },
-  { t: 'pan', e: '🍞' }, { t: 'flor', e: '🌸' }, { t: 'árbol', e: '🌳' }, { t: 'tren', e: '🚂' },
-  { t: 'cepillo de dientes', e: '🪥' }, { t: 'camiseta', e: '👕' }, { t: 'oso de peluche', e: '🧸' }, { t: 'helado', e: '🍦' }
+  { t: 'vaso', a: 'el', e: '🥛' }, { t: 'cuchara', a: 'la', e: '🥄' }, { t: 'pelota', a: 'la', e: '⚽' }, { t: 'coche', a: 'el', e: '🚗' },
+  { t: 'zapato', a: 'el', e: '👟' }, { t: 'manzana', a: 'la', e: '🍎' }, { t: 'plátano', a: 'el', e: '🍌' }, { t: 'libro', a: 'el', e: '📖' },
+  { t: 'cama', a: 'la', e: '🛏️' }, { t: 'gato', a: 'el', e: '🐱' }, { t: 'perro', a: 'el', e: '🐶' }, { t: 'casa', a: 'la', e: '🏠' },
+  { t: 'sol', a: 'el', e: '☀️' }, { t: 'llave', a: 'la', e: '🔑' }, { t: 'reloj', a: 'el', e: '⏰' }, { t: 'globo', a: 'el', e: '🎈' },
+  { t: 'pan', a: 'el', e: '🍞' }, { t: 'flor', a: 'la', e: '🌸' }, { t: 'árbol', a: 'el', e: '🌳' }, { t: 'tren', a: 'el', e: '🚂' },
+  { t: 'cepillo de dientes', a: 'el', e: '🪥' }, { t: 'camiseta', a: 'la', e: '👕' }, { t: 'oso de peluche', a: 'el', e: '🧸' }, { t: 'helado', a: 'el', e: '🍦' }
 ];
+/* Artículo correcto: el que trae el objeto o, si no, una estimación por la terminación */
+var MASC_EN_A = ['día', 'mapa', 'sofá', 'pijama', 'problema', 'tema', 'idioma', 'planeta', 'programa', 'papá', 'tranvía'];
+var FEM_OTRAS = ['tablet', 'mano', 'flor', 'llave', 'leche', 'nariz', 'luz', 'sal', 'miel', 'nube', 'noche', 'calle', 'radio', 'moto', 'foto', 'tele', 'piel', 'fuente', 'carne'];
+function articulo(o) {
+  if (o.a) return o.a;
+  var t = o.t.split(' ')[0];
+  if (/as$/.test(t)) return 'las';
+  if (/[eo]s$|[^aeiouáéíóú]es$/.test(t)) return 'los';
+  if (MASC_EN_A.indexOf(t) >= 0) return 'el';
+  if (FEM_OTRAS.indexOf(t) >= 0 || /(a|ción|sión|dad|tad|tud|umbre)$/.test(t)) return 'la';
+  return 'el';
+}
+function conArt(o) { return articulo(o) + ' ' + o.t; }
 var est = Object.assign({ nivel: 1, n: 2, may: 'min' }, CAA.leer('caa-objpic') || {});
 var fotos = CAA.leer('caa-objpic-fotos') || [];
 function guardar() { CAA.guardar('caa-objpic', est); }
@@ -625,12 +641,15 @@ function reducir(file) {
     r.onerror = ko; r.readAsDataURL(file);
   });
 }
+document.getElementById('nombre-foto').addEventListener('input', function () {
+  var t = this.value.trim().toLowerCase(); if (t) document.getElementById('art-foto').value = articulo({ t: t });
+});
 document.getElementById('form-foto').addEventListener('submit', function (e) {
   e.preventDefault();
   var f = document.getElementById('archivo').files[0], t = document.getElementById('nombre-foto').value.trim().toLowerCase();
   if (!f || !t) { document.getElementById('nombre-foto').focus(); return; }
   reducir(f).then(function (src) {
-    fotos.push({ t: t, src: src });
+    fotos.push({ t: t, a: document.getElementById('art-foto').value, src: src });
     try { localStorage.setItem('caa-objpic-fotos', JSON.stringify(fotos)); }
     catch (err) { fotos.pop(); alert('No caben más fotos en este dispositivo. Borra alguna.'); }
     e.target.reset(); pintarFotos();
@@ -690,7 +709,7 @@ function pintarRonda() {
     c.onclick = function () { responder(c, o.t === obj.t, obj); };
     cont.appendChild(c);
   });
-  CAA.hablar(est.nivel === 4 ? '¿Qué pone? Busca: ' + obj.t : (est.nivel === 1 ? 'Busca el igual' : 'Busca el ' + obj.t));
+  CAA.hablar(est.nivel === 4 ? '¿Qué pone? Busca la palabra ' + obj.t : (est.nivel === 1 ? 'Busca el que es igual' : 'Busca ' + conArt(obj)));
   CAA.scan.reiniciar();
 }
 function responder(c, ok, obj) {
@@ -700,7 +719,7 @@ function responder(c, ok, obj) {
     var r = c.getBoundingClientRect();
     CAA.fiesta(r.left + r.width / 2, r.top + r.height / 2);
     CAA.sonido('exito');
-    CAA.hablar('¡Sí! ' + obj.t);
+    var f = conArt(obj); CAA.hablar('¡Sí! ' + f.charAt(0).toUpperCase() + f.slice(1));
     document.querySelectorAll('#opciones .picto').forEach(function (b) { b.disabled = true; });
     CAA.scan.pausar(2600);
     setTimeout(function () {

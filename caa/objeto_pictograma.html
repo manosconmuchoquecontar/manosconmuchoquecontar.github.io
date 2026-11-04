@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Del objeto al pictograma · CAA · Manos con Mucho que Contar</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 8px; right: 12px; z-index: 40; font-size: 11px; font-weight: 700;
+  color: var(--ink3); opacity: .75; pointer-events: none;
+}
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  .pantalla { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .titulo-sec { font-size: 1.5rem; color: var(--teal-d); margin-bottom: .4rem; }
+  body.caa-contraste .titulo-sec { color: #FFE14D; }
+  .sub { color: var(--ink2); margin-bottom: 1.2rem; line-height: 1.5; }
+
+  .niveles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .nivel { text-align: left; background: white; border: 2.5px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+  .nivel[aria-pressed="true"] { border-color: var(--teal); background: #E3F6F3; }
+  .nivel .ico { font-size: 1.8rem; display: block; margin-bottom: .4rem; }
+  .nivel strong { display: block; font-size: 1.05rem; margin-bottom: .2rem; }
+  .nivel span.d { font-size: .88rem; color: var(--ink2); line-height: 1.45; }
+  body.caa-contraste .nivel { background: #000; } body.caa-contraste .nivel[aria-pressed="true"] { background: #113; }
+
+  .controles { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+  .seg-n { display: flex; gap: .4rem; align-items: center; font-weight: 800; font-size: 14px; flex-wrap: wrap; }
+  .seg-n button { min-width: 44px; height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid var(--border); background: white; font-weight: 800; font-size: 15px; }
+  .seg-n button[aria-pressed="true"] { background: var(--teal); color: white; border-color: var(--teal); }
+
+  #fotos-panel { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1.2rem; }
+  #fotos-panel h3 { margin-bottom: .4rem; }
+  .form-foto { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0; }
+  .form-foto input[type=text] { flex: 1; min-width: 160px; padding: 11px 16px; border-radius: 100px; border: 1.5px solid var(--border); font: inherit; }
+  .mis-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: .7rem; }
+  .mis-fotos figure { position: relative; background: var(--bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+  .mis-fotos img { width: 100%; height: 100px; object-fit: cover; display: block; }
+  .mis-fotos figcaption { font-weight: 800; font-size: 13px; text-align: center; padding: 6px; }
+  .mis-fotos button { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 50%; border: none; background: white; font-size: 12px; }
+
+  /* Juego */
+  #juego { min-height: calc(100vh - 64px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; padding: 1rem; }
+  .instruccion { font-size: clamp(1.2rem, 3.5vw, 1.8rem); color: var(--teal-d); text-align: center; }
+  body.caa-contraste .instruccion { color: #FFE14D; }
+  #modelo { width: min(42vw, 30vh, 260px); height: min(42vw, 30vh, 260px); border-radius: 24px; background: white; border: 4px dashed var(--teal); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  #modelo .emoji { font-size: min(28vw, 20vh, 170px); line-height: 1; }
+  #modelo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+  #modelo img.foto { object-fit: cover; padding: 0; }
+  .flecha { font-size: 2rem; color: var(--ink3); line-height: 1; }
+  #opciones { display: flex; flex-wrap: wrap; gap: clamp(.8rem, 3vw, 2rem); justify-content: center; }
+  #opciones .picto { width: min(26vw, 26vh, 210px); height: min(30vw, 30vh, 240px); border-width: 4px; }
+  #opciones .picto .img .emoji { font-size: min(14vw, 13vh, 110px); }
+  #opciones .palabra { width: auto; min-width: min(36vw, 230px); height: auto; padding: 1.2rem 1.6rem; font-size: clamp(1.8rem, 6vw, 3.2rem); font-family: 'Fredoka', sans-serif; font-weight: 600; letter-spacing: .04em; }
+  .picto.descartada { opacity: .18; transform: scale(.88); pointer-events: none; }
+  .picto.acierto { border-color: #2DBE60 !important; box-shadow: 0 0 0 8px rgba(45,190,96,.25); }
+  .progreso { display: flex; gap: 8px; }
+  .progreso span { width: 16px; height: 16px; border-radius: 50%; background: var(--border); }
+  .progreso span.ok { background: #2DBE60; }
+  #final { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  #final .grande { font-size: 6rem; }
+</style>
+</head>
+<body>
+
+<section id="config" class="pantalla">
+  <h2 class="titulo-sec">Del objeto al pictograma</h2>
+  <p class="sub">Para usar un comunicador hay que entender que un dibujo <b>representa</b> algo real. Avanza de nivel solo cuando lo consiga con facilidad.</p>
+
+  <div class="niveles" id="niveles">
+    <button class="nivel" data-n="1"><span class="ico">🟰</span><strong>1 · Igual con igual</strong><span class="d">Busca la imagen que es exactamente igual.</span></button>
+    <button class="nivel" data-n="2"><span class="ico">🖼️</span><strong>2 · Imagen → pictograma</strong><span class="d">Relaciona un dibujo realista con su pictograma.</span></button>
+    <button class="nivel" data-n="3"><span class="ico">📷</span><strong>3 · Mis fotos → pictograma</strong><span class="d">Fotos de objetos reales de casa con su pictograma.</span></button>
+    <button class="nivel" data-n="4"><span class="ico">🔤</span><strong>4 · Pictograma → palabra</strong><span class="d">Puente hacia la lectura: une el pictograma con su palabra escrita.</span></button>
+  </div>
+
+  <div id="fotos-panel" hidden>
+    <h3>📷 Mis fotos</h3>
+    <p class="sub" style="margin:0">Haz fotos de objetos que use cada día (su vaso, su pelota, su cuchara…) y escribe su nombre. Se guardan solo en este dispositivo.</p>
+    <form class="form-foto" id="form-foto">
+      <input type="file" id="archivo" accept="image/*" capture="environment" aria-label="Elegir foto">
+      <input type="text" id="nombre-foto" placeholder="¿Qué es? (p. ej. vaso)" aria-label="Nombre del objeto">
+      <button class="btn btn-s" type="submit">＋ Guardar</button>
+    </form>
+    <div class="mis-fotos" id="mis-fotos"></div>
+  </div>
+
+  <div class="controles">
+    <div class="seg-n" id="seg-n">Opciones: <button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button></div>
+    <div class="seg-n" id="seg-may" style="display:none">Letra: <button data-v="min">minúscula</button><button data-v="may">MAYÚSCULA</button></div>
+    <button class="btn btn-p" id="empezar">▶ Empezar</button>
+  </div>
+
+  <div class="consejo">
+    <b>Aprendizaje sin error:</b> si elige la opción equivocada, esa opción se apaga y puede volver a intentarlo. No hay sonidos de fallo. Empieza con 2 opciones y sube a 3 o 4 cuando acierte casi siempre a la primera.
+    <br><br><b>Generaliza:</b> después de jugar, haced lo mismo con objetos de verdad: «¿dónde está el vaso?» mostrando el pictograma.
+  </div>
+</section>
+
+<section id="juego" hidden data-scan-raiz>
+  <div class="progreso" id="progreso" aria-hidden="true"></div>
+  <h2 class="instruccion" id="instruccion">¿Cuál es igual?</h2>
+  <div id="modelo" aria-live="polite"></div>
+  <div class="flecha" aria-hidden="true">⬇</div>
+  <div id="opciones"></div>
+  <div id="final" hidden>
+    <div class="grande pop">🏆</div>
+    <h2 class="instruccion">¡Muy bien!</h2>
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <button class="btn btn-p scan" id="repetir" data-decir="Otra vez">🔁 Otra vez</button>
+      <button class="btn no-barrido" id="volver-config">⚙️ Cambiar nivel</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  function elegirVoz() {
+    var vs = speechSynthesis.getVoices();
+    voz = vs.find(function (v) { return v.lang === 'es-ES' && /google|mónica|monica|lucia|elvira/i.test(v.name); }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) ||
+          vs.find(function (v) { return /^es/i.test(v.lang); }) || null;
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'es-ES'; u.rate = 0.85; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(it.b || it.t);
+    prom.then(function (id) {
+      if (id == null) return;
+      var img = new Image(); img.alt = ''; img.decoding = 'async';
+      img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+      img.src = pictoUrl(id);
+    });
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (!scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+    });
+    m.addEventListener('change', function (e) {
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  function init(o) {
+    o = o || {};
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<button class="btn-ajustes" aria-label="Ajustes de accesibilidad" title="Ajustes">⚙️</button>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', panel.abrir);
+    CAA.abrirAjustes = panel.abrir;
+    aplicar();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'Del objeto al pictograma' });
+
+var OBJETOS = [
+  { t: 'vaso', e: '🥛' }, { t: 'cuchara', e: '🥄' }, { t: 'pelota', e: '⚽' }, { t: 'coche', e: '🚗' },
+  { t: 'zapato', e: '👟' }, { t: 'manzana', e: '🍎' }, { t: 'plátano', e: '🍌' }, { t: 'libro', e: '📖' },
+  { t: 'cama', e: '🛏️' }, { t: 'gato', e: '🐱' }, { t: 'perro', e: '🐶' }, { t: 'casa', e: '🏠' },
+  { t: 'sol', e: '☀️' }, { t: 'llave', e: '🔑' }, { t: 'reloj', e: '⏰' }, { t: 'globo', e: '🎈' },
+  { t: 'pan', e: '🍞' }, { t: 'flor', e: '🌸' }, { t: 'árbol', e: '🌳' }, { t: 'tren', e: '🚂' },
+  { t: 'cepillo de dientes', e: '🪥' }, { t: 'camiseta', e: '👕' }, { t: 'oso de peluche', e: '🧸' }, { t: 'helado', e: '🍦' }
+];
+var est = Object.assign({ nivel: 1, n: 2, may: 'min' }, CAA.leer('caa-objpic') || {});
+var fotos = CAA.leer('caa-objpic-fotos') || [];
+function guardar() { CAA.guardar('caa-objpic', est); }
+
+function pintarConfig() {
+  document.querySelectorAll('.nivel').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.n === est.nivel ? 'true' : 'false'); });
+  document.querySelectorAll('#seg-n button').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.n === est.n ? 'true' : 'false'); });
+  document.querySelectorAll('#seg-may button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === est.may ? 'true' : 'false'); });
+  document.getElementById('fotos-panel').hidden = est.nivel !== 3;
+  document.getElementById('seg-may').style.display = est.nivel === 4 ? 'flex' : 'none';
+  pintarFotos();
+}
+document.getElementById('niveles').addEventListener('click', function (e) { var b = e.target.closest('.nivel'); if (b) { est.nivel = +b.dataset.n; guardar(); pintarConfig(); } });
+document.getElementById('seg-n').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { est.n = +b.dataset.n; guardar(); pintarConfig(); } });
+document.getElementById('seg-may').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { est.may = b.dataset.v; guardar(); pintarConfig(); } });
+
+/* ── Fotos propias ── */
+function pintarFotos() {
+  var c = document.getElementById('mis-fotos'); c.innerHTML = '';
+  fotos.forEach(function (f, i) {
+    var fig = document.createElement('figure');
+    fig.innerHTML = '<img alt="" src="' + f.src + '"><figcaption>' + CAA.esc(f.t) + '</figcaption><button aria-label="Borrar ' + CAA.esc(f.t) + '">✕</button>';
+    fig.querySelector('button').onclick = function () { fotos.splice(i, 1); CAA.guardar('caa-objpic-fotos', fotos); pintarFotos(); };
+    c.appendChild(fig);
+  });
+}
+function reducir(file) {
+  return new Promise(function (ok, ko) {
+    var r = new FileReader();
+    r.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var m = 360, s = Math.min(1, m / Math.max(img.width, img.height));
+        var cv = document.createElement('canvas'); cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        ok(cv.toDataURL('image/jpeg', 0.78));
+      };
+      img.onerror = ko; img.src = r.result;
+    };
+    r.onerror = ko; r.readAsDataURL(file);
+  });
+}
+document.getElementById('form-foto').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var f = document.getElementById('archivo').files[0], t = document.getElementById('nombre-foto').value.trim().toLowerCase();
+  if (!f || !t) { document.getElementById('nombre-foto').focus(); return; }
+  reducir(f).then(function (src) {
+    fotos.push({ t: t, src: src });
+    try { localStorage.setItem('caa-objpic-fotos', JSON.stringify(fotos)); }
+    catch (err) { fotos.pop(); alert('No caben más fotos en este dispositivo. Borra alguna.'); }
+    e.target.reset(); pintarFotos();
+  });
+});
+
+/* ── Juego ── */
+var RONDAS = 5, ronda = 0, aciertosPrimera = 0, intentoActual = 0, banco = [];
+var config = document.getElementById('config'), juego = document.getElementById('juego');
+
+function mezclar(a) { return a.slice().sort(function () { return Math.random() - .5; }); }
+function texto(t) { return est.may === 'may' ? t.toUpperCase() : t; }
+
+function empezar() {
+  if (est.nivel === 3 && fotos.length < 2) { document.getElementById('fotos-panel').scrollIntoView({ behavior: 'smooth' }); document.getElementById('nombre-foto').focus(); return; }
+  var base = est.nivel === 3 ? fotos : OBJETOS;
+  banco = mezclar(base).slice(0, RONDAS);
+  while (banco.length < RONDAS) banco = banco.concat(mezclar(base)).slice(0, RONDAS);
+  ronda = 0;
+  config.hidden = true; juego.hidden = false;
+  document.getElementById('final').hidden = true;
+  pintarRonda();
+}
+function pintarProgreso() {
+  var p = document.getElementById('progreso'); p.innerHTML = '';
+  for (var i = 0; i < RONDAS; i++) { var s = document.createElement('span'); if (i < ronda) s.className = 'ok'; p.appendChild(s); }
+}
+function pintarRonda() {
+  intentoActual = 0;
+  pintarProgreso();
+  var obj = banco[ronda];
+  var base = est.nivel === 3 ? fotos : OBJETOS;
+  var otros = mezclar(base.filter(function (o) { return o.t !== obj.t; })).slice(0, est.n - 1);
+  var ops = mezclar([obj].concat(otros));
+
+  var modelo = document.getElementById('modelo'); modelo.innerHTML = '';
+  modelo.hidden = false; document.querySelector('.flecha').hidden = false;
+  var inst = document.getElementById('instruccion');
+  if (est.nivel === 1) { modelo.innerHTML = '<span class="emoji" aria-hidden="true">' + obj.e + '</span>'; inst.textContent = '¿Cuál es igual?'; }
+  else if (est.nivel === 2) { modelo.innerHTML = '<span class="emoji" aria-hidden="true">' + obj.e + '</span>'; inst.textContent = '¿Cuál es su pictograma?'; }
+  else if (est.nivel === 3) { modelo.innerHTML = '<img class="foto" alt="" src="' + obj.src + '">'; inst.textContent = '¿Cuál es su pictograma?'; }
+  else { modelo.innerHTML = '<span class="emoji" aria-hidden="true">' + (obj.e || '') + '</span>'; CAA.ponerPicto(modelo, obj); inst.textContent = '¿Qué pone?'; }
+  modelo.setAttribute('aria-label', obj.t);
+
+  var cont = document.getElementById('opciones'); cont.innerHTML = '';
+  ops.forEach(function (o) {
+    var c;
+    if (est.nivel === 1) {
+      c = CAA.celda({ t: o.t, e: o.e, sinPicto: true });
+      c.querySelector('.txt').style.visibility = 'hidden';
+    } else if (est.nivel === 4) {
+      c = document.createElement('button'); c.type = 'button'; c.className = 'picto palabra scan';
+      c.textContent = texto(o.t); c.dataset.decir = o.t; c.setAttribute('aria-label', o.t);
+    } else {
+      c = CAA.celda({ t: o.t, e: o.e || '🖼️' });
+    }
+    c.onclick = function () { responder(c, o.t === obj.t, obj); };
+    cont.appendChild(c);
+  });
+  CAA.hablar(est.nivel === 4 ? '¿Qué pone? Busca: ' + obj.t : (est.nivel === 1 ? 'Busca el igual' : 'Busca el ' + obj.t));
+  CAA.scan.reiniciar();
+}
+function responder(c, ok, obj) {
+  intentoActual++;
+  if (ok) {
+    c.classList.add('acierto');
+    var r = c.getBoundingClientRect();
+    CAA.fiesta(r.left + r.width / 2, r.top + r.height / 2);
+    CAA.sonido('exito');
+    CAA.hablar('¡Sí! ' + obj.t);
+    document.querySelectorAll('#opciones .picto').forEach(function (b) { b.disabled = true; });
+    CAA.scan.pausar(2600);
+    setTimeout(function () {
+      ronda++;
+      if (ronda >= RONDAS) fin(); else pintarRonda();
+    }, 2200);
+  } else {
+    c.classList.add('descartada'); c.disabled = true;
+    CAA.hablar('Ese no. Mira otra vez');
+    CAA.scan.reiniciar();
+  }
+}
+function fin() {
+  pintarProgreso();
+  document.getElementById('modelo').hidden = true; document.querySelector('.flecha').hidden = true; document.getElementById('opciones').innerHTML = '';
+  document.getElementById('instruccion').textContent = '';
+  document.getElementById('final').hidden = false;
+  CAA.fiesta(null, null, ['🏆', '⭐', '🎉', '💛'], 24);
+  CAA.sonido('exito'); CAA.hablar('¡Muy bien!');
+  CAA.scan.reiniciar();
+}
+document.getElementById('empezar').addEventListener('click', empezar);
+document.getElementById('repetir').addEventListener('click', empezar);
+document.getElementById('volver-config').addEventListener('click', function () { juego.hidden = true; config.hidden = false; CAA.scan.reiniciar(); });
+
+pintarConfig();
+</script>
+</body>
+</html>

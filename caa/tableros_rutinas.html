@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableros por rutinas · CAA · Manos con Mucho que Contar</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 8px; right: 12px; z-index: 40; font-size: 11px; font-weight: 700;
+  color: var(--ink3); opacity: .75; pointer-events: none;
+}
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  .app { flex: 1; display: flex; flex-direction: column; gap: .6rem; padding: .6rem .8rem 1.6rem; min-height: 0; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+  .rutinas { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+  .rutinas button { flex-shrink: 0; padding: 8px 14px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-weight: 800; font-size: 14px; white-space: nowrap; }
+  .rutinas button[aria-selected="true"] { background: var(--teal); color: white; border-color: var(--teal); }
+  .herr { display: flex; gap: .4rem; margin-left: auto; flex-shrink: 0; }
+  .herr button { padding: 8px 12px; border-radius: 100px; border: 1.5px solid var(--border); background: white; font-weight: 700; font-size: 13px; white-space: nowrap; }
+  .herr button[aria-pressed="true"] { background: #FFF1C2; border-color: #E9A400; }
+  .barra-sup { display: flex; gap: .6rem; align-items: center; }
+
+  /* Mensaje */
+  .mensaje { display: flex; gap: .5rem; align-items: stretch; background: white; border: 2px solid var(--border); border-radius: 16px; padding: .4rem; min-height: 74px; }
+  .frase { flex: 1; display: flex; gap: .3rem; align-items: center; overflow-x: auto; min-width: 0; padding: 0 .3rem; }
+  .frase .vacio-txt { color: var(--ink3); font-weight: 600; font-size: 14px; }
+  .frase .mini { flex-shrink: 0; width: 58px; height: 62px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; border: 1.5px solid var(--border); padding: 3px; text-align: center; line-height: 1; background: white; }
+  .frase .mini .img { height: 38px; display: flex; align-items: center; justify-content: center; }
+  .frase .mini .img img { max-height: 38px; max-width: 50px; }
+  .frase .mini .emoji { font-size: 26px; }
+  .acc-msg { display: flex; gap: .4rem; }
+  .acc-msg button { width: 62px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg2); font-size: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .acc-msg button span { font-size: 10px; font-weight: 800; }
+  .acc-msg .hablar { background: var(--teal); color: white; border-color: var(--teal); }
+
+  /* Tablero */
+  .tablero { flex: 1; display: flex; flex-direction: column; gap: .45rem; min-height: 0; }
+  .fila { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr) 10px repeat(4, 1fr); gap: .45rem; min-height: 0; border-radius: 16px; }
+  .fila .sep { background: transparent; }
+  .fila .picto { min-height: 0; height: 100%; padding: 4px; border-radius: 12px; font-size: clamp(10px, 1.5vw, 16px); }
+  .fila .picto .img .emoji { font-size: clamp(20px, 4.5vh, 48px); }
+  .picto.pulsado { animation: pulso .7s ease-out; }
+  @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(42,157,143,.7); transform: scale(1.06); } 100% { box-shadow: 0 0 0 18px rgba(42,157,143,0); transform: scale(1); } }
+  body.editando .fila .picto.franja { outline: 2px dashed #E9A400; outline-offset: -4px; }
+  body.editando .fila .picto.franja::after { content: '✏️'; position: absolute; top: 2px; right: 4px; font-size: 12px; }
+
+  .leyenda { display: flex; flex-wrap: wrap; gap: .35rem .9rem; font-size: 11px; font-weight: 700; color: var(--ink2); justify-content: center; }
+  .leyenda i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 1px solid rgba(0,0,0,.15); }
+
+  #ayuda-modal .caja { max-width: 600px; }
+  #ayuda-modal ul { padding-left: 1.2rem; line-height: 1.6; margin: .6rem 0 1rem; }
+  #ayuda-modal li { margin-bottom: .4rem; }
+
+  .titulo-print { display: none; }
+  @media (max-width: 640px) {
+    .fila { grid-template-columns: repeat(4, 1fr) 4px repeat(4, 1fr); gap: .25rem; }
+    .fila .picto { border-width: 1.5px; border-radius: 8px; padding: 2px; }
+    .fila .picto .txt { font-size: 9px; }
+    .fila .picto .img .emoji { font-size: min(7vw, 4.5vh); }
+    .herr button .t { display: none; }
+    .barra-sup { flex-wrap: wrap; }
+    .herr { margin-left: 0; }
+  }
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    html, body { height: auto; overflow: visible; display: block; }
+    .rutinas, .herr, .mensaje, .leyenda.no-print { display: none !important; }
+    .titulo-print { display: block; font-family: 'Fredoka', sans-serif; font-size: 18pt; margin-bottom: 4mm; text-align: center; }
+    .app { padding: 0; max-width: none; }
+    .tablero { gap: 2mm; }
+    .fila { height: 42mm; flex: none; gap: 2mm; }
+    .fila .picto { border: 1.5px solid #333; font-size: 11pt; }
+    .fila .picto .img img { max-height: 28mm; }
+    .marca-print { display: block !important; text-align: center; font-size: 8pt; margin-top: 3mm; color: #555; }
+  }
+  .marca-print { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="barra-sup">
+    <div class="rutinas no-barrido" id="rutinas" role="tablist" aria-label="Rutinas"></div>
+    <div class="herr no-barrido">
+      <button id="btn-editar" aria-pressed="false" title="Cambiar palabras de la derecha">✏️ <span class="t">Personalizar</span></button>
+      <button id="btn-imprimir" title="Imprimir este tablero">🖨️ <span class="t">Imprimir</span></button>
+      <button id="btn-ayuda" title="Cómo modelar">❓ <span class="t">Cómo usarlo</span></button>
+    </div>
+  </div>
+
+  <div class="mensaje scan-fila" aria-label="Frase">
+    <div class="frase" id="frase" aria-live="polite"><span class="vacio-txt">Toca los pictogramas para formar una frase</span></div>
+    <div class="acc-msg">
+      <button class="hablar scan" id="decir" data-decir="Decir">🔊<span>Decir</span></button>
+      <button class="scan" id="borrar" data-decir="Borrar">⌫<span>Borrar</span></button>
+      <button class="scan" id="limpiar" data-decir="Limpiar todo">🗑️<span>Todo</span></button>
+    </div>
+  </div>
+
+  <h2 class="titulo-print" id="titulo-print"></h2>
+  <div class="tablero" id="tablero"></div>
+  <div class="leyenda">
+    <span><i style="background:var(--k-persona)"></i>Personas</span>
+    <span><i style="background:var(--k-accion)"></i>Acciones</span>
+    <span><i style="background:var(--k-describe)"></i>Describir</span>
+    <span><i style="background:var(--k-cosa)"></i>Cosas</span>
+    <span><i style="background:var(--k-social)"></i>Social</span>
+    <span><i style="background:var(--k-no)"></i>Negar / parar</span>
+    <span><i style="background:var(--k-pregunta)"></i>Preguntas</span>
+    <span><i style="background:var(--k-lugar)"></i>Lugares</span>
+  </div>
+  <p class="marca-print">Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p>
+</div>
+
+<div class="caa-modal" id="ayuda-modal" role="dialog" aria-modal="true" aria-labelledby="ay-t">
+  <div class="caja">
+    <button class="cerrar" aria-label="Cerrar">✕</button>
+    <h2 id="ay-t">❓ Cómo usar los tableros</h2>
+    <p><b>La parte izquierda nunca cambia</b> (palabras núcleo: quiero, más, no, otra vez…). Así aprende dónde está cada palabra, igual que aprendemos dónde están las letras del teclado. <b>La parte derecha cambia</b> según la rutina.</p>
+    <ul>
+      <li><b>Modela tú primero:</b> mientras hablas, toca 1 o 2 pictogramas. «¿Quieres <b>MÁS</b> agua?»</li>
+      <li><b>No le pidas que repita.</b> Ofrece el modelo y espera unos segundos con expectación.</li>
+      <li><b>Responde a todo lo que toque</b>, aunque parezca al azar: «¡Has dicho NO! Vale, no».</li>
+      <li><b>Amplía:</b> si toca «agua», tú modelas «<b>quiero</b> agua» o «<b>más</b> agua».</li>
+      <li>Imprímelo y déjalo donde ocurre la rutina: en la mesa, en el baño, en la puerta.</li>
+    </ul>
+    <button class="btn btn-p" style="width:100%" data-cerrar>Entendido</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  function elegirVoz() {
+    var vs = speechSynthesis.getVoices();
+    voz = vs.find(function (v) { return v.lang === 'es-ES' && /google|mónica|monica|lucia|elvira/i.test(v.name); }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) ||
+          vs.find(function (v) { return /^es/i.test(v.lang); }) || null;
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'es-ES'; u.rate = 0.85; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(it.b || it.t);
+    prom.then(function (id) {
+      if (id == null) return;
+      var img = new Image(); img.alt = ''; img.decoding = 'async';
+      img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+      img.src = pictoUrl(id);
+    });
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (!scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+    });
+    m.addEventListener('change', function (e) {
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  function init(o) {
+    o = o || {};
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<button class="btn-ajustes" aria-label="Ajustes de accesibilidad" title="Ajustes">⚙️</button>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', panel.abrir);
+    CAA.abrirAjustes = panel.abrir;
+    aplicar();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'Tableros por rutinas' });
+
+/* Vocabulario núcleo: SIEMPRE en la misma posición (4 columnas × 4 filas) */
+var NUCLEO = [
+  [{ t: 'yo', e: '🙋', k: 'persona' }, { t: 'quiero', e: '🤲', k: 'accion' }, { t: 'más', e: '➕', k: 'describe' }, { t: 'no', e: '🚫', k: 'no' }],
+  [{ t: 'tú', e: '👉', k: 'persona' }, { t: 'me gusta', b: 'gustar', e: '👍', k: 'accion' }, { t: 'otra vez', b: 'otra vez', e: '🔁', k: 'describe' }, { t: 'sí', e: '✅', k: 'social' }],
+  [{ t: 'ayuda', b: 'ayudar', e: '🆘', k: 'social' }, { t: 'mirar', e: '👀', k: 'accion' }, { t: 'dar', e: '🫴', k: 'accion' }, { t: 'ya', b: 'terminar', e: '🏁', k: 'no', d: 'ya, terminado' }],
+  [{ t: 'esto', e: '👇', k: 'describe' }, { t: 'ir', e: '🚶', k: 'accion' }, { t: 'abrir', e: '📦', k: 'accion' }, { t: '¿qué?', b: 'qué', e: '❓', k: 'pregunta', d: 'qué' }]
+];
+
+var RUTINAS = {
+  comer: { n: '🍽️ Comer', p: [
+    { t: 'comer', e: '🍴', k: 'accion' }, { t: 'beber', e: '🥤', k: 'accion' }, { t: 'rico', e: '😋', k: 'describe' }, { t: 'caliente', e: '🔥', k: 'describe' },
+    { t: 'agua', e: '💧', k: 'cosa' }, { t: 'leche', e: '🥛', k: 'cosa' }, { t: 'pan', e: '🍞', k: 'cosa' }, { t: 'frío', e: '🧊', k: 'describe' },
+    { t: 'fruta', e: '🍎', k: 'cosa' }, { t: 'galleta', e: '🍪', k: 'cosa' }, { t: 'yogur', e: '🥣', k: 'cosa' }, { t: 'lleno', e: '😮‍💨', k: 'describe', b: 'lleno' },
+    { t: 'cuchara', e: '🥄', k: 'cosa' }, { t: 'plato', e: '🍽️', k: 'cosa' }, { t: 'vaso', e: '🥛', k: 'cosa' }, { t: 'limpiar', e: '🧻', k: 'accion' }
+  ] },
+  bano: { n: '🛁 Baño', p: [
+    { t: 'bañar', e: '🛁', k: 'accion' }, { t: 'lavar', e: '🧼', k: 'accion' }, { t: 'secar', e: '🌬️', k: 'accion' }, { t: 'salpicar', e: '💦', k: 'accion' },
+    { t: 'agua', e: '💧', k: 'cosa' }, { t: 'jabón', e: '🧼', k: 'cosa' }, { t: 'champú', e: '🧴', k: 'cosa' }, { t: 'mojado', e: '💦', k: 'describe' },
+    { t: 'toalla', e: '🧺', k: 'cosa' }, { t: 'esponja', e: '🧽', k: 'cosa' }, { t: 'patito', b: 'pato de goma', e: '🦆', k: 'cosa' }, { t: 'caliente', e: '🔥', k: 'describe' },
+    { t: 'pelo', e: '💇', k: 'cosa' }, { t: 'manos', e: '🙌', k: 'cosa' }, { t: 'pies', e: '🦶', k: 'cosa' }, { t: 'frío', e: '🧊', k: 'describe' }
+  ] },
+  vestir: { n: '👕 Vestirse', p: [
+    { t: 'poner', e: '👕', k: 'accion' }, { t: 'quitar', e: '🫳', k: 'accion' }, { t: 'arriba', e: '⬆️', k: 'lugar' }, { t: 'abajo', e: '⬇️', k: 'lugar' },
+    { t: 'camiseta', e: '👕', k: 'cosa' }, { t: 'pantalón', e: '👖', k: 'cosa' }, { t: 'calcetines', e: '🧦', k: 'cosa' }, { t: 'zapatos', e: '👟', k: 'cosa' },
+    { t: 'abrigo', e: '🧥', k: 'cosa' }, { t: 'pijama', e: '🛌', k: 'cosa' }, { t: 'gorro', e: '🧢', k: 'cosa' }, { t: 'vestido', e: '👗', k: 'cosa' },
+    { t: 'grande', e: '🐘', k: 'describe' }, { t: 'pequeño', e: '🐭', k: 'describe' }, { t: 'mío', e: '🫵', k: 'persona', b: 'mío' }, { t: 'rápido', e: '⚡', k: 'describe' }
+  ] },
+  jugar: { n: '🧸 Jugar', p: [
+    { t: 'jugar', e: '🎲', k: 'accion' }, { t: 'tirar', e: '🤾', k: 'accion' }, { t: 'construir', e: '🧱', k: 'accion' }, { t: 'divertido', e: '😆', k: 'describe' },
+    { t: 'pelota', e: '⚽', k: 'cosa' }, { t: 'coche', e: '🚗', k: 'cosa' }, { t: 'muñeca', e: '🪆', k: 'cosa' }, { t: 'mi turno', b: 'mi turno', e: '☝️', k: 'social' },
+    { t: 'bloques', e: '🧱', k: 'cosa' }, { t: 'puzle', e: '🧩', k: 'cosa' }, { t: 'pompas', b: 'pompas de jabón', e: '🫧', k: 'cosa' }, { t: 'tu turno', b: 'tu turno', e: '👉', k: 'social' },
+    { t: 'caer', e: '💥', k: 'accion' }, { t: 'grande', e: '🐘', k: 'describe' }, { t: 'otro', e: '🔀', k: 'describe' }, { t: '¡oh, oh!', b: 'sorpresa', e: '😮', k: 'social', d: 'oh, oh' }
+  ] },
+  parque: { n: '🛝 Parque', p: [
+    { t: 'columpio', e: '🛝', k: 'cosa' }, { t: 'tobogán', e: '🛝', k: 'cosa' }, { t: 'arena', e: '🏖️', k: 'cosa' }, { t: 'rápido', e: '⚡', k: 'describe' },
+    { t: 'subir', e: '🧗', k: 'accion' }, { t: 'bajar', e: '⬇️', k: 'accion' }, { t: 'correr', e: '🏃', k: 'accion' }, { t: 'despacio', e: '🐢', k: 'describe' },
+    { t: 'empujar', e: '🫸', k: 'accion' }, { t: 'arriba', e: '⬆️', k: 'lugar' }, { t: 'abajo', e: '⬇️', k: 'lugar' }, { t: 'cansado', e: '😮‍💨', k: 'describe' },
+    { t: 'perro', e: '🐶', k: 'cosa' }, { t: 'pájaro', e: '🐦', k: 'cosa' }, { t: 'amigo', e: '🧒', k: 'persona' }, { t: 'casa', e: '🏠', k: 'lugar' }
+  ] },
+  cuento: { n: '📖 Cuento', p: [
+    { t: 'leer', e: '📖', k: 'accion' }, { t: 'pasar página', b: 'pasar página', e: '📄', k: 'accion' }, { t: '¡oh!', b: 'sorpresa', e: '😮', k: 'social', d: 'oh' }, { t: 'fin', e: '🔚', k: 'no' },
+    { t: 'libro', e: '📚', k: 'cosa' }, { t: 'animal', e: '🐻', k: 'cosa' }, { t: 'niño', e: '👦', k: 'persona' }, { t: 'niña', e: '👧', k: 'persona' },
+    { t: 'divertido', e: '😆', k: 'describe' }, { t: 'triste', e: '😢', k: 'describe' }, { t: 'miedo', e: '😨', k: 'describe' }, { t: 'contento', e: '😊', k: 'describe' },
+    { t: 'grande', e: '🐘', k: 'describe' }, { t: 'pequeño', e: '🐭', k: 'describe' }, { t: '¿dónde?', b: 'dónde', e: '📍', k: 'pregunta', d: 'dónde' }, { t: '¿quién?', b: 'quién', e: '👤', k: 'pregunta', d: 'quién' }
+  ] }
+};
+
+var est = Object.assign({ rutina: 'comer', propias: {} }, CAA.leer('caa-tableros') || {});
+function guardar() { CAA.guardar('caa-tableros', est); }
+var frase = [];
+var editando = false;
+
+function franja(r) {
+  var base = RUTINAS[r].p.slice();
+  var p = est.propias[r] || {};
+  Object.keys(p).forEach(function (i) { base[i] = p[i]; });
+  return base;
+}
+
+function pintarRutinas() {
+  var c = document.getElementById('rutinas'); c.innerHTML = '';
+  Object.keys(RUTINAS).forEach(function (k) {
+    var b = document.createElement('button'); b.textContent = RUTINAS[k].n; b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', k === est.rutina ? 'true' : 'false');
+    b.onclick = function () { est.rutina = k; guardar(); pintarRutinas(); pintarTablero(); };
+    c.appendChild(b);
+  });
+  document.getElementById('titulo-print').textContent = 'Tablero: ' + RUTINAS[est.rutina].n.replace(/^\S+\s/, '');
+}
+
+function pintarTablero() {
+  var t = document.getElementById('tablero'); t.innerHTML = '';
+  var fr = franja(est.rutina);
+  for (var f = 0; f < 4; f++) {
+    var fila = document.createElement('div'); fila.className = 'fila scan-fila';
+    NUCLEO[f].forEach(function (it) { fila.appendChild(crear(it, false)); });
+    var sep = document.createElement('div'); sep.className = 'sep'; sep.setAttribute('aria-hidden', 'true'); fila.appendChild(sep);
+    for (var c = 0; c < 4; c++) { var idx = f * 4 + c; fila.appendChild(crear(fr[idx], true, idx)); }
+    t.appendChild(fila);
+  }
+  CAA.scan.reiniciar();
+}
+
+function crear(it, esFranja, idx) {
+  var c = CAA.celda(it, esFranja ? 'franja' : 'nucleo');
+  c.onclick = function () {
+    if (editando && esFranja) { editar(idx, it); return; }
+    c.classList.remove('pulsado'); void c.offsetWidth; c.classList.add('pulsado');
+    CAA.hablar(it.d || it.t);
+    anadir(it);
+  };
+  return c;
+}
+
+function editar(idx, it) {
+  var nuevo = prompt('Escribe la palabra que quieres poner en lugar de «' + it.t + '».\n(Déjalo vacío para volver a la original)', it.t);
+  if (nuevo === null) return;
+  nuevo = nuevo.trim().toLowerCase();
+  est.propias[est.rutina] = est.propias[est.rutina] || {};
+  if (!nuevo || nuevo === RUTINAS[est.rutina].p[idx].t) delete est.propias[est.rutina][idx];
+  else est.propias[est.rutina][idx] = { t: nuevo, e: '⭐', k: it.k || 'cosa' };
+  guardar(); pintarTablero();
+}
+
+/* ── Frase ── */
+function pintarFrase() {
+  var c = document.getElementById('frase'); c.innerHTML = '';
+  if (!frase.length) { c.innerHTML = '<span class="vacio-txt">Toca los pictogramas para formar una frase</span>'; return; }
+  frase.forEach(function (it) {
+    var m = document.createElement('div'); m.className = 'mini picto ' + (it.k || '');
+    m.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' + CAA.esc(it.t);
+    CAA.ponerPicto(m.querySelector('.img'), it);
+    c.appendChild(m);
+  });
+  c.scrollLeft = c.scrollWidth;
+}
+function anadir(it) { if (frase.length >= 10) frase.shift(); frase.push(it); pintarFrase(); }
+document.getElementById('decir').onclick = function () {
+  if (!frase.length) return;
+  CAA.hablar(frase.map(function (i) { return i.d || i.t; }).join(' '));
+};
+document.getElementById('borrar').onclick = function () { frase.pop(); pintarFrase(); };
+document.getElementById('limpiar').onclick = function () { frase = []; pintarFrase(); };
+
+/* ── Herramientas ── */
+document.getElementById('btn-editar').onclick = function () {
+  editando = !editando; this.setAttribute('aria-pressed', editando);
+  document.body.classList.toggle('editando', editando);
+  if (editando) CAA.hablar('Toca una palabra de la derecha para cambiarla', true);
+};
+document.getElementById('btn-imprimir').onclick = function () { window.print(); };
+var ayuda = document.getElementById('ayuda-modal');
+document.getElementById('btn-ayuda').onclick = function () { ayuda.classList.add('abierto'); ayuda.querySelector('.cerrar').focus(); };
+ayuda.addEventListener('click', function (e) { if (e.target === ayuda || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) ayuda.classList.remove('abierto'); });
+
+pintarRutinas(); pintarTablero();
+if (!CAA.leer('caa-tableros-visto')) { CAA.guardar('caa-tableros-visto', true); ayuda.classList.add('abierto'); }
+</script>
+</body>
+</html>

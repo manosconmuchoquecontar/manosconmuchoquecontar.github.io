@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palabra de la semana · CAA · Manos con Mucho que Contar</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 8px; right: 12px; z-index: 40; font-size: 11px; font-weight: 700;
+  color: var(--ink3); opacity: .75; pointer-events: none;
+}
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  .pantalla { max-width: 1000px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .nav-sem { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
+  .nav-sem button { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--border); background: white; font-size: 20px; font-weight: 800; }
+  .nav-sem .etq { font-weight: 800; color: var(--ink2); font-size: 14px; text-transform: uppercase; letter-spacing: .05em; min-width: 180px; text-align: center; }
+
+  .ficha { background: white; border: 1px solid var(--border); border-radius: 28px; padding: 1.8rem; display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 2rem; align-items: start; }
+  body.caa-contraste .ficha { background: #000; }
+  .lado { display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+  .lado .picto { width: 100%; aspect-ratio: 1 / 1.08; border-width: 4px; font-size: clamp(22px, 4vw, 34px); }
+  .lado .picto .img .emoji { font-size: clamp(70px, 14vw, 140px); }
+  .lado .para { font-size: 15px; color: var(--ink2); line-height: 1.5; }
+  .lado .para b { color: var(--ink); }
+  .combina { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; }
+  .combina span { background: var(--bg2); padding: 5px 12px; border-radius: 100px; font-weight: 800; font-size: 13px; }
+
+  .ideas h2 { font-size: 1.5rem; color: var(--teal-d); margin-bottom: .3rem; }
+  body.caa-contraste .ideas h2 { color: #FFE14D; }
+  .ideas .sub { color: var(--ink2); margin-bottom: 1.2rem; line-height: 1.5; }
+  .idea { display: flex; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--border); }
+  .idea:first-of-type { border-top: none; }
+  .idea .ico { font-size: 2rem; width: 52px; height: 52px; flex-shrink: 0; border-radius: 14px; background: var(--bg2); display: flex; align-items: center; justify-content: center; }
+  .idea h3 { font-size: 1rem; margin-bottom: .2rem; }
+  .idea p { color: var(--ink2); line-height: 1.5; font-size: 15px; }
+  .idea p q { quotes: '«' '»'; font-weight: 700; color: var(--ink); }
+  .idea p q b { color: var(--teal); text-transform: uppercase; }
+  body.caa-contraste .idea p q { color: #fff; }
+
+  .acciones { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin: 1.5rem 0; }
+  .todas h3 { text-align: center; margin: 2rem 0 1rem; color: var(--teal-d); }
+  .lista-palabras { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: .6rem; }
+  .lista-palabras .picto { height: 110px; }
+  .lista-palabras .picto[aria-current="true"] { border-color: var(--teal); border-width: 4px; }
+
+  .marca-print { display: none; }
+  @media (max-width: 720px) { .ficha { grid-template-columns: 1fr; padding: 1.2rem; } .lado .picto { max-width: 260px; } }
+  @media print {
+    @page { size: A4 portrait; margin: 12mm; }
+    .nav-sem, .acciones, .todas { display: none !important; }
+    .ficha { border: 3px solid #2A9D8F; grid-template-columns: 70mm 1fr; }
+    .idea { break-inside: avoid; }
+    .marca-print { display: block; text-align: center; font-size: 8pt; margin-top: 4mm; color: #555; }
+  }
+</style>
+</head>
+<body>
+<main class="pantalla">
+  <div class="nav-sem no-print">
+    <button id="ant" aria-label="Palabra anterior">‹</button>
+    <span class="etq" id="etq"></span>
+    <button id="sig" aria-label="Palabra siguiente">›</button>
+  </div>
+
+  <article class="ficha" id="ficha" aria-live="polite">
+    <div class="lado">
+      <div id="picto-grande"></div>
+      <p class="para" id="para"></p>
+      <div>
+        <p class="para" style="margin-bottom:.4rem"><b>Combínala con:</b></p>
+        <div class="combina" id="combina"></div>
+      </div>
+    </div>
+    <div class="ideas">
+      <h2 id="titulo"></h2>
+      <p class="sub">Cada vez que la digas en voz alta, <b>señálala</b> en su tablero o comunicador. No le pidas que la repita: solo modela, muchas veces al día.</p>
+      <div id="ideas"></div>
+    </div>
+  </article>
+  <p class="marca-print">Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p>
+
+  <div class="acciones">
+    <button class="btn btn-p" id="imprimir">🖨️ Imprimir para la nevera</button>
+    <button class="btn" id="hoy">📅 Volver a la de esta semana</button>
+  </div>
+
+  <section class="todas">
+    <h3>Todas las palabras</h3>
+    <div class="lista-palabras" id="lista"></div>
+  </section>
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  function elegirVoz() {
+    var vs = speechSynthesis.getVoices();
+    voz = vs.find(function (v) { return v.lang === 'es-ES' && /google|mónica|monica|lucia|elvira/i.test(v.name); }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) ||
+          vs.find(function (v) { return /^es/i.test(v.lang); }) || null;
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'es-ES'; u.rate = 0.85; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(it.b || it.t);
+    prom.then(function (id) {
+      if (id == null) return;
+      var img = new Image(); img.alt = ''; img.decoding = 'async';
+      img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+      img.src = pictoUrl(id);
+    });
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (!scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (!scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+    });
+    m.addEventListener('change', function (e) {
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  function init(o) {
+    o = o || {};
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<button class="btn-ajustes" aria-label="Ajustes de accesibilidad" title="Ajustes">⚙️</button>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', panel.abrir);
+    CAA.abrirAjustes = panel.abrir;
+    aplicar();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'Palabra de la semana' });
+
+/* Palabras núcleo con ideas de modelado en 4 momentos del día */
+var PALABRAS = [
+  { t: 'más', e: '➕', k: 'describe', para: 'Sirve para <b>pedir que algo continúe</b>. Es de las primeras palabras más potentes: funciona en casi todo.',
+    con: ['quiero', 'agua', 'cosquillas', 'otra vez'],
+    ideas: [
+      ['🍽️', 'En la comida', 'Sirve poquito en el plato. Cuando se acabe: <q>¿<b>Más</b>?</q> y espera. Si te mira o tiende la mano, dale y di <q><b>Más</b> pan</q>.'],
+      ['🫧', 'Jugando', 'Haz pompas y para. <q>¿<b>Más</b> pompas?</q> Espera con el bote en la mano y la boca preparada.'],
+      ['🤗', 'Cosquillas y juego físico', 'Haz cosquillas, para de golpe y mira con expectación: <q>¿<b>Más</b>?</q>'],
+      ['🛝', 'En el parque', 'Empuja el columpio tres veces y sujétalo: <q>¿<b>Más</b> columpio?</q>']
+    ] },
+  { t: 'otra vez', e: '🔁', k: 'describe', para: 'Sirve para <b>repetir algo que ha terminado</b>: una canción, un juego, una caída divertida.',
+    con: ['más', 'canción', 'cuento', 'me gusta'],
+    ideas: [
+      ['🎵', 'Canciones', 'Al terminar su canción favorita: <q>¡Se acabó! ¿<b>Otra vez</b>?</q>'],
+      ['🧱', 'Torres', 'Construid una torre y tiradla juntos. <q>¡Pum! ¡<b>Otra vez</b>!</q>'],
+      ['📖', 'Cuentos', 'Al cerrar el libro: <q>Fin. ¿Lo leemos <b>otra vez</b>?</q>'],
+      ['🛁', 'En el baño', 'Echa agua con el vaso sobre su mano: <q>¡<b>Otra vez</b>!</q>']
+    ] },
+  { t: 'no', e: '🚫', k: 'no', para: 'Sirve para <b>rechazar y protestar</b>. Que pueda decir «no» con palabras evita muchas rabietas.',
+    con: ['quiero', 'me gusta', 'ya', 'esto'],
+    ideas: [
+      ['🥦', 'En la comida', 'Ofrécele algo que no le gusta: <q>¿Quieres brócoli? ¿<b>No</b>? Vale, <b>no</b>.</q> Respeta su «no» siempre que puedas.'],
+      ['🙈', 'Escondite', 'Tápate la cara: <q>¿Dónde está mamá? ¡<b>No</b> está!</q>'],
+      ['👕', 'Al vestirse', 'Ofrece la camiseta equivocada a propósito: <q>¿Esta? ¡<b>No</b>!</q>'],
+      ['🧸', 'Jugando', 'Pon el coche en la cabeza: <q>¿Va aquí? ¡<b>No</b>! Aquí <b>no</b>.</q>']
+    ] },
+  { t: 'ya', e: '🏁', k: 'no', d: 'ya, terminado', para: 'Sirve para <b>decir que algo ha terminado</b> o que no quiere seguir.',
+    con: ['no', 'más', 'ir', 'comer'],
+    ideas: [
+      ['🍽️', 'Al acabar de comer', 'Plato vacío: <q>¡<b>Ya</b>! Terminado.</q>'],
+      ['🛁', 'Al salir del baño', 'Quita el tapón: <q>Se va el agua. ¡<b>Ya</b>!</q>'],
+      ['🧩', 'Al terminar un juego', 'Última pieza del puzle: <q>¡<b>Ya</b> está!</q>'],
+      ['📺', 'Pantallas', 'Antes de apagar, avisa: <q>Un poquito más y… <b>ya</b>.</q>']
+    ] },
+  { t: 'quiero', e: '🤲', k: 'accion', para: 'Sirve para <b>pedir</b>. Combinada con cualquier cosa forma sus primeras frases de dos palabras.',
+    con: ['agua', 'más', 'esto', 'ir'],
+    ideas: [
+      ['🍎', 'Merienda', 'Enseña dos opciones: <q>Yo <b>quiero</b> manzana. ¿Y tú?</q>'],
+      ['🧸', 'Juguetes', 'Pon su juguete favorito a la vista pero fuera de su alcance: <q>¿<b>Quieres</b> el coche?</q>'],
+      ['👟', 'Salir', 'Junto a la puerta: <q><b>Quiero</b> ir a la calle.</q>'],
+      ['🎵', 'Música', '<q><b>Quiero</b> música.</q> Y la pones.']
+    ] },
+  { t: 'me gusta', e: '👍', b: 'gustar', k: 'accion', para: 'Sirve para <b>comentar y compartir</b>, no solo para pedir. Comunicar también es charlar.',
+    con: ['no', 'esto', 'más', 'mirar'],
+    ideas: [
+      ['😋', 'Comiendo', '<q>Mmm, <b>me gusta</b>.</q> Y con lo que no: <q>No <b>me gusta</b>.</q>'],
+      ['📖', 'Cuentos', 'Señala un dibujo: <q>¡El perro! <b>Me gusta</b> el perro.</q>'],
+      ['🛝', 'En el parque', '<q>El tobogán… ¡<b>me gusta</b>!</q>'],
+      ['👗', 'Al vestirse', '<q>Esta camiseta <b>me gusta</b>.</q>']
+    ] },
+  { t: 'ayuda', e: '🆘', b: 'ayudar', k: 'social', para: 'Sirve para <b>pedir ayuda</b> en vez de frustrarse o abandonar.',
+    con: ['abrir', 'quiero', 'tú', 'esto'],
+    ideas: [
+      ['🫙', 'Botes y envases', 'Dale el yogur cerrado. Antes de abrirlo: <q>¿<b>Ayuda</b>? Te <b>ayudo</b>.</q>'],
+      ['👟', 'Zapatos', '<q>Este cuesta… ¡<b>Ayuda</b>!</q> (modélalo tú cuando te cueste algo).'],
+      ['🧩', 'Puzles', 'Cuando una pieza no entre: <q>¿Necesitas <b>ayuda</b>?</q>'],
+      ['🧸', 'Juguetes altos', 'Pon un juguete en una estantería alta. <q><b>Ayuda</b>, por favor.</q>']
+    ] },
+  { t: 'mirar', e: '👀', k: 'accion', para: 'Sirve para <b>compartir la atención</b>: «¡mira esto!». Es la base de la conversación.',
+    con: ['esto', 'tú', 'me gusta', '¿qué?'],
+    ideas: [
+      ['🐦', 'En la calle', '<q>¡<b>Mira</b>! Un pájaro.</q> Señala y espera a que lo mire.'],
+      ['📖', 'Cuentos', '<q><b>Mira</b> qué hace el oso.</q>'],
+      ['🪞', 'Espejo', '<q><b>Mira</b>, ¡eres tú!</q>'],
+      ['🍳', 'Cocinando', '<q><b>Mira</b> cómo sube el bizcocho.</q>']
+    ] },
+  { t: 'abrir', e: '📦', k: 'accion', para: 'Sirve para <b>pedir acceso</b> a algo cerrado. Muy motivadora con sorpresas.',
+    con: ['ayuda', 'quiero', 'esto', 'ya'],
+    ideas: [
+      ['🎁', 'Cajas sorpresa', 'Esconde juguetes en cajas: <q>¿Qué hay? <b>Abrir</b>…</q>'],
+      ['🚪', 'Puertas', 'Antes de abrir: <q><b>Abrir</b> la puerta.</q>'],
+      ['🥫', 'Envases', '<q><b>Abrir</b> el yogur.</q>'],
+      ['📖', 'Libros', '<q><b>Abrimos</b> el cuento.</q>']
+    ] },
+  { t: 'ir', e: '🚶', k: 'accion', para: 'Sirve para <b>hablar de movimientos y lugares</b>: ir a la calle, irse, ir al baño.',
+    con: ['quiero', 'casa', 'parque', 'ya'],
+    ideas: [
+      ['🚪', 'Salir de casa', '<q>Nos <b>vamos</b>. <b>Ir</b> a la calle.</q>'],
+      ['🚽', 'Baño', '<q><b>Vamos</b> al baño.</q>'],
+      ['🚗', 'Jugando con coches', '<q>El coche se <b>va</b>… ¡brum!</q>'],
+      ['🛝', 'Del parque a casa', '<q>Ya. <b>Ir</b> a casa.</q>']
+    ] },
+  { t: 'dar', e: '🫴', k: 'accion', para: 'Sirve para <b>pedir o dar cosas</b> e inicia el juego de turnos.',
+    con: ['tú', 'yo', 'esto', 'más'],
+    ideas: [
+      ['🍪', 'Merienda', '<q>¿Me <b>das</b> una galleta?</q> y pon la mano.'],
+      ['⚽', 'Pelota', 'Juego de pasarse: <q><b>Dar</b>… ¡a ti!</q>'],
+      ['🧸', 'Peluches', '<q><b>Damos</b> de comer al oso.</q>'],
+      ['🧺', 'Recoger', '<q><b>Dame</b> el coche. Gracias.</q>']
+    ] },
+  { t: 'yo', e: '🙋', k: 'persona', para: 'Sirve para <b>hablar de uno mismo</b> y pedir turno.',
+    con: ['quiero', 'me gusta', 'tú', 'ir'],
+    ideas: [
+      ['🎲', 'Turnos', '<q>¿Quién tira? ¡<b>Yo</b>!</q>'],
+      ['🍽️', 'Repartir', '<q>¿Quién quiere pan? <b>Yo</b>.</q>'],
+      ['🪞', 'Espejo', '<q>¿Quién es? ¡<b>Yo</b>!</q>'],
+      ['🧦', 'Vestirse', '<q><b>Yo</b> me pongo el calcetín.</q>']
+    ] },
+  { t: 'tú', e: '👉', k: 'persona', para: 'Sirve para <b>dirigirse a otros</b> y repartir turnos.',
+    con: ['yo', 'dar', 'ayuda', 'mirar'],
+    ideas: [
+      ['🎲', 'Turnos', '<q>Ahora <b>tú</b>.</q>'],
+      ['📷', 'Fotos', '<q>Mira, <b>tú</b> en la foto.</q>'],
+      ['⚽', 'Pelota', '<q>Para <b>ti</b>.</q> (y se la pasas)'],
+      ['🍽️', 'En la mesa', '<q>¿Y <b>tú</b>? ¿Qué quieres?</q>']
+    ] },
+  { t: 'esto', e: '👇', k: 'describe', para: 'Sirve para <b>señalar cualquier cosa</b> aunque no tenga su palabra en el tablero.',
+    con: ['quiero', 'no', 'me gusta', '¿qué?'],
+    ideas: [
+      ['🛒', 'En la compra', '<q>¿Cogemos <b>esto</b>?</q>'],
+      ['🧸', 'Jugando', '<q>Quiero <b>esto</b>.</q> mientras tocas el juguete.'],
+      ['📖', 'Cuentos', '<q>¿Qué es <b>esto</b>?</q>'],
+      ['👕', 'Vestirse', '<q>¿<b>Esto</b> o <b>esto</b>?</q>']
+    ] },
+  { t: 'sí', e: '✅', k: 'social', para: 'Sirve para <b>aceptar y responder</b>. Úsala junto al «no» para preguntas cerradas.',
+    con: ['no', 'quiero', 'más', 'me gusta'],
+    ideas: [
+      ['🍎', 'Ofrecer', '<q>¿Quieres manzana? <b>Sí</b>.</q>'],
+      ['🎵', 'Canciones', '<q>¿Cantamos? ¡<b>Sí</b>!</q>'],
+      ['🛝', 'Parque', '<q>¿Vamos al tobogán? <b>Sí</b>.</q>'],
+      ['🧸', 'Juego simbólico', '<q>¿El oso tiene hambre? ¡<b>Sí</b>!</q>']
+    ] },
+  { t: '¿qué?', e: '❓', b: 'qué', d: 'qué', k: 'pregunta', para: 'Sirve para <b>preguntar</b> y mostrar curiosidad.',
+    con: ['esto', 'mirar', 'hacer', '¿dónde?'],
+    ideas: [
+      ['🎁', 'Sorpresas', 'Agita una caja: <q>¿<b>Qué</b> hay?</q>'],
+      ['📖', 'Cuentos', '<q>¿<b>Qué</b> pasa ahora?</q>'],
+      ['🔔', 'Ruidos', 'Si suena el timbre: <q>¿<b>Qué</b> es?</q>'],
+      ['🍳', 'Cocina', '<q>¿<b>Qué</b> hacemos hoy?</q>']
+    ] }
+];
+
+function semanaISO(d) {
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var dia = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dia);
+  var ini = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(((d - ini) / 86400000 + 1) / 7);
+}
+var HOY = semanaISO(new Date()) % PALABRAS.length;
+var actual = HOY;
+
+function pintar() {
+  var p = PALABRAS[actual];
+  document.getElementById('etq').textContent = actual === HOY ? '⭐ Palabra de esta semana' : 'Palabra ' + (actual + 1) + ' de ' + PALABRAS.length;
+  var g = document.getElementById('picto-grande'); g.innerHTML = '';
+  var c = CAA.celda(p); c.classList.add('pop'); c.style.width = '100%';
+  c.onclick = function () { CAA.hablar(p.d || p.t); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); };
+  g.appendChild(c);
+  document.getElementById('para').innerHTML = p.para;
+  document.getElementById('combina').innerHTML = p.con.map(function (x) { return '<span>' + CAA.esc(x) + '</span>'; }).join('');
+  document.getElementById('titulo').textContent = 'Esta semana modelamos: «' + p.t.toUpperCase() + '»';
+  document.getElementById('ideas').innerHTML = p.ideas.map(function (i) {
+    return '<div class="idea"><span class="ico" aria-hidden="true">' + i[0] + '</span><div><h3>' + i[1] + '</h3><p>' + i[2] + '</p></div></div>';
+  }).join('');
+  document.querySelectorAll('#lista .picto').forEach(function (b, i) { b.setAttribute('aria-current', i === actual ? 'true' : 'false'); });
+  CAA.scan.reiniciar();
+}
+
+var lista = document.getElementById('lista');
+PALABRAS.forEach(function (p, i) {
+  var c = CAA.celda(p); c.classList.remove('scan');
+  c.onclick = function () { actual = i; pintar(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  lista.appendChild(c);
+});
+document.getElementById('ant').onclick = function () { actual = (actual - 1 + PALABRAS.length) % PALABRAS.length; pintar(); };
+document.getElementById('sig').onclick = function () { actual = (actual + 1) % PALABRAS.length; pintar(); };
+document.getElementById('hoy').onclick = function () { actual = HOY; pintar(); };
+document.getElementById('imprimir').onclick = function () { window.print(); };
+pintar();
+</script>
+</body>
+</html>

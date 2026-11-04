@@ -156,6 +156,8 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
   .opc-wrap summary { cursor: pointer; font-weight: 800; font-size: 13px; color: var(--ink2); padding: 4px 2px; list-style: none; }
   .opc-wrap summary::-webkit-details-marker { display: none; }
   .opc-wrap[open] summary { margin-bottom: .4rem; }
+  .ayuda-voz { font-size: 13px; color: var(--ink2); margin: .45rem .2rem 0; }
+  .ayuda-voz b { color: var(--ink); }
   .opciones { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
   .opciones .grupo { display: flex; gap: 2px; background: white; border: 1.5px solid var(--border); border-radius: 100px; padding: 3px; }
   .opciones .grupo button { border: none; background: transparent; padding: 6px 12px; border-radius: 100px; font-weight: 800; font-size: 13px; }
@@ -184,6 +186,20 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
   body.caa-contraste .tecla.vocal.color { background: #FFE14D; color: #000; }
 
   #escritos-modal .caja { max-width: 620px; }
+  .son-ayuda { color: #4A706D; font-size: 14px; line-height: 1.55; margin-bottom: .8rem; }
+  .son-leyenda { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: 12px; font-weight: 800; margin-bottom: .8rem; }
+  .est-grab { color: #1F7A4A; } .est-web { color: #1D4E89; } .est-tts { color: #8A6A10; }
+  .son-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 2px; }
+  .son { border: 2px solid rgba(26,58,56,.12); border-radius: 14px; padding: .5rem; display: flex; flex-direction: column; align-items: center; gap: .3rem; background: #F5FAFA; }
+  .son b { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; line-height: 1; }
+  .son small { font-size: 10px; font-weight: 800; text-align: center; min-height: 2.2em; }
+  .son .bts { display: flex; gap: 4px; }
+  .son .bts button { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid rgba(26,58,56,.15); background: white; font-size: 14px; }
+  .son.grabando { border-color: #E5484D; background: #FFECEC; }
+  .son.grabando .rec { background: #E5484D; color: white; animation: latir 1s infinite; }
+  @keyframes latir { 50% { transform: scale(1.12); } }
+  .son-pie { display: flex; justify-content: space-between; gap: .5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .tecla.digrafo { font-size: clamp(16px, 3.6vh, 36px); }
   .lista-escritos { display: flex; flex-direction: column; gap: .5rem; margin: 1rem 0; max-height: 50vh; overflow: auto; }
   .lista-escritos div { background: #F5FAFA; border-radius: 12px; padding: .7rem 1rem; display: flex; gap: .8rem; align-items: center; }
   .lista-escritos .txt { flex: 1; font-family: 'Fredoka', sans-serif; font-size: 1.2rem; word-break: break-word; }
@@ -200,19 +216,36 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     <span class="lbl">Letra</span>
     <div class="grupo" data-op="caso"><button data-v="may">MAYÚS</button><button data-v="min">minús</button></div>
     <span class="lbl">Voz</span>
-    <div class="grupo" data-op="eco"><button data-v="letra">Letra</button><button data-v="palabra">Palabra</button><button data-v="nada">Nada</button></div>
+    <div class="grupo" data-op="eco"><button data-v="letra">Nombre</button><button data-v="sonido">Fonema</button><button data-v="palabra">Solo palabra</button><button data-v="nada">Silencio</button></div>
     <span class="lbl">Vocales</span>
     <div class="grupo" data-op="vocales"><button data-v="color">Color</button><button data-v="igual">Igual</button></div>
     <span class="lbl">Ayuda</span>
     <div class="grupo" data-op="pred"><button data-v="si">Palabras</button><button data-v="no">No</button></div>
-    <button class="btn" id="ver-escritos" style="padding:7px 14px;font-size:13px;margin-left:auto">📁 Mis escritos</button>
-  </div></details>
+    <button class="btn" id="ver-sonidos" style="padding:7px 14px;font-size:13px;margin-left:auto">🎙️ Sonidos</button>
+    <button class="btn" id="ver-escritos" style="padding:7px 14px;font-size:13px">📁 Mis escritos</button>
+  </div>
+  <p class="ayuda-voz" id="ayuda-voz"></p></details>
 
   <div class="escrito" id="escrito" aria-live="polite" aria-label="Texto escrito"></div>
   <div class="prediccion scan-fila" id="prediccion"></div>
   <div class="teclado" id="teclado"></div>
 </div>
 
+
+<div class="caa-modal" id="sonidos-modal" role="dialog" aria-modal="true" aria-labelledby="son-t">
+  <div class="caja" style="max-width:760px">
+    <button class="cerrar" aria-label="Cerrar">✕</button>
+    <h2 id="son-t">🎙️ Sonidos de las letras</h2>
+    <p class="son-ayuda">Graba cada fonema con tu voz (pulsa 🎙️, haz el sonido y vuelve a pulsar; se para solo a los 2 segundos). Se guardan <b>en este dispositivo</b>.<br>
+    Para que <b>todas las familias</b> oigan tus sonidos en la web: pulsa «Descargar mis grabaciones» y sube los archivos .wav a la carpeta <b>caa/sonidos</b> de GitHub.</p>
+    <div class="son-leyenda"><span class="est-grab">● Grabado aquí</span><span class="est-web">● Archivo de la web</span><span class="est-tts">● Voz del ordenador (sílaba)</span></div>
+    <div class="son-grid" id="son-grid"></div>
+    <div class="son-pie">
+      <button class="btn" id="son-bajar">⬇ Descargar mis grabaciones</button>
+      <button class="btn btn-p" data-cerrar>Listo</button>
+    </div>
+  </div>
+</div>
 <div class="caa-modal" id="escritos-modal" role="dialog" aria-modal="true" aria-labelledby="esc-t">
   <div class="caja">
     <button class="cerrar" aria-label="Cerrar">✕</button>
@@ -672,14 +705,76 @@ var PALABRAS = ('yo tu mama papa agua quiero mas no si ya ayuda me gusta mirar i
 var ACENTOS = { mama: 'mamá', papa: 'papá', mas: 'más', si: 'sí', tu: 'tú', que: 'qué', bano: 'baño', pequeno: 'pequeño', tele: 'tele', alli: 'allí', aqui: 'aquí', donde: 'dónde', quien: 'quién', cuando: 'cuándo', platano: 'plátano', arbol: 'árbol', avion: 'avión', bebe: 'bebé', nino: 'niño', nina: 'niña', musica: 'música', frio: 'frío', enfadado: 'enfadado', adios: 'adiós' };
 var PRED = PALABRAS.map(function (p) { return ACENTOS[p] || p; }).filter(function (p, i, a) { return a.indexOf(p) === i; });
 
+/* ═══ Sonidos de las letras ═══
+   Orden de prioridad: 1) grabación hecha en este dispositivo
+                       2) archivo de la web  caa/sonidos/<clave>.wav
+                       3) voz del ordenador (sílaba de apoyo: la voz no sabe decir fonemas aislados) */
+var NOMBRES_DIG = { ch: 'che', ll: 'elle', rr: 'erre doble', qu: 'cu u', gu: 'ge u' };
+var SILABA = { a: 'a', e: 'e', i: 'i', o: 'o', u: 'u', b: 'ba', c: 'ca', d: 'da', f: 'fa', g: 'ga', h: 'la hache no suena', j: 'ja', k: 'ca',
+  l: 'la', m: 'ma', n: 'na', 'ñ': 'ña', p: 'pa', q: 'que', r: 'ara', s: 'sa', t: 'ta', v: 'va', w: 'gua', x: 'taxi', y: 'ya', z: 'za',
+  ch: 'cha', ll: 'lla', rr: 'rra', qu: 'que', gu: 'gue' };
+var TECLAS_SON = 'abcdefghijklmnñopqrstuvwxyz'.split('');
+function claveArchivo(l) { return l === 'ñ' ? 'enye' : l; }
+function nombreTecla(l) { return NOMBRES[l] || NOMBRES_DIG[l] || l; }
+
+/* Base de datos local para las grabaciones */
+var BD = null;
+function bd() {
+  if (BD) return BD;
+  BD = new Promise(function (ok, ko) {
+    var r = indexedDB.open('caa-fonemas', 1);
+    r.onupgradeneeded = function () { r.result.createObjectStore('sonidos'); };
+    r.onsuccess = function () { ok(r.result); }; r.onerror = function () { ko(r.error); };
+  });
+  return BD;
+}
+function bdOp(modo, fn) { return bd().then(function (db) { return new Promise(function (ok, ko) { var tx = db.transaction('sonidos', modo); var r = fn(tx.objectStore('sonidos')); tx.oncomplete = function () { ok(r && r.result); }; tx.onerror = function () { ko(tx.error); }; }); }); }
+function leerGrab(k) { return bdOp('readonly', function (st) { return st.get(k); }).catch(function () { return null; }); }
+function guardarGrab(k, blob) { return bdOp('readwrite', function (st) { return st.put(blob, k); }); }
+function borrarGrab(k) { return bdOp('readwrite', function (st) { return st.delete(k); }); }
+function todasGrab() { return bdOp('readonly', function (st) { return st.getAllKeys(); }).catch(function () { return []; }); }
+
+var webEstado = {};   // clave → 'ok' | 'no'
+var audioActual = null;
+function reproducir(src) {
+  return new Promise(function (ok, ko) {
+    if (audioActual) { audioActual.pause(); }
+    var a = new Audio(src); audioActual = a;
+    a.onended = ok; a.onerror = ko;
+    var pr = a.play(); if (pr && pr.catch) pr.catch(ko);
+  });
+}
+function decirSonido(l) {
+  if (!CAA.ajustes.voz) return;
+  var k = claveArchivo(l);
+  speechSynthesis && speechSynthesis.cancel();
+  leerGrab(k).then(function (blob) {
+    if (blob) { var u = URL.createObjectURL(blob); return reproducir(u).finally(function () { URL.revokeObjectURL(u); }); }
+    if (webEstado[k] === 'no') throw 0;
+    return reproducir('sonidos/' + k + '.wav').then(function () { webEstado[k] = 'ok'; }, function (e) { webEstado[k] = 'no'; throw e; });
+  }).catch(function () { CAA.hablar(SILABA[l] || l); });
+}
+function decirTecla(l) {
+  if (est.eco === 'sonido') decirSonido(l);
+  else if (est.eco === 'letra') CAA.hablar(nombreTecla(l));
+}
+
 var est = Object.assign({ orden: 'abc', caso: 'may', eco: 'letra', vocales: 'color', pred: 'si' }, CAA.leer('caa-abc') || {});
+if (!DISPOS[est.orden]) est.orden = 'abc';
 var texto = '';
 var escritos = CAA.leer('caa-abc-escritos') || [];
 
 function quitarTildes(s) { return s.replace(/ñ/g, '#').normalize('NFD').replace(/[^\x00-\x7F#]/g, '').replace(/#/g, 'ñ'); }
 function fmt(s) { return est.caso === 'may' ? s.toUpperCase() : s.toLowerCase(); }
 
+var AYUDA_VOZ = {
+  letra: '<b>Nombre:</b> al pulsar la S dice «ese». Al pulsar espacio lee la palabra escrita.',
+  sonido: '<b>Fonema:</b> al pulsar la S suena /s/. Al pulsar espacio lee la palabra escrita. Graba tus fonemas en «🎙️ Sonidos».',
+  palabra: '<b>Solo palabra:</b> las letras no suenan; al pulsar espacio lee la palabra escrita.',
+  nada: '<b>Silencio:</b> no suena nada al escribir. Se puede leer todo con el botón «leer».'
+};
 function pintarOpciones() {
+  var av = document.getElementById('ayuda-voz'); if (av) av.innerHTML = AYUDA_VOZ[est.eco] || '';
   document.querySelectorAll('.opciones .grupo').forEach(function (g) {
     g.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', est[g.dataset.op] === b.dataset.v ? 'true' : 'false'); });
   });
@@ -687,7 +782,8 @@ function pintarOpciones() {
 document.querySelectorAll('.opciones .grupo').forEach(function (g) {
   g.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
-    est[g.dataset.op] = b.dataset.v; CAA.guardar('caa-abc', est);
+    est[g.dataset.op] = b.dataset.v;
+    CAA.guardar('caa-abc', est);
     pintarOpciones(); pintarTeclado(); pintarTexto();
   });
 });
@@ -701,14 +797,15 @@ function tecla(etq, cls, fn, decir) {
 }
 function pintarTeclado() {
   var t = document.getElementById('teclado'); t.innerHTML = '';
-  var filas = DISPOS[est.orden];
+  var filas = (DISPOS[est.orden] || DISPOS.abc).map(function (f) { return typeof f === 'string' ? f.split('') : f; });
   var maxCols = Math.max.apply(null, filas.map(function (f) { return f.length; }));
   filas.forEach(function (f) {
     var fila = document.createElement('div'); fila.className = 'fila scan-fila';
-    fila.style.gridTemplateColumns = 'repeat(' + maxCols + ', 1fr)';
-    f.split('').forEach(function (l) {
+    fila.style.gridTemplateColumns = 'repeat(' + (est.orden === 'fonemas' ? f.length : maxCols) + ', 1fr)';
+    f.forEach(function (l) {
       var vocal = 'aeiou'.indexOf(l) >= 0;
-      fila.appendChild(tecla(fmt(l), (vocal ? 'vocal ' : '') + (vocal && est.vocales === 'color' ? 'color' : ''), function () { escribir(l); }, NOMBRES[l]));
+      var cls = (vocal ? 'vocal ' : '') + (vocal && est.vocales === 'color' ? 'color ' : '') + (l.length > 1 ? 'digrafo' : '');
+      fila.appendChild(tecla(fmt(l), cls, function () { escribir(l); }, est.eco === 'sonido' ? (SILABA[l] || l) : nombreTecla(l)));
     });
     t.appendChild(fila);
   });
@@ -731,7 +828,7 @@ function escribir(l) {
     if (est.eco !== 'nada' && p) CAA.hablar(p);
   } else {
     texto += l;
-    if (est.eco === 'letra') CAA.hablar(NOMBRES[l] || l);
+    decirTecla(l);
   }
   pintarTexto();
 }
@@ -790,6 +887,101 @@ function pintarEscritos() {
 }
 document.getElementById('ver-escritos').onclick = function () { pintarEscritos(); modal.classList.add('abierto'); modal.querySelector('.cerrar').focus(); };
 modal.addEventListener('click', function (e) { if (e.target === modal || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) modal.classList.remove('abierto'); });
+
+/* ═══ Grabador de sonidos ═══ */
+var sonModal = document.getElementById('sonidos-modal');
+var grabando = null;
+function encodeWAV(buf) {
+  var ch = buf.getChannelData(0), sr = buf.sampleRate;
+  // recorte de silencios al principio y al final
+  var umbral = 0.02, ini = 0, fin = ch.length - 1;
+  while (ini < ch.length && Math.abs(ch[ini]) < umbral) ini++;
+  while (fin > ini && Math.abs(ch[fin]) < umbral) fin--;
+  ini = Math.max(0, ini - Math.round(sr * 0.04)); fin = Math.min(ch.length - 1, fin + Math.round(sr * 0.08));
+  var datos = ch.subarray(ini, fin + 1);
+  var pico = 0; for (var i = 0; i < datos.length; i++) pico = Math.max(pico, Math.abs(datos[i]));
+  var gan = pico > 0 ? Math.min(4, 0.9 / pico) : 1;
+  var dv = new DataView(new ArrayBuffer(44 + datos.length * 2));
+  function str(o, t) { for (var i = 0; i < t.length; i++) dv.setUint8(o + i, t.charCodeAt(i)); }
+  str(0, 'RIFF'); dv.setUint32(4, 36 + datos.length * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+  dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, sr, true);
+  dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); str(36, 'data'); dv.setUint32(40, datos.length * 2, true);
+  for (var j = 0; j < datos.length; j++) { var v = Math.max(-1, Math.min(1, datos[j] * gan)); dv.setInt16(44 + j * 2, v < 0 ? v * 0x8000 : v * 0x7FFF, true); }
+  return new Blob([dv], { type: 'audio/wav' });
+}
+function aWav(blob) {
+  return blob.arrayBuffer().then(function (ab) {
+    var Ctx = window.AudioContext || window.webkitAudioContext, ctx = new Ctx();
+    return new Promise(function (ok, ko) { ctx.decodeAudioData(ab, ok, ko); }).then(function (buf) {
+      var sr = 22050, off = new OfflineAudioContext(1, Math.ceil(buf.duration * sr), sr);
+      var src = off.createBufferSource(); src.buffer = buf; src.connect(off.destination); src.start();
+      return off.startRendering();
+    }).then(function (r) { ctx.close(); return encodeWAV(r); });
+  });
+}
+function grabar(k, tarjeta) {
+  if (grabando) { grabando.parar(); return; }
+  if (!navigator.mediaDevices || !window.MediaRecorder) { alert('Este navegador no permite grabar. Prueba con Chrome.'); return; }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    var rec = new MediaRecorder(stream), trozos = [];
+    rec.ondataavailable = function (e) { trozos.push(e.data); };
+    rec.onstop = function () {
+      stream.getTracks().forEach(function (t) { t.stop(); });
+      tarjeta.classList.remove('grabando'); grabando = null;
+      aWav(new Blob(trozos, { type: rec.mimeType })).then(function (wav) { return guardarGrab(k, wav); })
+        .then(function () { pintarSonidos(); decirSonidoClave(k); })
+        .catch(function () { alert('No se ha podido guardar la grabación. Inténtalo de nuevo.'); });
+    };
+    var t = setTimeout(function () { if (rec.state === 'recording') rec.stop(); }, 2000);
+    grabando = { parar: function () { clearTimeout(t); if (rec.state === 'recording') rec.stop(); } };
+    tarjeta.classList.add('grabando'); rec.start();
+  }).catch(function () { alert('Hace falta permitir el micrófono para grabar.'); });
+}
+function decirSonidoClave(k) { var l = k === 'enye' ? 'ñ' : k; var e = est.eco; est.eco = 'sonido'; decirTecla(l); est.eco = e; }
+function comprobarWeb(k) {
+  if (webEstado[k]) return Promise.resolve(webEstado[k] === 'ok');
+  return new Promise(function (ok) {
+    var a = new Audio(); a.preload = 'metadata';
+    a.onloadedmetadata = function () { webEstado[k] = 'ok'; ok(true); };
+    a.onerror = function () { webEstado[k] = 'no'; ok(false); };
+    a.src = 'sonidos/' + k + '.wav';
+  });
+}
+function pintarSonidos() {
+  var g = document.getElementById('son-grid');
+  todasGrab().then(function (claves) {
+    g.innerHTML = '';
+    TECLAS_SON.forEach(function (l) {
+      var k = claveArchivo(l), tiene = claves.indexOf(k) >= 0;
+      var d = document.createElement('div'); d.className = 'son';
+      d.innerHTML = '<b>' + CAA.esc(fmt(l)) + '</b><small class="' + (tiene ? 'est-grab">● Grabado aquí' : 'est-tts">● Voz: «' + CAA.esc(SILABA[l]) + '»') + '</small>' +
+        '<div class="bts"><button class="rec" aria-label="Grabar ' + CAA.esc(l) + '">🎙️</button><button aria-label="Escuchar ' + CAA.esc(l) + '">▶</button>' +
+        (tiene ? '<button aria-label="Borrar grabación de ' + CAA.esc(l) + '">🗑️</button>' : '') + '</div>';
+      var bs = d.querySelectorAll('button');
+      bs[0].onclick = function () { grabar(k, d); };
+      bs[1].onclick = function () { decirSonidoClave(k); };
+      if (bs[2]) bs[2].onclick = function () { borrarGrab(k).then(pintarSonidos); };
+      if (!tiene) comprobarWeb(k).then(function (hay) { if (hay) { var sm = d.querySelector('small'); sm.className = 'est-web'; sm.textContent = '● Archivo de la web'; } });
+      g.appendChild(d);
+    });
+  });
+}
+document.getElementById('ver-sonidos').onclick = function () { pintarSonidos(); sonModal.classList.add('abierto'); sonModal.querySelector('.cerrar').focus(); };
+sonModal.addEventListener('click', function (e) {
+  if (e.target === sonModal || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { if (grabando) grabando.parar(); sonModal.classList.remove('abierto'); }
+});
+document.getElementById('son-bajar').onclick = function () {
+  todasGrab().then(function (claves) {
+    if (!claves.length) { alert('Todavía no has grabado ningún sonido.'); return; }
+    claves.reduce(function (pr, k, i) {
+      return pr.then(function () { return leerGrab(k); }).then(function (blob) {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = k + '.wav';
+        document.body.appendChild(a); a.click(); a.remove();
+        return new Promise(function (ok) { setTimeout(ok, 350); });
+      });
+    }, Promise.resolve());
+  });
+};
 
 /* Teclado físico (solo en modo táctil, para adultos o niños que usan teclado) */
 document.addEventListener('keydown', function (e) {

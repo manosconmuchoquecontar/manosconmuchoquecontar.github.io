@@ -49,9 +49,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* ── Marca de agua ── */
 .caa-marca {
-  position: fixed; bottom: 8px; right: 12px; z-index: 40; font-size: 11px; font-weight: 700;
-  color: var(--ink3); opacity: .75; pointer-events: none;
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
 }
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
 
 /* ── Botones genéricos ── */
 .btn {
@@ -134,7 +136,7 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 <style>
   html, body { height: 100%; }
   body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
-  .app { flex: 1; display: flex; flex-direction: column; gap: .55rem; padding: .6rem .8rem 1.6rem; max-width: 1300px; width: 100%; margin: 0 auto; min-height: 0; }
+  .app { flex: 1; display: flex; flex-direction: column; gap: .55rem; padding: .6rem .8rem 2.9rem; max-width: 1300px; width: 100%; margin: 0 auto; min-height: 0; }
 
   .opc-wrap summary { cursor: pointer; font-weight: 800; font-size: 13px; color: var(--ink2); padding: 4px 2px; list-style: none; }
   .opc-wrap summary::-webkit-details-marker { display: none; }

@@ -50,9 +50,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* ── Marca de agua ── */
 .caa-marca {
-  position: fixed; bottom: 8px; right: 12px; z-index: 40; font-size: 11px; font-weight: 700;
-  color: var(--ink3); opacity: .75; pointer-events: none;
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
 }
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
 
 /* ── Botones genéricos ── */
 .btn {

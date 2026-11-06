@@ -161,6 +161,13 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   .caa-marca { font-size: 10px; padding: 3px 9px; bottom: 5px; left: 5px; }
 }
 
+/* ── Elegir voz ── */
+.voz-elegir { display: flex; gap: .5rem; margin: .5rem 0 .3rem; }
+.voz-elegir select { flex: 1; min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 14px; background: white; color: #1A3A38; }
+.mini-rango { display: block; font-size: 13px; font-weight: 700; margin-top: .45rem; }
+.mini-rango small { font-weight: 600; color: #6E8F8C; }
+.mini-rango input { width: 100%; accent-color: #2A9D8F; }
+
 /* ── Contraseña del adulto ── */
 .caa-pin .caja { max-width: 340px; text-align: center; }
 .caa-pin .ico { font-size: 2.3rem; }
@@ -311,18 +318,28 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   /* ── Ajustes ── */
-  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false };
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1 };
   var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
   var oyentes = [];
   function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
 
   /* ── Voz ── */
   var voz = null;
+  /* Voces: se puede elegir una parecida a la del comunicador del niño.
+     Por defecto, voz femenina si el dispositivo la tiene. */
+  var FEM = /m[oó]nica|paulina|marisol|luc[ií]a|elvira|helena|laura|sabina|dalia|isabel|carmen|ximena|elena|in[eé]s|mar[ií]a|sandy|shelley|\bflo\b|grandma|abuela|google espa|female|mujer/i;
+  var MASC = /jorge|juan|diego|pablo|[aá]lvaro|ra[uú]l|carlos|alonso|enrique|jos[eé]|eddy|reed|rocko|grandpa|abuelo|gonzalo|dar[ií]o|jaime|tom[aá]s|andr[eé]s|\bmale\b|hombre/i;
+  var pintarVoces = null;
+  function generoVoz(v) { return FEM.test(v.name) ? 'f' : (MASC.test(v.name) ? 'm' : ''); }
+  function vocesEs() { return speechSynthesis.getVoices().filter(function (v) { return /^es/i.test(v.lang); }); }
   function elegirVoz() {
-    var vs = speechSynthesis.getVoices();
-    voz = vs.find(function (v) { return v.lang === 'es-ES' && /google|mónica|monica|lucia|elvira/i.test(v.name); }) ||
-          vs.find(function (v) { return v.lang === 'es-ES'; }) ||
-          vs.find(function (v) { return /^es/i.test(v.lang); }) || null;
+    var vs = vocesEs();
+    var fija = aj.vozNombre && vs.find(function (v) { return v.name === aj.vozNombre; });
+    voz = fija ||
+          vs.find(function (v) { return v.lang === 'es-ES' && generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) || vs[0] || null;
+    if (pintarVoces) pintarVoces();
   }
   if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
 
@@ -331,7 +348,7 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     return new Promise(function (ok) {
       speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(texto);
-      u.lang = 'es-ES'; u.rate = 0.85; if (voz) u.voice = voz;
+      u.lang = voz ? voz.lang : 'es-ES'; u.rate = aj.vozVel || 0.85; u.pitch = aj.vozTono || 1; if (voz) u.voice = voz;
       var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
       u.onend = fin; u.onerror = fin;
       setTimeout(function () { speechSynthesis.speak(u); }, 30);
@@ -771,6 +788,10 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
           '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
       '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
         '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        '<div class="voz-elegir"><select id="caa-voz-sel" aria-label="Elegir voz"></select><button type="button" class="btn btn-s" data-probar>🔊 Probar</button></div>' +
+        '<p class="ayuda" style="margin:-.1rem 0 .4rem">Elige una voz parecida a la de su comunicador (♀ femenina · ♂ masculina). Las voces dependen de cada dispositivo.</p>' +
+        '<label class="mini-rango">Velocidad <input type="range" id="caa-voz-vel" min="0.6" max="1.2" step="0.05"></label>' +
+        '<label class="mini-rango">Tono <small>(más alto = suena más infantil)</small> <input type="range" id="caa-voz-tono" min="0.8" max="1.6" step="0.05"></label>' +
         (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
         '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
       '<div class="ajuste"><span class="lbl">Vista</span>' +
@@ -802,23 +823,40 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
       var vel = m.querySelector('#caa-vel');
       if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
       var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+      m.querySelector('#caa-voz-vel').value = aj.vozVel; m.querySelector('#caa-voz-tono').value = aj.vozTono;
+      if (pintarVoces) pintarVoces();
     }
     m.addEventListener('click', function (e) {
       var b = e.target.closest('.seg[data-k] button');
       if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
       if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
       if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+      if (e.target.closest('[data-probar]')) hablar('Hola. Quiero más, otra vez', true);
       if (e.target.closest('[data-pin-guardar]')) {
         var nv = m.querySelector('#caa-pin-nuevo'), msg = m.querySelector('#caa-pin-msg');
         if (/^\d{4}$/.test(nv.value)) { guardar('caa-pin', nv.value); nv.value = ''; msg.style.color = '#1F7A4A'; msg.textContent = '✔ Contraseña cambiada. Apúntala en un sitio seguro.'; }
         else { msg.style.color = '#C4372B'; msg.textContent = 'Tienen que ser 4 números.'; }
       }
     });
+    pintarVoces = function () {
+      var sel = m.querySelector('#caa-voz-sel'); if (!sel || !('speechSynthesis' in window)) return;
+      var vs = vocesEs();
+      if (!vs.length) { sel.innerHTML = '<option>No hay voces en español en este dispositivo</option>'; sel.disabled = true; return; }
+      sel.disabled = false;
+      var auto = voz && !aj.vozNombre ? ' (' + voz.name + ')' : '';
+      sel.innerHTML = '<option value="">Automática: femenina si hay' + esc(auto) + '</option>' + vs.map(function (v) {
+        var g = generoVoz(v);
+        return '<option value="' + esc(v.name) + '"' + (v.name === aj.vozNombre ? ' selected' : '') + '>' + (g === 'f' ? '♀ ' : g === 'm' ? '♂ ' : '') + esc(v.name) + ' · ' + esc(v.lang) + '</option>';
+      }).join('');
+    };
     m.addEventListener('change', function (e) {
+      if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
       if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
     });
     m.addEventListener('input', function (e) {
       if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-voz-vel') cambiar('vozVel', +e.target.value);
+      if (e.target.id === 'caa-voz-tono') cambiar('vozTono', +e.target.value);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
     var previo = null;

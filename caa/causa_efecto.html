@@ -2,10 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Causa y efecto · CAA · Manos con Mucho que Contar</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Playwrite+DE+Grund&family=Playwrite+HR+Lijeva&display=swap">
 <style>
 /* ── Estilos comunes CAA ── */
 /* ═══════════════════════════════════════════════
@@ -130,6 +133,61 @@ body.caa-contraste .caa-barra h1 { color: #FFE14D; }
 .caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
 body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
 
+
+/* ── Letra escolar: MAYÚSCULAS (Playwrite DE Grund) · minúsculas (Playwrite HR Lijeva) ── */
+:root { --font-mayus: 'Playwrite DE Grund', 'Fredoka', cursive; --font-minus: 'Playwrite HR Lijeva', 'Fredoka', cursive; }
+.picto .txt, .letra-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+.frase-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+body.modo-minus .picto .txt, body.modo-minus .letra-nino { font-family: var(--font-minus); text-transform: lowercase; }
+body.modo-minus .frase-nino { font-family: var(--font-minus); text-transform: none; }
+.picto .txt { font-size: .86em; line-height: 1.45; }
+
+/* ── Barra: selector de letra, pantalla completa ── */
+.caa-barra .grupo-barra { display: flex; gap: .4rem; align-items: center; flex-shrink: 0; }
+.caa-letra { display: flex; background: white; border: 1px solid var(--border); border-radius: 100px; padding: 3px; }
+.caa-letra button { border: none; background: transparent; border-radius: 100px; padding: 3px 11px; font-size: 16px; line-height: 1.5; color: var(--ink2); }
+.caa-letra button[aria-pressed="true"] { background: var(--teal); color: white; }
+.caa-letra .may { font-family: var(--font-mayus); } .caa-letra .min { font-family: var(--font-minus); }
+.caa-barra .btn-icono { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; color: var(--teal-d); }
+.caa-barra .btn-icono svg { width: 20px; height: 20px; }
+body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { background: #000; color: #fff; border-color: #fff; }
+@media (max-width: 600px) { .caa-barra { gap: .4rem; padding: .5rem .6rem; } .caa-barra .volver span { display: none; } .caa-barra h1 { font-size: .95rem; text-align: left; } }
+@media (max-height: 520px) {
+  .caa-barra { padding: .25rem .7rem; }
+  .caa-barra .btn-ajustes, .caa-barra .btn-icono { width: 34px; height: 34px; font-size: 16px; }
+  .caa-barra .volver { padding: 5px 10px; font-size: 13px; }
+  .caa-barra h1 { font-size: .95rem; }
+  .caa-letra button { font-size: 13px; padding: 1px 9px; }
+  .caa-marca { font-size: 10px; padding: 3px 9px; bottom: 5px; left: 5px; }
+}
+
+/* ── Contraseña del adulto ── */
+.caa-pin .caja { max-width: 340px; text-align: center; }
+.caa-pin .ico { font-size: 2.3rem; }
+.caa-pin h2 { margin: .2rem 0 .3rem; }
+.caa-pin .motivo { font-size: 13px; color: #4A706D; }
+.pin-puntos { display: flex; gap: 12px; justify-content: center; margin: 1rem 0; }
+.pin-puntos span { width: 15px; height: 15px; border-radius: 50%; background: #D4F0EC; transition: all .2s; }
+.pin-puntos span.lleno { background: #1F5249; transform: scale(1.15); }
+.pin-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pin-teclas button { padding: 13px; border: 2px solid #D4F0EC; border-radius: 12px; background: white; font-size: 1.25rem; font-weight: 800; color: #1A3A38; }
+.pin-teclas button:active { transform: scale(.94); }
+.pin-teclas .borrar { color: #C4372B; border-color: #F5C0C0; }
+.pin-error { color: #C4372B; font-weight: 800; font-size: 13px; min-height: 1.3em; margin-top: .6rem; }
+.pin-olvido { font-size: 11.5px; color: #6E8F8C; margin-top: .4rem; line-height: 1.45; }
+.caa-pin.temblor .caja { animation: caa-temblor .35s; }
+@keyframes caa-temblor { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.pin-cambiar { display: flex; gap: .5rem; flex-wrap: wrap; }
+.pin-cambiar input { width: 120px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 18px; letter-spacing: 6px; text-align: center; }
+.pin-msg { font-size: 13px; font-weight: 700; margin-top: .4rem; min-height: 1.2em; }
+@media (max-height: 560px) { .pin-teclas button { padding: 8px; font-size: 1.05rem; } .pin-puntos { margin: .5rem 0; } .caa-pin .ico { display: none; } }
+
+/* ── Bienvenida ── */
+.caa-bienv .caja { max-width: 440px; }
+.caa-bienv .bloque { display: flex; gap: .7rem; background: #E8F4F2; border-radius: 14px; padding: .75rem 1rem; margin-bottom: .55rem; font-size: 14px; line-height: 1.5; color: #1A3A38; }
+.caa-bienv .bloque .i { font-size: 1.35rem; flex-shrink: 0; }
+.caa-bienv .pin-chip { display: inline-block; background: #1F5249; color: white; font-weight: 900; padding: 0 8px; border-radius: 8px; letter-spacing: 2px; }
+
 /* ── Aviso para adultos ── */
 .consejo {
   background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
@@ -199,7 +257,7 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     <h2>✨ ¡Toca y mira qué pasa!</h2>
     <div class="grupo">
       <span class="lbl">¿Dónde hay que tocar?</span>
-      <div class="opciones" data-op="modo">
+      <div class="opciones adulto" data-op="modo">
         <button data-v="pantalla">En cualquier sitio</button>
         <button data-v="grande">Diana grande</button>
         <button data-v="pequena">Diana pequeña</button>
@@ -207,7 +265,7 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     </div>
     <div class="grupo">
       <span class="lbl">¿Qué pasa al tocar?</span>
-      <div class="opciones" data-op="tema">
+      <div class="opciones adulto" data-op="tema">
         <button data-v="burbujas">🫧 Burbujas</button>
         <button data-v="estrellas">⭐ Estrellas</button>
         <button data-v="animales">🐮 Animales</button>
@@ -222,7 +280,7 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     </div>
   </section>
   <div id="diana" aria-hidden="true"></div>
-  <button id="parar" class="btn no-barrido">⏹ Terminar</button>
+  <button id="parar" class="btn no-barrido adulto">⏹ Terminar</button>
   <div id="contador" aria-live="off"></div>
 </main>
 
@@ -253,7 +311,7 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   /* ── Ajustes ── */
-  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true };
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false };
   var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
   var oyentes = [];
   function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
@@ -528,7 +586,7 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
       avanzar();
     }, aj.velocidad);
   }
-  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido')); }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido') || t.closest('.adulto')); }
   function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
 
   document.addEventListener('keydown', function (e) {
@@ -563,6 +621,137 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     else api_scan.reiniciar();
   }
 
+
+  /* ═══ Letra escolar (se recuerda en todos los juegos) ═══ */
+  var letra = leer('caa-letra') === 'minus' ? 'minus' : 'mayus';
+  var oyentesLetra = [];
+  function aplicarLetra() {
+    document.body.classList.toggle('modo-minus', letra === 'minus');
+    document.querySelectorAll('.caa-letra button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.l === letra ? 'true' : 'false'); });
+  }
+  function ponerLetra(l) { letra = l === 'minus' ? 'minus' : 'mayus'; guardar('caa-letra', letra); aplicarLetra(); oyentesLetra.forEach(function (f) { f(letra); }); }
+
+  /* ═══ Pantalla completa ═══ */
+  var ICO_FS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICO_FS_SALIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function enPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function pantallaCompleta() {
+    var d = document.documentElement;
+    if (enPantallaCompleta()) {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!pedir) { avisoPantallaCompleta(); return; }
+    var pr;
+    try { pr = pedir.call(d, { navigationUI: 'hide' }); } catch (e) { avisoPantallaCompleta(); return; }
+    var girar = function () { if (opciones.horizontal && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); };
+    if (pr && pr.then) pr.then(girar).catch(avisoPantallaCompleta); else girar();
+  }
+  function iconoPantalla() {
+    var b = document.querySelector('.btn-fs'); if (!b) return;
+    var on = enPantallaCompleta();
+    b.innerHTML = on ? ICO_FS_SALIR : ICO_FS;
+    b.setAttribute('aria-label', on ? 'Salir de pantalla completa' : 'Pantalla completa'); b.title = b.getAttribute('aria-label');
+  }
+  document.addEventListener('fullscreenchange', iconoPantalla);
+  document.addEventListener('webkitfullscreenchange', iconoPantalla);
+  function avisoPantallaCompleta() {
+    modalInfo('📱 Pantalla completa',
+      'Este dispositivo no deja poner la web a pantalla completa desde el navegador (pasa en los iPhone).<br><br>' +
+      '<b>Para conseguirlo:</b> pulsa <b>Compartir</b> (el cuadrado con la flecha hacia arriba) → <b>Añadir a pantalla de inicio</b>. Abriendo la web desde ese icono se ve a pantalla completa.<br><br>' +
+      '<b>Para ponerla en horizontal:</b> desactiva el bloqueo de rotación en el Centro de control y gira el móvil.');
+  }
+  function modalInfo(titulo, html, alCerrar) {
+    var m = document.createElement('div'); m.className = 'caa-modal abierto'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+    m.innerHTML = '<div class="caja" style="max-width:460px"><button class="cerrar" aria-label="Cerrar">✕</button><h2>' + titulo + '</h2>' +
+      '<div style="font-size:15px;line-height:1.6;color:#1A3A38">' + html + '</div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:1.2rem" data-cerrar>Entendido</button></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { m.remove(); if (alCerrar) alCerrar(); api_scan.reiniciar(); } });
+    m.querySelector('[data-cerrar]').focus();
+    return m;
+  }
+
+  /* ═══ Contraseña del adulto (control parental) ═══ */
+  function pinGuardado() { var p = leer('caa-pin'); return /^\d{4}$/.test(p) ? p : '1234'; }
+  var desbloqueadoHasta = 0, pinM = null;
+  function pedirPin(cb, motivo) {
+    if (!aj.pinActivo || Date.now() < desbloqueadoHasta) { cb(); return; }
+    if (!pinM) construirPin();
+    pinM.cb = cb; pinM.valor = ''; puntosPin(); pinM.el.querySelector('.pin-error').textContent = '';
+    pinM.el.querySelector('.motivo').textContent = motivo || 'Esta opción es para el adulto.';
+    pinM.el.classList.add('abierto');
+    clearInterval(scan.timer); limpiar();
+    pinM.el.querySelector('.pin-teclas button').focus();
+  }
+  function construirPin() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal caa-pin'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-pin-t');
+    var teclas = '';
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', '0', '<'].forEach(function (k) {
+      if (k === 'x') teclas += '<button type="button" data-k="x" aria-label="Cancelar">✕</button>';
+      else if (k === '<') teclas += '<button type="button" class="borrar" data-k="<" aria-label="Borrar">⌫</button>';
+      else teclas += '<button type="button" data-k="' + k + '">' + k + '</button>';
+    });
+    m.innerHTML = '<div class="caja"><div class="ico" aria-hidden="true">🔒</div><h2 id="caa-pin-t">Zona del adulto</h2>' +
+      '<p class="motivo"></p><div class="pin-puntos" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+      '<div class="pin-teclas">' + teclas + '</div><p class="pin-error" role="alert"></p>' +
+      '<p class="pin-olvido">La contraseña de serie es <b>1234</b>. Se cambia en ⚙️ Ajustes → Control parental.</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]');
+      if (e.target === m) { cerrarPin(); return; }
+      if (!b) return;
+      var k = b.dataset.k;
+      if (k === 'x') cerrarPin(); else if (k === '<') { pinM.valor = pinM.valor.slice(0, -1); puntosPin(); } else teclaPin(k);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!m.classList.contains('abierto')) return;
+      if (/^\d$/.test(e.key)) { e.preventDefault(); teclaPin(e.key); }
+      else if (e.key === 'Backspace') { e.preventDefault(); pinM.valor = pinM.valor.slice(0, -1); puntosPin(); }
+      else if (e.key === 'Escape') cerrarPin();
+    });
+    pinM = { el: m, valor: '', cb: null };
+  }
+  function puntosPin() { pinM.el.querySelectorAll('.pin-puntos span').forEach(function (s, i) { s.classList.toggle('lleno', i < pinM.valor.length); }); }
+  function teclaPin(k) {
+    if (pinM.valor.length >= 4) return;
+    pinM.valor += k; puntosPin();
+    if (pinM.valor.length < 4) return;
+    if (pinM.valor === pinGuardado()) {
+      desbloqueadoHasta = Date.now() + 5 * 60 * 1000;
+      var cb = pinM.cb; cerrarPin(true); if (cb) cb();
+    } else {
+      pinM.el.querySelector('.pin-error').textContent = 'Contraseña incorrecta';
+      pinM.el.classList.add('temblor');
+      setTimeout(function () { pinM.el.classList.remove('temblor'); pinM.valor = ''; puntosPin(); }, 700);
+    }
+  }
+  function cerrarPin(ok) { pinM.el.classList.remove('abierto'); pinM.cb = null; if (!ok) api_scan.reiniciar(); }
+
+  /* Elementos con clase .adulto: piden la contraseña antes de funcionar (5 minutos sin volver a pedirla) */
+  var pasarAdulto = false;
+  document.addEventListener('click', function (e) {
+    if (pasarAdulto || !aj.pinActivo || Date.now() < desbloqueadoHasta || !e.target.closest) return;
+    if (!e.target.closest('.adulto') || e.target.closest('.caa-modal')) return;
+    e.preventDefault(); e.stopPropagation();
+    var obj = e.target.closest('button, a, summary, input, select, label, [data-k]') || e.target;
+    pedirPin(function () { pasarAdulto = true; try { obj.click(); if (obj.focus) obj.focus(); } finally { pasarAdulto = false; } });
+  }, true);
+
+  function bienvenida() {
+    if (leer('caa-bienvenida-v1')) return;
+    var m = modalInfo('👋 Antes de empezar',
+      '<div><div class="bloque"><span class="i">⛶</span><span>Usa el botón de <b>pantalla completa</b> (arriba a la derecha) para que el juego ocupe toda la pantalla. En el móvil, ponlo en horizontal.</span></div>' +
+      '<div class="bloque"><span class="i" style="font-family:var(--font-mayus)">Aa</span><span>Elige <b>MAYÚSCULAS o minúsculas</b>. Se usa la letra escolar y se recuerda en todos los juegos.</span></div>' +
+      '<div class="bloque"><span class="i">🔒</span><span>Los <b>ajustes ⚙️</b> y las opciones del adulto piden una contraseña para que el niño no las cambie sin querer. La contraseña es <span class="pin-chip">1234</span> y puedes cambiarla en ⚙️ Ajustes → Control parental.</span></div></div>',
+      function () { guardar('caa-bienvenida-v1', true); });
+    m.classList.add('caa-bienv');
+    m.querySelector('[data-cerrar]').textContent = '¡Entendido!';
+  }
+
   /* ── Panel de ajustes ── */
   function construirAjustes(extra, conBarrido) {
     var m = document.createElement('div');
@@ -586,6 +775,13 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
         '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
       '<div class="ajuste"><span class="lbl">Vista</span>' +
         '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">🔒 Control parental</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinActivo"> Pedir contraseña para los ajustes y las opciones del adulto</label>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinSalir"> Pedir contraseña también para salir del juego («Volver»)</label>' +
+        '<div class="lbl" style="margin-top:.7rem">Cambiar la contraseña</div>' +
+        '<div class="pin-cambiar"><input type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Nueva contraseña de 4 números" placeholder="••••" id="caa-pin-nuevo">' +
+        '<button class="btn btn-s" type="button" data-pin-guardar>Guardar</button></div>' +
+        '<p class="pin-msg" id="caa-pin-msg"></p></div>' +
       '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
         '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
         '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
@@ -612,6 +808,11 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
       if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
       if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
       if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+      if (e.target.closest('[data-pin-guardar]')) {
+        var nv = m.querySelector('#caa-pin-nuevo'), msg = m.querySelector('#caa-pin-msg');
+        if (/^\d{4}$/.test(nv.value)) { guardar('caa-pin', nv.value); nv.value = ''; msg.style.color = '#1F7A4A'; msg.textContent = '✔ Contraseña cambiada. Apúntala en un sitio seguro.'; }
+        else { msg.style.color = '#C4372B'; msg.textContent = 'Tienen que ser 4 números.'; }
+      }
     });
     m.addEventListener('change', function (e) {
       if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
@@ -627,14 +828,21 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
   }
 
   /* ── Inicio ── */
+  var opciones = {};
   function init(o) {
-    o = o || {};
+    o = o || {}; opciones = o;
     var barra = document.createElement('header');
     barra.className = 'caa-barra';
     barra.innerHTML =
-      '<a class="volver" href="' + (o.volver || '../caa.html') + '">← <span>Volver</span></a>' +
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '" aria-label="Volver">← <span>Volver</span></a>' +
       '<h1>' + esc(o.titulo || document.title) + '</h1>' +
-      '<button class="btn-ajustes" aria-label="Ajustes de accesibilidad" title="Ajustes">⚙️</button>';
+      '<div class="grupo-barra">' +
+        (o.letra !== false ? '<div class="caa-letra" role="group" aria-label="Tipo de letra">' +
+          '<button type="button" class="may" data-l="mayus" aria-label="Letra mayúscula" title="MAYÚSCULAS">Aa</button>' +
+          '<button type="button" class="min" data-l="minus" aria-label="Letra minúscula" title="minúsculas">aa</button></div>' : '') +
+        '<button type="button" class="btn-icono btn-fs"></button>' +
+        '<button type="button" class="btn-ajustes" aria-label="Ajustes (adulto)" title="Ajustes (adulto)">⚙️</button>' +
+      '</div>';
     document.body.insertBefore(barra, document.body.firstChild);
 
     var marca = document.createElement('div');
@@ -643,9 +851,17 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
 
     scan.activo = o.barrido !== false;
     var panel = construirAjustes(o.ajustesExtra, scan.activo);
-    barra.querySelector('.btn-ajustes').addEventListener('click', panel.abrir);
-    CAA.abrirAjustes = panel.abrir;
-    aplicar();
+    barra.querySelector('.btn-ajustes').addEventListener('click', function () { pedirPin(panel.abrir, 'Los ajustes son para el adulto.'); });
+    barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
+    barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
+    barra.querySelector('.volver').addEventListener('click', function (e) {
+      if (!aj.pinSalir) return;
+      e.preventDefault(); var href = this.href;
+      pedirPin(function () { location.href = href; }, 'Para salir del juego hace falta la contraseña.');
+    });
+    CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
+    aplicarLetra(); iconoPantalla(); aplicar();
+    if (o.bienvenida !== false) bienvenida();
   }
 
   window.CAA = {
@@ -653,13 +869,16 @@ body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px da
     elegirPicto: abrirSelector, modoElegir: activarElegir,
     sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
     get ajustes() { return aj; },
+    get letra() { return letra; },
+    alCambiarLetra: function (f) { oyentesLetra.push(f); },
+    pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
     alCambiar: function (f) { oyentes.push(f); }
   };
 })();
 
 </script>
 <script>
-CAA.init({ titulo: 'Causa y efecto', barrido: false });
+CAA.init({ titulo: 'Causa y efecto', barrido: false, letra: false });
 
 var conf = Object.assign({ modo: 'pantalla', tema: 'burbujas' }, CAA.leer('caa-causa') || {});
 var escena = document.getElementById('escena');

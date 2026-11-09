@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Agenda visual · CAA · Manos con Mucho que Contar</title>
+<meta name="description" content="Agendas visuales y secuencias con pictogramas para anticipar rutinas: mañana, tarde, dormir, lavarse las manos, ir al baño… Con fotos propias y para imprimir.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Playwrite+DE+Grund&family=Playwrite+HR+Lijeva&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
+}
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
+
+/* ── Letra escolar: MAYÚSCULAS (Playwrite DE Grund) · minúsculas (Playwrite HR Lijeva) ── */
+:root { --font-mayus: 'Playwrite DE Grund', 'Fredoka', cursive; --font-minus: 'Playwrite HR Lijeva', 'Fredoka', cursive; }
+.picto .txt, .letra-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+.frase-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+body.modo-minus .picto .txt, body.modo-minus .letra-nino { font-family: var(--font-minus); text-transform: lowercase; }
+body.modo-minus .frase-nino { font-family: var(--font-minus); text-transform: none; }
+.picto .txt { font-size: .86em; line-height: 1.45; }
+
+/* ── Barra: selector de letra, pantalla completa ── */
+.caa-barra .grupo-barra { display: flex; gap: .4rem; align-items: center; flex-shrink: 0; }
+.caa-letra { display: flex; background: white; border: 1px solid var(--border); border-radius: 100px; padding: 3px; }
+.caa-letra button { border: none; background: transparent; border-radius: 100px; padding: 3px 11px; font-size: 16px; line-height: 1.5; color: var(--ink2); }
+.caa-letra button[aria-pressed="true"] { background: var(--teal); color: white; }
+.caa-letra .may { font-family: var(--font-mayus); } .caa-letra .min { font-family: var(--font-minus); }
+.caa-barra .btn-icono { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; color: var(--teal-d); }
+.caa-barra .btn-icono svg { width: 20px; height: 20px; }
+body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { background: #000; color: #fff; border-color: #fff; }
+@media (max-width: 600px) { .caa-barra { gap: .4rem; padding: .5rem .6rem; } .caa-barra .volver span { display: none; } .caa-barra h1 { font-size: .95rem; text-align: left; } }
+@media (max-height: 520px) {
+  .caa-barra { padding: .25rem .7rem; }
+  .caa-barra .btn-ajustes, .caa-barra .btn-icono { width: 34px; height: 34px; font-size: 16px; }
+  .caa-barra .volver { padding: 5px 10px; font-size: 13px; }
+  .caa-barra h1 { font-size: .95rem; }
+  .caa-letra button { font-size: 13px; padding: 1px 9px; }
+  .caa-marca { font-size: 10px; padding: 3px 9px; bottom: 5px; left: 5px; }
+}
+
+/* ── Elegir voz ── */
+.voz-elegir { display: flex; gap: .5rem; margin: .5rem 0 .3rem; }
+.voz-elegir select { flex: 1; min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 14px; background: white; color: #1A3A38; }
+.mini-rango { display: block; font-size: 13px; font-weight: 700; margin-top: .45rem; }
+.mini-rango small { font-weight: 600; color: #6E8F8C; }
+.mini-rango input { width: 100%; accent-color: #2A9D8F; }
+
+/* ── Contraseña del adulto ── */
+.caa-pin .caja { max-width: 340px; text-align: center; }
+.caa-pin .ico { font-size: 2.3rem; }
+.caa-pin h2 { margin: .2rem 0 .3rem; }
+.caa-pin .motivo { font-size: 13px; color: #4A706D; }
+.pin-puntos { display: flex; gap: 12px; justify-content: center; margin: 1rem 0; }
+.pin-puntos span { width: 15px; height: 15px; border-radius: 50%; background: #D4F0EC; transition: all .2s; }
+.pin-puntos span.lleno { background: #1F5249; transform: scale(1.15); }
+.pin-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pin-teclas button { padding: 13px; border: 2px solid #D4F0EC; border-radius: 12px; background: white; font-size: 1.25rem; font-weight: 800; color: #1A3A38; }
+.pin-teclas button:active { transform: scale(.94); }
+.pin-teclas .borrar { color: #C4372B; border-color: #F5C0C0; }
+.pin-error { color: #C4372B; font-weight: 800; font-size: 13px; min-height: 1.3em; margin-top: .6rem; }
+.pin-olvido { font-size: 11.5px; color: #6E8F8C; margin-top: .4rem; line-height: 1.45; }
+.caa-pin.temblor .caja { animation: caa-temblor .35s; }
+@keyframes caa-temblor { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.pin-cambiar { display: flex; gap: .5rem; flex-wrap: wrap; }
+.pin-cambiar input { width: 120px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 18px; letter-spacing: 6px; text-align: center; }
+.pin-msg { font-size: 13px; font-weight: 700; margin-top: .4rem; min-height: 1.2em; }
+@media (max-height: 560px) { .pin-teclas button { padding: 8px; font-size: 1.05rem; } .pin-puntos { margin: .5rem 0; } .caa-pin .ico { display: none; } }
+
+/* ── Bienvenida ── */
+.caa-bienv .caja { max-width: 440px; }
+.caa-bienv .bloque { display: flex; gap: .7rem; background: #E8F4F2; border-radius: 14px; padding: .75rem 1rem; margin-bottom: .55rem; font-size: 14px; line-height: 1.5; color: #1A3A38; }
+.caa-bienv .bloque .i { font-size: 1.35rem; flex-shrink: 0; }
+.caa-bienv .pin-chip { display: inline-block; background: #1F5249; color: white; font-weight: 900; padding: 0 8px; border-radius: 8px; letter-spacing: 2px; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  .pantalla { max-width: 1100px; margin: 0 auto; padding: 1.4rem 1rem 3.5rem; }
+  .titulo-sec { font-size: 1.55rem; color: var(--teal-d); margin-bottom: .35rem; }
+  body.caa-contraste .titulo-sec { color: #FFE14D; }
+  .sub { color: var(--ink2); margin-bottom: 1.2rem; line-height: 1.55; max-width: 760px; }
+
+  /* ── Biblioteca ── */
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; margin-bottom: 2.2rem; }
+  .ag { background: white; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; text-align: left; padding: 0; transition: transform .2s, box-shadow .2s; }
+  .ag:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(26,58,56,.08); }
+  .ag .tira { display: flex; gap: 4px; padding: .8rem; background: var(--bg2); min-height: 76px; align-items: center; overflow: hidden; }
+  .ag .tira span { font-size: 1.7rem; line-height: 1; }
+  .ag .info { padding: .8rem 1rem 1rem; }
+  .ag h3 { font-size: 1.05rem; margin-bottom: .2rem; }
+  .ag p { color: var(--ink2); font-size: 13px; }
+  .ag-mia .acciones { display: flex; gap: .35rem; padding: 0 1rem 1rem; flex-wrap: wrap; }
+  .ag-mia .acciones button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; }
+  .ag-nueva { border: 3px dashed rgba(42,157,143,.45); background: rgba(42,157,143,.05); border-radius: 20px; min-height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; font-weight: 800; color: var(--teal-d); font-size: 1rem; }
+  .ag-nueva span { font-size: 2.4rem; }
+  body.caa-contraste .ag { background: #000; }
+
+  /* ── Uso ── */
+  #uso { min-height: calc(100vh - 64px); display: flex; flex-direction: column; padding: .8rem 1rem 3rem; gap: .8rem; max-width: 1300px; margin: 0 auto; }
+  .uso-cab { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  .uso-cab h2 { flex: 1; font-size: clamp(1.2rem, 3vw, 1.7rem); color: var(--teal-d); min-width: 180px; }
+  body.caa-contraste .uso-cab h2 { color: #FFE14D; }
+  .seg { display: flex; background: white; border: 1.5px solid var(--border); border-radius: 100px; padding: 3px; }
+  .seg button { border: none; background: transparent; border-radius: 100px; padding: 7px 13px; font-weight: 800; font-size: 13px; }
+  .seg button[aria-pressed="true"] { background: var(--teal); color: white; }
+  .herr { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .herr button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 7px 12px; font-weight: 800; font-size: 13px; white-space: nowrap; }
+
+  /* Vista lista */
+  .pasos { display: flex; flex-wrap: wrap; gap: clamp(.5rem, 1.5vw, 1rem); justify-content: center; align-content: flex-start; flex: 1; }
+  .paso { position: relative; width: clamp(110px, 15vw, 170px); display: flex; flex-direction: column; align-items: center; }
+  .paso .num { position: absolute; top: -9px; left: -6px; z-index: 2; width: 28px; height: 28px; border-radius: 50%; background: var(--teal-d); color: white; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+  .paso .picto { width: 100%; aspect-ratio: 1 / 1.12; border-width: 3px; font-size: clamp(13px, 1.6vw, 17px); }
+  .paso .picto .img .emoji { font-size: clamp(36px, 6vw, 64px); }
+  .paso.ahora .picto { border-color: var(--teal); border-width: 5px; box-shadow: 0 0 0 6px rgba(42,157,143,.18); transform: scale(1.04); }
+  .paso.ahora::after { content: 'AHORA'; position: absolute; bottom: -12px; background: var(--teal); color: white; font-weight: 900; font-size: 11px; letter-spacing: .08em; padding: 3px 10px; border-radius: 100px; }
+  .paso.hecho .picto { opacity: .38; filter: grayscale(.8); }
+  .paso.hecho::before { content: '✓'; position: absolute; z-index: 3; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border-radius: 50%; background: #2DBE60; color: white; font-size: 32px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+  .flecha-paso { align-self: center; font-size: 1.4rem; color: var(--ink3); }
+  .paso .picto .txt, .ad-col .picto .txt { overflow: visible; text-overflow: clip; overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; line-height: 1.25; }
+  .paso .picto .txt { font-size: .82em; }
+  .ad-col .picto .txt { font-size: .9em; }
+  .pasos.vertical { flex-direction: column; flex-wrap: nowrap; align-items: center; }
+  .pasos.vertical .paso { width: min(420px, 92vw); flex-direction: row; }
+  .pasos.vertical .paso .picto { aspect-ratio: auto; height: clamp(84px, 13vh, 120px); flex-direction: row; justify-content: flex-start; gap: 1rem; padding: 8px 14px; }
+  .pasos.vertical .paso .picto .img { flex: 0 0 auto; width: clamp(64px, 10vh, 100px); height: 100%; }
+  .pasos.vertical .paso .picto .txt { text-align: left; font-size: clamp(15px, 2.2vw, 20px); }
+  .pasos.vertical .paso.ahora::after { bottom: auto; right: -8px; top: 50%; transform: translateY(-50%); }
+  .pasos.vertical .flecha-paso { transform: rotate(90deg); margin: -.3rem 0; }
+
+  /* Vista Ahora / Después */
+  .ahora-despues { flex: 1; display: grid; grid-template-columns: 1fr auto 1fr; gap: clamp(.8rem, 3vw, 2.4rem); align-items: center; justify-items: center; }
+  .ad-col { display: flex; flex-direction: column; align-items: center; gap: .7rem; width: 100%; }
+  .ad-etq { font-size: clamp(1.3rem, 3.6vw, 2.2rem); color: var(--teal-d); line-height: 1.6; }
+  .ad-col.despues .ad-etq { color: var(--ink3); }
+  .ad-col .picto { width: min(100%, 44vh, 360px); aspect-ratio: 1 / 1.1; border-width: 5px; font-size: clamp(18px, 3vw, 28px); }
+  .ad-col.ahora .picto { border-color: var(--teal); box-shadow: 0 0 0 8px rgba(42,157,143,.15); }
+  .ad-col.despues .picto { opacity: .8; }
+  .ad-col .picto .img .emoji { font-size: min(18vw, 20vh, 150px); }
+  .ad-flecha { font-size: clamp(2rem, 6vw, 4rem); color: var(--ink3); }
+  .fin { text-align: center; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .fin .grande { font-size: clamp(4rem, 12vw, 7rem); }
+  .fin h3 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--teal-d); line-height: 1.6; }
+
+  .barra-hecho { display: flex; justify-content: center; gap: .7rem; flex-wrap: wrap; }
+  .btn-hecho { font-size: clamp(1.1rem, 2.6vw, 1.5rem); padding: 14px 40px; background: #2DBE60; color: white; border: none; border-radius: 100px; font-weight: 900; box-shadow: 0 6px 18px rgba(45,190,96,.35); }
+  .btn-hecho:active { transform: scale(.96); }
+  .btn-hecho:disabled { opacity: .4; }
+
+  /* ── Editor ── */
+  #editor { max-width: 860px; margin: 0 auto; padding: 1.4rem 1rem 7rem; }
+  .ed-bloque { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 1.2rem; margin-bottom: 1rem; }
+  body.caa-contraste .ed-bloque { background: #000; }
+  .ed-bloque h3 { font-size: 1.1rem; color: var(--teal-d); margin-bottom: .3rem; }
+  .ed-bloque .ayuda { font-size: 14px; color: var(--ink2); margin-bottom: .8rem; line-height: 1.5; }
+  .ed-in { padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--border); font: inherit; font-size: 15px; width: 100%; background: white; color: #1A3A38; }
+  .fila-paso { display: grid; grid-template-columns: 30px 64px 1fr auto; gap: .6rem; align-items: center; padding: .55rem; border-radius: 14px; background: var(--bg); margin-bottom: .5rem; }
+  .fila-paso .n { font-weight: 900; color: var(--teal-d); text-align: center; }
+  .fila-paso .prev { width: 64px; height: 64px; border-radius: 12px; background: white; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; cursor: pointer; }
+  .fila-paso .prev img { width: 100%; height: 100%; object-fit: contain; }
+  .fila-paso .prev img.foto { object-fit: cover; }
+  .fila-paso .bts { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .fila-paso .bts button { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border); background: white; font-size: 15px; }
+  .barra-ed { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-top: 1px solid var(--border); padding: .7rem 1rem 2.6rem; display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; }
+
+  /* ── Impresión ── */
+  #impresion { display: none; }
+  @media print {
+    @page { size: A4 landscape; margin: 10mm; }
+    body > *:not(#impresion) { display: none !important; }
+    #impresion { display: block !important; }
+    #impresion h1 { font-family: 'Fredoka', sans-serif; font-size: 20pt; text-align: center; margin-bottom: 5mm; color: #1F5249; }
+    .imp-pasos { display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); gap: 4mm; }
+    .imp-paso { border: 1.5px dashed #888; border-radius: 4mm; padding: 3mm; display: flex; flex-direction: column; align-items: center; break-inside: avoid; position: relative; height: 58mm; }
+    .imp-paso .n { position: absolute; top: 2mm; left: 3mm; font-weight: 900; font-size: 12pt; color: #1F5249; }
+    .imp-paso .img { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 0; }
+    .imp-paso .img img { max-width: 90%; max-height: 40mm; object-fit: contain; }
+    .imp-paso .img img.foto { object-fit: cover; }
+    .imp-paso .img .emoji { font-size: 34pt; }
+    .imp-paso .t { font-size: 13pt; text-align: center; padding-top: 1mm; }
+    .imp-pie { text-align: center; font-size: 8pt; color: #555; margin-top: 4mm; }
+  }
+
+  @media (max-width: 640px) {
+    .ahora-despues { grid-template-columns: 1fr; }
+    .ad-flecha { transform: rotate(90deg); }
+    .ad-col .picto { width: min(70vw, 30vh, 260px); }
+    .fila-paso { grid-template-columns: 22px 54px 1fr; }
+    .fila-paso .bts { grid-column: 1 / -1; justify-content: flex-start; }
+    .fila-paso .prev { width: 54px; height: 54px; }
+  }
+  @media (max-height: 520px) {
+    #uso { padding: .4rem .8rem 2rem; gap: .4rem; }
+    .uso-cab h2 { font-size: 1.05rem; }
+    .seg button, .herr button { padding: 4px 10px; font-size: 12px; }
+    .paso { width: clamp(84px, 11vw, 130px); }
+    .paso .picto .img .emoji { font-size: clamp(28px, 9vh, 46px); }
+    .ahora-despues { grid-template-columns: 1fr auto 1fr; }
+    .ad-flecha { transform: none; }
+    .ad-col .picto { width: min(42vh, 240px); border-width: 4px; }
+    .ad-col .picto .img .emoji { font-size: 14vh; }
+    .ad-etq { font-size: 1.1rem; }
+    .btn-hecho { padding: 8px 28px; font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+<section id="biblioteca" class="pantalla">
+  <h2 class="titulo-sec">📅 Agenda visual</h2>
+  <p class="sub">Anticipar lo que va a pasar da seguridad y reduce las rabietas. Elige una plantilla y adáptala, o crea la tuya con fotos de vuestra casa. El niño puede marcar cada paso como <b>hecho</b> e ir viendo lo que viene después.</p>
+
+  <h3 class="titulo-sec" style="font-size:1.2rem">⭐ Mis agendas</h3>
+  <div class="tarjetas" id="mis"></div>
+
+  <h3 class="titulo-sec" style="font-size:1.2rem">📋 Plantillas para empezar</h3>
+  <p class="sub" style="margin-bottom:.8rem">Al abrir una plantilla se crea una copia en «Mis agendas» que puedes cambiar a tu gusto.</p>
+  <div class="tarjetas" id="plantillas"></div>
+
+  <div class="consejo">
+    <b>Consejos:</b> empieza con agendas cortas (2 o 3 pasos, o solo «Ahora → Después»). Repasad juntos la agenda antes de empezar y señalad cada paso al hacerlo. Si cambia algo, cámbialo también en la agenda delante de él: así aprende que los cambios se avisan. Las fotos de sus cosas reales suelen entenderse mejor al principio que los pictogramas.
+  </div>
+</section>
+
+<section id="uso" hidden data-scan-raiz>
+  <div class="uso-cab">
+    <h2 id="uso-titulo" class="fredoka"></h2>
+    <div class="seg adulto no-barrido" id="vista" role="group" aria-label="Forma de ver la agenda">
+      <button data-v="lista">📋 Toda la agenda</button><button data-v="ahora">👉 Ahora → Después</button>
+    </div>
+    <div class="herr adulto no-barrido">
+      <button id="u-reiniciar">↺ Empezar de nuevo</button>
+      <button id="u-editar">✏️ Editar</button>
+      <button id="u-imprimir">🖨️ Imprimir</button>
+      <button id="u-salir">📚 Otras agendas</button>
+    </div>
+  </div>
+  <div id="u-cuerpo" style="flex:1;display:flex;flex-direction:column"></div>
+  <div class="barra-hecho">
+    <button class="btn-hecho scan" id="u-hecho" data-decir="Hecho">✓ ¡Hecho!</button>
+  </div>
+</section>
+
+<section id="editor" hidden>
+  <div class="ed-bloque">
+    <h3>1. Nombre de la agenda</h3>
+    <input class="ed-in" id="ed-titulo" maxlength="50" placeholder="Por ejemplo: Por la mañana">
+  </div>
+  <div class="ed-bloque">
+    <h3>2. Pasos</h3>
+    <p class="ayuda">Escribe cada paso y pulsa fuera del recuadro: el pictograma se busca solo. <b>Toca el dibujo</b> para elegir otro pictograma. Con 📷 puedes poner una foto vuestra (su baño, su mochila, su cole…).</p>
+    <div id="ed-pasos"></div>
+    <button class="btn btn-s" id="ed-add">＋ Añadir paso</button>
+  </div>
+  <div class="ed-bloque">
+    <h3>3. Cómo se ve</h3>
+    <div class="seg" id="ed-orient" style="display:inline-flex">
+      <button data-v="horizontal">➡️ En fila</button><button data-v="vertical">⬇️ En columna</button>
+    </div>
+    <p class="ayuda" style="margin-top:.6rem">«En columna» funciona bien en el móvil en vertical y para pegar en la puerta o la nevera.</p>
+  </div>
+  <div class="barra-ed">
+    <button class="btn" id="ed-cancelar">✕ Cancelar</button>
+    <button class="btn btn-p" id="ed-guardar">💾 Guardar y usar</button>
+  </div>
+</section>
+
+<section id="impresion" aria-hidden="true"></section>
+<input type="file" id="f-foto" accept="image/*" hidden>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1 };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  /* Voces: se puede elegir una parecida a la del comunicador del niño.
+     Por defecto, voz femenina si el dispositivo la tiene. */
+  var FEM = /m[oó]nica|paulina|marisol|luc[ií]a|elvira|helena|laura|sabina|dalia|isabel|carmen|ximena|elena|in[eé]s|mar[ií]a|sandy|shelley|\bflo\b|grandma|abuela|google espa|female|mujer/i;
+  var MASC = /jorge|juan|diego|pablo|[aá]lvaro|ra[uú]l|carlos|alonso|enrique|jos[eé]|eddy|reed|rocko|grandpa|abuelo|gonzalo|dar[ií]o|jaime|tom[aá]s|andr[eé]s|\bmale\b|hombre/i;
+  var pintarVoces = null;
+  function generoVoz(v) { return FEM.test(v.name) ? 'f' : (MASC.test(v.name) ? 'm' : ''); }
+  function vocesEs() { return speechSynthesis.getVoices().filter(function (v) { return /^es/i.test(v.lang); }); }
+  function elegirVoz() {
+    var vs = vocesEs();
+    var fija = aj.vozNombre && vs.find(function (v) { return v.name === aj.vozNombre; });
+    voz = fija ||
+          vs.find(function (v) { return v.lang === 'es-ES' && generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) || vs[0] || null;
+    if (pintarVoces) pintarVoces();
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = voz ? voz.lang : 'es-ES'; u.rate = aj.vozVel || 0.85; u.pitch = aj.vozTono || 1; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido') || t.closest('.adulto')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+
+  /* ═══ Letra escolar (se recuerda en todos los juegos) ═══ */
+  var letra = leer('caa-letra') === 'minus' ? 'minus' : 'mayus';
+  var oyentesLetra = [];
+  function aplicarLetra() {
+    document.body.classList.toggle('modo-minus', letra === 'minus');
+    document.querySelectorAll('.caa-letra button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.l === letra ? 'true' : 'false'); });
+  }
+  function ponerLetra(l) { letra = l === 'minus' ? 'minus' : 'mayus'; guardar('caa-letra', letra); aplicarLetra(); oyentesLetra.forEach(function (f) { f(letra); }); }
+
+  /* ═══ Pantalla completa ═══ */
+  var ICO_FS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICO_FS_SALIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function enPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function pantallaCompleta() {
+    var d = document.documentElement;
+    if (enPantallaCompleta()) {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!pedir) { avisoPantallaCompleta(); return; }
+    var pr;
+    try { pr = pedir.call(d, { navigationUI: 'hide' }); } catch (e) { avisoPantallaCompleta(); return; }
+    var girar = function () { if (opciones.horizontal && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); };
+    if (pr && pr.then) pr.then(girar).catch(avisoPantallaCompleta); else girar();
+  }
+  function iconoPantalla() {
+    var b = document.querySelector('.btn-fs'); if (!b) return;
+    var on = enPantallaCompleta();
+    b.innerHTML = on ? ICO_FS_SALIR : ICO_FS;
+    b.setAttribute('aria-label', on ? 'Salir de pantalla completa' : 'Pantalla completa'); b.title = b.getAttribute('aria-label');
+  }
+  document.addEventListener('fullscreenchange', iconoPantalla);
+  document.addEventListener('webkitfullscreenchange', iconoPantalla);
+  function avisoPantallaCompleta() {
+    modalInfo('📱 Pantalla completa',
+      'Este dispositivo no deja poner la web a pantalla completa desde el navegador (pasa en los iPhone).<br><br>' +
+      '<b>Para conseguirlo:</b> pulsa <b>Compartir</b> (el cuadrado con la flecha hacia arriba) → <b>Añadir a pantalla de inicio</b>. Abriendo la web desde ese icono se ve a pantalla completa.<br><br>' +
+      '<b>Para ponerla en horizontal:</b> desactiva el bloqueo de rotación en el Centro de control y gira el móvil.');
+  }
+  function modalInfo(titulo, html, alCerrar) {
+    var m = document.createElement('div'); m.className = 'caa-modal abierto'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+    m.innerHTML = '<div class="caja" style="max-width:460px"><button class="cerrar" aria-label="Cerrar">✕</button><h2>' + titulo + '</h2>' +
+      '<div style="font-size:15px;line-height:1.6;color:#1A3A38">' + html + '</div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:1.2rem" data-cerrar>Entendido</button></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { m.remove(); if (alCerrar) alCerrar(); api_scan.reiniciar(); } });
+    m.querySelector('[data-cerrar]').focus();
+    return m;
+  }
+
+  /* ═══ Contraseña del adulto (control parental) ═══ */
+  function pinGuardado() { var p = leer('caa-pin'); return /^\d{4}$/.test(p) ? p : '1234'; }
+  var desbloqueadoHasta = 0, pinM = null;
+  function pedirPin(cb, motivo) {
+    if (!aj.pinActivo || Date.now() < desbloqueadoHasta) { cb(); return; }
+    if (!pinM) construirPin();
+    pinM.cb = cb; pinM.valor = ''; puntosPin(); pinM.el.querySelector('.pin-error').textContent = '';
+    pinM.el.querySelector('.motivo').textContent = motivo || 'Esta opción es para el adulto.';
+    pinM.el.classList.add('abierto');
+    clearInterval(scan.timer); limpiar();
+    pinM.el.querySelector('.pin-teclas button').focus();
+  }
+  function construirPin() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal caa-pin'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-pin-t');
+    var teclas = '';
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', '0', '<'].forEach(function (k) {
+      if (k === 'x') teclas += '<button type="button" data-k="x" aria-label="Cancelar">✕</button>';
+      else if (k === '<') teclas += '<button type="button" class="borrar" data-k="<" aria-label="Borrar">⌫</button>';
+      else teclas += '<button type="button" data-k="' + k + '">' + k + '</button>';
+    });
+    m.innerHTML = '<div class="caja"><div class="ico" aria-hidden="true">🔒</div><h2 id="caa-pin-t">Zona del adulto</h2>' +
+      '<p class="motivo"></p><div class="pin-puntos" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+      '<div class="pin-teclas">' + teclas + '</div><p class="pin-error" role="alert"></p>' +
+      '<p class="pin-olvido">La contraseña de serie es <b>1234</b>. Se cambia en ⚙️ Ajustes → Control parental.</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]');
+      if (e.target === m) { cerrarPin(); return; }
+      if (!b) return;
+      var k = b.dataset.k;
+      if (k === 'x') cerrarPin(); else if (k === '<') { pinM.valor = pinM.valor.slice(0, -1); puntosPin(); } else teclaPin(k);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!m.classList.contains('abierto')) return;
+      if (/^\d$/.test(e.key)) { e.preventDefault(); teclaPin(e.key); }
+      else if (e.key === 'Backspace') { e.preventDefault(); pinM.valor = pinM.valor.slice(0, -1); puntosPin(); }
+      else if (e.key === 'Escape') cerrarPin();
+    });
+    pinM = { el: m, valor: '', cb: null };
+  }
+  function puntosPin() { pinM.el.querySelectorAll('.pin-puntos span').forEach(function (s, i) { s.classList.toggle('lleno', i < pinM.valor.length); }); }
+  function teclaPin(k) {
+    if (pinM.valor.length >= 4) return;
+    pinM.valor += k; puntosPin();
+    if (pinM.valor.length < 4) return;
+    if (pinM.valor === pinGuardado()) {
+      desbloqueadoHasta = Date.now() + 5 * 60 * 1000;
+      var cb = pinM.cb; cerrarPin(true); if (cb) cb();
+    } else {
+      pinM.el.querySelector('.pin-error').textContent = 'Contraseña incorrecta';
+      pinM.el.classList.add('temblor');
+      setTimeout(function () { pinM.el.classList.remove('temblor'); pinM.valor = ''; puntosPin(); }, 700);
+    }
+  }
+  function cerrarPin(ok) { pinM.el.classList.remove('abierto'); pinM.cb = null; if (!ok) api_scan.reiniciar(); }
+
+  /* Elementos con clase .adulto: piden la contraseña antes de funcionar (5 minutos sin volver a pedirla) */
+  var pasarAdulto = false;
+  document.addEventListener('click', function (e) {
+    if (pasarAdulto || !aj.pinActivo || Date.now() < desbloqueadoHasta || !e.target.closest) return;
+    if (!e.target.closest('.adulto') || e.target.closest('.caa-modal')) return;
+    e.preventDefault(); e.stopPropagation();
+    var obj = e.target.closest('button, a, summary, input, select, label, [data-k]') || e.target;
+    pedirPin(function () { pasarAdulto = true; try { obj.click(); if (obj.focus) obj.focus(); } finally { pasarAdulto = false; } });
+  }, true);
+
+  function bienvenida() {
+    if (leer('caa-bienvenida-v1')) return;
+    var m = modalInfo('👋 Antes de empezar',
+      '<div><div class="bloque"><span class="i">⛶</span><span>Usa el botón de <b>pantalla completa</b> (arriba a la derecha) para que el juego ocupe toda la pantalla. En el móvil, ponlo en horizontal.</span></div>' +
+      '<div class="bloque"><span class="i" style="font-family:var(--font-mayus)">Aa</span><span>Elige <b>MAYÚSCULAS o minúsculas</b>. Se usa la letra escolar y se recuerda en todos los juegos.</span></div>' +
+      '<div class="bloque"><span class="i">🔒</span><span>Los <b>ajustes ⚙️</b> y las opciones del adulto piden una contraseña para que el niño no las cambie sin querer. La contraseña es <span class="pin-chip">1234</span> y puedes cambiarla en ⚙️ Ajustes → Control parental.</span></div></div>',
+      function () { guardar('caa-bienvenida-v1', true); });
+    m.classList.add('caa-bienv');
+    m.querySelector('[data-cerrar]').textContent = '¡Entendido!';
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        '<div class="voz-elegir"><select id="caa-voz-sel" aria-label="Elegir voz"></select><button type="button" class="btn btn-s" data-probar>🔊 Probar</button></div>' +
+        '<p class="ayuda" style="margin:-.1rem 0 .4rem">Elige una voz parecida a la de su comunicador (♀ femenina · ♂ masculina). Las voces dependen de cada dispositivo.</p>' +
+        '<label class="mini-rango">Velocidad <input type="range" id="caa-voz-vel" min="0.6" max="1.2" step="0.05"></label>' +
+        '<label class="mini-rango">Tono <small>(más alto = suena más infantil)</small> <input type="range" id="caa-voz-tono" min="0.8" max="1.6" step="0.05"></label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">🔒 Control parental</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinActivo"> Pedir contraseña para los ajustes y las opciones del adulto</label>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinSalir"> Pedir contraseña también para salir del juego («Volver»)</label>' +
+        '<div class="lbl" style="margin-top:.7rem">Cambiar la contraseña</div>' +
+        '<div class="pin-cambiar"><input type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Nueva contraseña de 4 números" placeholder="••••" id="caa-pin-nuevo">' +
+        '<button class="btn btn-s" type="button" data-pin-guardar>Guardar</button></div>' +
+        '<p class="pin-msg" id="caa-pin-msg"></p></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+      m.querySelector('#caa-voz-vel').value = aj.vozVel; m.querySelector('#caa-voz-tono').value = aj.vozTono;
+      if (pintarVoces) pintarVoces();
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+      if (e.target.closest('[data-probar]')) hablar('Hola. Quiero más, otra vez', true);
+      if (e.target.closest('[data-pin-guardar]')) {
+        var nv = m.querySelector('#caa-pin-nuevo'), msg = m.querySelector('#caa-pin-msg');
+        if (/^\d{4}$/.test(nv.value)) { guardar('caa-pin', nv.value); nv.value = ''; msg.style.color = '#1F7A4A'; msg.textContent = '✔ Contraseña cambiada. Apúntala en un sitio seguro.'; }
+        else { msg.style.color = '#C4372B'; msg.textContent = 'Tienen que ser 4 números.'; }
+      }
+    });
+    pintarVoces = function () {
+      var sel = m.querySelector('#caa-voz-sel'); if (!sel || !('speechSynthesis' in window)) return;
+      var vs = vocesEs();
+      if (!vs.length) { sel.innerHTML = '<option>No hay voces en español en este dispositivo</option>'; sel.disabled = true; return; }
+      sel.disabled = false;
+      var auto = voz && !aj.vozNombre ? ' (' + voz.name + ')' : '';
+      sel.innerHTML = '<option value="">Automática: femenina si hay' + esc(auto) + '</option>' + vs.map(function (v) {
+        var g = generoVoz(v);
+        return '<option value="' + esc(v.name) + '"' + (v.name === aj.vozNombre ? ' selected' : '') + '>' + (g === 'f' ? '♀ ' : g === 'm' ? '♂ ' : '') + esc(v.name) + ' · ' + esc(v.lang) + '</option>';
+      }).join('');
+    };
+    m.addEventListener('change', function (e) {
+      if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-voz-vel') cambiar('vozVel', +e.target.value);
+      if (e.target.id === 'caa-voz-tono') cambiar('vozTono', +e.target.value);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  var opciones = {};
+  function init(o) {
+    o = o || {}; opciones = o;
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '" aria-label="Volver">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<div class="grupo-barra">' +
+        (o.letra !== false ? '<div class="caa-letra" role="group" aria-label="Tipo de letra">' +
+          '<button type="button" class="may" data-l="mayus" aria-label="Letra mayúscula" title="MAYÚSCULAS">Aa</button>' +
+          '<button type="button" class="min" data-l="minus" aria-label="Letra minúscula" title="minúsculas">aa</button></div>' : '') +
+        '<button type="button" class="btn-icono btn-fs"></button>' +
+        '<button type="button" class="btn-ajustes" aria-label="Ajustes (adulto)" title="Ajustes (adulto)">⚙️</button>' +
+      '</div>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', function () { pedirPin(panel.abrir, 'Los ajustes son para el adulto.'); });
+    barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
+    barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
+    barra.querySelector('.volver').addEventListener('click', function (e) {
+      if (!aj.pinSalir) return;
+      e.preventDefault(); var href = this.href;
+      pedirPin(function () { location.href = href; }, 'Para salir del juego hace falta la contraseña.');
+    });
+    CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
+    aplicarLetra(); iconoPantalla(); aplicar();
+    if (o.bienvenida !== false) bienvenida();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    get letra() { return letra; },
+    alCambiarLetra: function (f) { oyentesLetra.push(f); },
+    pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'Agenda visual', horizontal: true });
+
+/* ════════════════ Plantillas ════════════════
+   t = texto · b = búsqueda del pictograma en ARASAAC (si es distinta) · e = emoji de reserva */
+var PLANTILLAS = [
+  { titulo: 'Ahora → Después', vista: 'ahora', desc: 'Lo más sencillo para empezar.', pasos: [
+    { t: 'trabajar', e: '📚' }, { t: 'jugar', e: '🧸' } ] },
+  { titulo: 'Por la mañana', desc: 'Desde que se despierta hasta el cole.', pasos: [
+    { t: 'despertarse', e: '⏰' }, { t: 'ir al baño', b: 'váter', e: '🚽' }, { t: 'vestirse', e: '👕' }, { t: 'desayunar', e: '🥣' },
+    { t: 'lavarse los dientes', e: '🪥' }, { t: 'coger la mochila', b: 'mochila', e: '🎒' }, { t: 'ir al cole', b: 'colegio', e: '🏫' } ] },
+  { titulo: 'Por la tarde', desc: 'De la salida del cole a la cena.', pasos: [
+    { t: 'merendar', e: '🥪' }, { t: 'hacer los deberes', b: 'deberes', e: '✏️' }, { t: 'jugar', e: '🧸' }, { t: 'ir al parque', b: 'parque', e: '🛝' },
+    { t: 'bañarse', e: '🛁' }, { t: 'cenar', e: '🍽️' } ] },
+  { titulo: 'A dormir', desc: 'La rutina antes de ir a la cama.', pasos: [
+    { t: 'cenar', e: '🍽️' }, { t: 'ponerse el pijama', b: 'pijama', e: '🛌' }, { t: 'lavarse los dientes', e: '🪥' },
+    { t: 'leer un cuento', b: 'cuento', e: '📖' }, { t: 'dormir', e: '😴' } ] },
+  { titulo: 'Lavarse las manos', desc: 'Secuencia paso a paso.', pasos: [
+    { t: 'abrir el grifo', b: 'abrir el grifo', e: '🚰' }, { t: 'mojarse las manos', b: 'mojar', e: '💧' }, { t: 'echar jabón', b: 'jabón', e: '🧼' },
+    { t: 'frotar', e: '🙌' }, { t: 'aclarar', e: '💦' }, { t: 'cerrar el grifo', b: 'cerrar el grifo', e: '🚰' }, { t: 'secarse', b: 'secarse las manos', e: '🧻' } ] },
+  { titulo: 'Lavarse los dientes', desc: 'Secuencia paso a paso.', pasos: [
+    { t: 'coger el cepillo', b: 'cepillo de dientes', e: '🪥' }, { t: 'echar pasta', b: 'pasta de dientes', e: '🧴' }, { t: 'cepillar', b: 'cepillarse los dientes', e: '🪥' },
+    { t: 'escupir', e: '💦' }, { t: 'enjuagarse', e: '🥛' }, { t: 'guardar el cepillo', b: 'guardar', e: '📥' } ] },
+  { titulo: 'Ir al baño', desc: 'Para el control de esfínteres.', pasos: [
+    { t: 'bajar el pantalón', b: 'bajarse los pantalones', e: '👖' }, { t: 'sentarse', b: 'sentarse en el váter', e: '🚽' }, { t: 'hacer pis', e: '💧' },
+    { t: 'limpiarse', b: 'papel higiénico', e: '🧻' }, { t: 'subir el pantalón', b: 'subirse los pantalones', e: '👖' }, { t: 'tirar de la cadena', e: '🚽' },
+    { t: 'lavarse las manos', e: '🧼' } ] },
+  { titulo: 'Vestirse', desc: 'Secuencia paso a paso.', pasos: [
+    { t: 'calzoncillo o braga', b: 'ropa interior', e: '🩲' }, { t: 'camiseta', e: '👕' }, { t: 'pantalón', e: '👖' },
+    { t: 'calcetines', e: '🧦' }, { t: 'zapatos', e: '👟' } ] }
+];
+
+var MIS = CAA.leer('caa-agendas') || [];
+function guardarMis() {
+  try { localStorage.setItem('caa-agendas', JSON.stringify(MIS)); return true; }
+  catch (e) { alert('No queda espacio en este dispositivo. Prueba con menos fotos o borra alguna agenda.'); return false; }
+}
+function mostrar(id) { ['biblioteca', 'uso', 'editor'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
+function copia(o) { return JSON.parse(JSON.stringify(o)); }
+
+/* Imagen de un paso: foto propia, pictograma ARASAAC o emoji */
+function celdaPaso(p) {
+  var c = CAA.celda({ t: p.t, b: p.b, e: p.e || '🖼️', sinPicto: !!p.foto });
+  if (p.foto) { var i = new Image(); i.alt = ''; i.src = p.foto; i.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:10px'; var cont = c.querySelector('.img'); cont.innerHTML = ''; cont.appendChild(i); }
+  return c;
+}
+
+/* ════════════════ Biblioteca ════════════════ */
+function tira(pasos) { return pasos.slice(0, 6).map(function (p) { return '<span>' + (p.e || '🖼️') + '</span>'; }).join('') + (pasos.length > 6 ? '<span style="font-size:1rem;color:var(--ink3)">+' + (pasos.length - 6) + '</span>' : ''); }
+function pintarBiblioteca() {
+  var m = document.getElementById('mis'); m.innerHTML = '';
+  var n = document.createElement('button'); n.className = 'ag-nueva adulto'; n.innerHTML = '<span aria-hidden="true">✏️</span>Crear una agenda nueva';
+  n.onclick = function () { editar(null, { titulo: '', vista: 'lista', orient: 'horizontal', pasos: [{ t: '' }, { t: '' }] }); };
+  m.appendChild(n);
+  MIS.forEach(function (a, i) {
+    var w = document.createElement('div'); w.className = 'ag ag-mia';
+    w.innerHTML = '<div class="tira" aria-hidden="true">' + tira(a.pasos) + '</div><div class="info"><h3>' + CAA.esc(a.titulo) + '</h3><p>' + a.pasos.length + ' pasos</p></div>' +
+      '<div class="acciones"><button data-a="usar">▶ Usar</button><button class="adulto" data-a="editar">✏️ Editar</button><button class="adulto" data-a="borrar" aria-label="Borrar">🗑️</button></div>';
+    w.querySelector('.acciones').onclick = function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.a === 'usar') usar(i);
+      if (b.dataset.a === 'editar') editar(i, MIS[i]);
+      if (b.dataset.a === 'borrar' && confirm('¿Borrar la agenda «' + a.titulo + '»?')) { MIS.splice(i, 1); guardarMis(); pintarBiblioteca(); }
+    };
+    m.appendChild(w);
+  });
+  var pl = document.getElementById('plantillas'); pl.innerHTML = '';
+  PLANTILLAS.forEach(function (t) {
+    var b = document.createElement('button'); b.className = 'ag adulto';
+    b.innerHTML = '<div class="tira" aria-hidden="true">' + tira(t.pasos) + '</div><div class="info"><h3>' + CAA.esc(t.titulo) + '</h3><p>' + CAA.esc(t.desc) + '</p></div>';
+    b.onclick = function () {
+      var a = copia(t); delete a.desc; a.id = Date.now(); a.vista = a.vista || 'lista'; a.orient = 'horizontal';
+      MIS.unshift(a); if (!guardarMis()) { MIS.shift(); return; }
+      pintarBiblioteca(); usar(0);
+    };
+    pl.appendChild(b);
+  });
+}
+
+/* ════════════════ Uso ════════════════ */
+var actual = null, idx = -1, paso = 0;
+function usar(i) {
+  idx = i; actual = MIS[i]; paso = 0;
+  document.getElementById('uso-titulo').textContent = actual.titulo;
+  pintarVista(); mostrar('uso'); pintarUso();
+  var p = actual.pasos[0]; if (p) CAA.hablar('Ahora, ' + p.t);
+}
+function pintarVista() { document.querySelectorAll('#vista button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === actual.vista ? 'true' : 'false'); }); }
+function pintarUso() {
+  var c = document.getElementById('u-cuerpo'); c.innerHTML = '';
+  var P = actual.pasos, fin = paso >= P.length;
+  document.getElementById('u-hecho').disabled = fin;
+  document.getElementById('u-hecho').hidden = fin;
+  if (fin) {
+    c.innerHTML = '<div class="fin" style="margin:auto"><div class="grande pop">🎉</div><h3 class="frase-nino">¡Terminado!</h3>' +
+      '<button class="btn btn-p scan" id="u-otra" data-decir="Otra vez">🔁 Otra vez</button></div>';
+    c.querySelector('#u-otra').onclick = function () { paso = 0; pintarUso(); CAA.hablar('Ahora, ' + P[0].t); };
+    CAA.scan.reiniciar(); return;
+  }
+  if (actual.vista === 'ahora') {
+    var g = document.createElement('div'); g.className = 'ahora-despues';
+    var a = document.createElement('div'); a.className = 'ad-col ahora';
+    a.innerHTML = '<div class="ad-etq frase-nino">Ahora</div>';
+    var ca = celdaPaso(P[paso]); ca.onclick = function () { CAA.hablar('Ahora, ' + P[paso].t); }; a.appendChild(ca);
+    var fl = document.createElement('div'); fl.className = 'ad-flecha'; fl.setAttribute('aria-hidden', 'true'); fl.textContent = '➜';
+    var d = document.createElement('div'); d.className = 'ad-col despues';
+    d.innerHTML = '<div class="ad-etq frase-nino">Después</div>';
+    if (P[paso + 1]) { var cd = celdaPaso(P[paso + 1]); cd.onclick = function () { CAA.hablar('Después, ' + P[paso + 1].t); }; d.appendChild(cd); }
+    else { var cf = celdaPaso({ t: '¡terminado!', b: 'terminar', e: '🎉' }); cf.onclick = function () { CAA.hablar('Después, terminado'); }; d.appendChild(cf); }
+    g.appendChild(a); g.appendChild(fl); g.appendChild(d); c.appendChild(g);
+  } else {
+    var w = document.createElement('div'); w.className = 'pasos' + (actual.orient === 'vertical' ? ' vertical' : '');
+    P.forEach(function (p, i) {
+      if (i > 0) { var f = document.createElement('span'); f.className = 'flecha-paso'; f.setAttribute('aria-hidden', 'true'); f.textContent = '➜'; w.appendChild(f); }
+      var d = document.createElement('div'); d.className = 'paso' + (i < paso ? ' hecho' : i === paso ? ' ahora' : '');
+      d.innerHTML = '<span class="num" aria-hidden="true">' + (i + 1) + '</span>';
+      var ce = celdaPaso(p); ce.setAttribute('aria-label', (i + 1) + '. ' + p.t + (i < paso ? ', hecho' : i === paso ? ', ahora' : ''));
+      ce.onclick = function () { CAA.hablar(p.t); }; d.appendChild(ce);
+      w.appendChild(d);
+    });
+    c.appendChild(w);
+    var ah = w.querySelector('.paso.ahora'); if (ah) ah.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }
+  CAA.scan.reiniciar();
+}
+document.getElementById('u-hecho').onclick = function () {
+  var P = actual.pasos; if (paso >= P.length) return;
+  paso++;
+  CAA.sonido('exito');
+  var r = this.getBoundingClientRect(); CAA.fiesta(r.left + r.width / 2, r.top, ['✅', '⭐', '✨'], 12);
+  pintarUso();
+  if (paso >= P.length) CAA.hablar('¡Terminado! ¡Muy bien!');
+  else CAA.hablar('¡Hecho! Ahora, ' + P[paso].t);
+};
+document.getElementById('vista').onclick = function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  actual.vista = b.dataset.v; MIS[idx] = actual; guardarMis(); pintarVista(); pintarUso();
+};
+document.getElementById('u-reiniciar').onclick = function () { paso = 0; pintarUso(); CAA.hablar('Ahora, ' + actual.pasos[0].t); };
+document.getElementById('u-editar').onclick = function () { editar(idx, actual); };
+document.getElementById('u-salir').onclick = function () { speechSynthesis && speechSynthesis.cancel(); pintarBiblioteca(); mostrar('biblioteca'); };
+document.getElementById('u-imprimir').onclick = imprimir;
+
+/* ════════════════ Imprimir ════════════════ */
+function imprimir() {
+  var a = actual, z = document.getElementById('impresion');
+  var cols = a.pasos.length <= 3 ? a.pasos.length : (a.pasos.length === 4 ? 4 : (a.pasos.length <= 8 ? 4 : 5));
+  z.innerHTML = '<h1>' + CAA.esc(a.titulo) + '</h1><div class="imp-pasos" style="--cols:' + cols + '"></div>' +
+    '<p class="imp-pie">Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p>';
+  var g = z.querySelector('.imp-pasos');
+  var cargas = [];
+  a.pasos.forEach(function (p, i) {
+    var d = document.createElement('div'); d.className = 'imp-paso';
+    d.innerHTML = '<span class="n">' + (i + 1) + '</span><div class="img"><span class="emoji">' + (p.e || '') + '</span></div><div class="t letra-nino">' + CAA.esc(p.t) + '</div>';
+    var im = d.querySelector('.img');
+    if (p.foto) { im.innerHTML = '<img class="foto" alt="" src="' + p.foto + '">'; }
+    else cargas.push(CAA.pictoId(p.b || p.t).then(function (id) {
+      if (id == null) return;
+      return new Promise(function (ok) { var i2 = new Image(); i2.onload = i2.onerror = ok; i2.src = CAA.pictoUrl(id); i2.alt = ''; im.innerHTML = ''; im.appendChild(i2); });
+    }));
+    g.appendChild(d);
+  });
+  Promise.all(cargas).then(function () { setTimeout(function () { window.print(); }, 150); });
+}
+
+/* ════════════════ Editor ════════════════ */
+var borr = null, editIdx = null, fotoPara = null;
+function editar(i, a) {
+  editIdx = i; borr = copia(a); if (!borr.orient) borr.orient = 'horizontal';
+  document.getElementById('ed-titulo').value = borr.titulo || '';
+  pintarPasosEd(); pintarOrient(); mostrar('editor');
+}
+function pintarOrient() { document.querySelectorAll('#ed-orient button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === borr.orient ? 'true' : 'false'); }); }
+document.getElementById('ed-orient').onclick = function (e) { var b = e.target.closest('button'); if (b) { borr.orient = b.dataset.v; pintarOrient(); } };
+document.getElementById('ed-titulo').oninput = function () { borr.titulo = this.value; };
+
+function previo(cont, p) {
+  cont.innerHTML = '';
+  if (p.foto) { var i = new Image(); i.className = 'foto'; i.alt = ''; i.src = p.foto; cont.appendChild(i); return; }
+  if (!p.t) { cont.textContent = '➕'; return; }
+  var s = document.createElement('span'); s.textContent = p.e || '🖼️'; s.style.fontSize = '2rem'; cont.appendChild(s);
+  CAA.ponerPicto(cont, { t: p.t, b: p.b });
+}
+function pintarPasosEd() {
+  var c = document.getElementById('ed-pasos'); c.innerHTML = '';
+  borr.pasos.forEach(function (p, i) {
+    var f = document.createElement('div'); f.className = 'fila-paso';
+    f.innerHTML = '<span class="n">' + (i + 1) + '</span><div class="prev" title="Toca para elegir otro pictograma" role="button" tabindex="0" aria-label="Elegir pictograma"></div>' +
+      '<input class="ed-in" maxlength="40" placeholder="Paso ' + (i + 1) + ' (p. ej. desayunar)" aria-label="Paso ' + (i + 1) + '">' +
+      '<div class="bts"><button data-a="foto" aria-label="Poner una foto" title="Foto">📷</button><button data-a="arriba" aria-label="Subir">↑</button><button data-a="abajo" aria-label="Bajar">↓</button><button data-a="borrar" aria-label="Borrar paso">🗑️</button></div>';
+    var inp = f.querySelector('input'), pv = f.querySelector('.prev');
+    inp.value = p.t || '';
+    previo(pv, p);
+    inp.oninput = function () { p.t = inp.value.trim().toLowerCase(); };
+    inp.onchange = function () { if (p.b && p.t !== p.tOriginal) { delete p.b; } delete p.e; previo(pv, p); };
+    pv.onclick = function () {
+      if (p.foto) { if (confirm('¿Quitar la foto y usar un pictograma?')) { delete p.foto; previo(pv, p); } return; }
+      if (p.t) CAA.elegirPicto(p.b || p.t);
+    };
+    f.querySelector('.bts').onclick = function (e) {
+      var b = e.target.closest('button'); if (!b) return; var P = borr.pasos;
+      if (b.dataset.a === 'foto') { fotoPara = { p: p, pv: pv }; document.getElementById('f-foto').click(); }
+      if (b.dataset.a === 'arriba' && i > 0) { P.splice(i - 1, 0, P.splice(i, 1)[0]); pintarPasosEd(); }
+      if (b.dataset.a === 'abajo' && i < P.length - 1) { P.splice(i + 1, 0, P.splice(i, 1)[0]); pintarPasosEd(); }
+      if (b.dataset.a === 'borrar' && P.length > 1) { P.splice(i, 1); pintarPasosEd(); }
+    };
+    p.tOriginal = p.t;
+    c.appendChild(f);
+  });
+}
+document.getElementById('ed-add').onclick = function () {
+  borr.pasos.push({ t: '' }); pintarPasosEd();
+  var ins = document.querySelectorAll('#ed-pasos input'); ins[ins.length - 1].focus();
+};
+document.getElementById('f-foto').onchange = function () {
+  var file = this.files[0]; this.value = ''; if (!file || !fotoPara) return;
+  var r = new FileReader();
+  r.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      var s = Math.min(1, 480 / Math.max(img.width, img.height));
+      var cv = document.createElement('canvas'); cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s);
+      var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
+      fotoPara.p.foto = cv.toDataURL('image/jpeg', 0.72); previo(fotoPara.pv, fotoPara.p);
+    };
+    img.src = r.result;
+  };
+  r.readAsDataURL(file);
+};
+document.getElementById('ed-cancelar').onclick = function () {
+  if (editIdx !== null && MIS[editIdx]) usar(editIdx); else { pintarBiblioteca(); mostrar('biblioteca'); }
+};
+document.getElementById('ed-guardar').onclick = function () {
+  borr.titulo = (borr.titulo || '').trim();
+  if (!borr.titulo) { alert('Ponle un nombre a la agenda.'); document.getElementById('ed-titulo').focus(); return; }
+  borr.pasos = borr.pasos.filter(function (p) { return (p.t || '').trim() || p.foto; });
+  borr.pasos.forEach(function (p) { if (!p.t) p.t = 'foto'; delete p.tOriginal; });
+  if (!borr.pasos.length) { alert('Añade al menos un paso.'); pintarPasosEd(); return; }
+  if (!borr.id) borr.id = Date.now();
+  var ant = editIdx !== null ? MIS[editIdx] : null;
+  if (editIdx === null) { MIS.unshift(borr); editIdx = 0; } else MIS[editIdx] = borr;
+  if (!guardarMis()) { if (ant) MIS[editIdx] = ant; else MIS.shift(); return; }
+  pintarBiblioteca(); usar(editIdx);
+};
+
+pintarBiblioteca();
+</script>
+</body>
+</html>

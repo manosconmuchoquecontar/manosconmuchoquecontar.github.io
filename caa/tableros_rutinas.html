@@ -258,6 +258,10 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   #ayuda-modal li { margin-bottom: .4rem; }
 
   .titulo-print { display: none; }
+  .aviso-com { display: flex; gap: .6rem; align-items: center; background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 12px; padding: .45rem .5rem .45rem .9rem; font-size: 13px; line-height: 1.45; color: #5C4A12; flex-shrink: 0; }
+  .aviso-com b { color: #3E3008; }
+  .aviso-com button { border: none; background: rgba(0,0,0,.06); border-radius: 50%; width: 28px; height: 28px; flex-shrink: 0; font-size: 13px; color: #5C4A12; }
+  @media (max-height: 520px) { .aviso-com { font-size: 11px; padding: .25rem .4rem .25rem .7rem; } }
   @media (max-width: 640px) {
     .fila { grid-template-columns: repeat(4, 1fr) 4px repeat(4, 1fr); gap: .25rem; }
     .fila .picto { border-width: 1.5px; border-radius: 8px; padding: 2px; }
@@ -285,6 +289,7 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     .fila .picto .txt { font-size: clamp(8px, 1.12vw, 12px); line-height: 1.25; text-align: left; overflow: visible; text-overflow: clip; letter-spacing: -.01em; }
   }
   @media print {
+    .aviso-com { display: none !important; }
     @page { size: A4 landscape; margin: 8mm; }
     html, body { height: auto; overflow: visible; display: block; }
     .rutinas, .herr, .mensaje, .leyenda.no-print { display: none !important; }
@@ -301,6 +306,10 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
 </head>
 <body>
 <div class="app">
+  <div class="aviso-com no-barrido" id="aviso-com" role="note">
+    <span>⚠️ Estos tableros sirven para <b>modelar y practicar</b> en casa. <b>No sustituyen al comunicador de tu hijo.</b> Si ya tiene uno, usad siempre el suyo; si todavía no tiene, habla con su logopeda o su maestra de AL para elegir el más adecuado.</span>
+    <button type="button" aria-label="Cerrar aviso">✕</button>
+  </div>
   <div class="barra-sup">
     <div class="rutinas no-barrido adulto" id="rutinas" role="tablist" aria-label="Rutinas"></div>
     <div class="herr no-barrido adulto">
@@ -331,13 +340,14 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     <span><i style="background:var(--k-pregunta)"></i>Preguntas</span>
     <span><i style="background:var(--k-lugar)"></i>Lugares</span>
   </div>
-  <p class="marca-print">Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p>
+  <p class="marca-print"><b>Tablero para modelar y practicar: no sustituye al comunicador del niño.</b><br>Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p>
 </div>
 
 <div class="caa-modal" id="ayuda-modal" role="dialog" aria-modal="true" aria-labelledby="ay-t">
   <div class="caja">
     <button class="cerrar" aria-label="Cerrar">✕</button>
     <h2 id="ay-t">❓ Cómo usar los tableros</h2>
+    <p class="consejo" style="margin-bottom:1rem"><b>Importante:</b> estos tableros son para <b>modelar y practicar</b>. No sustituyen al comunicador de tu hijo. Si ya tiene uno, usad siempre el suyo. Elegir un sistema de comunicación es una decisión que se toma con su logopeda o su maestra de AL.</p>
     <p><b>La parte izquierda nunca cambia</b> (palabras núcleo: quiero, más, no, otra vez…). Así aprende dónde está cada palabra, igual que aprendemos dónde están las letras del teclado. <b>La parte derecha cambia</b> según la rutina.</p>
     <ul>
       <li><b>Modela tú primero:</b> mientras hablas, toca 1 o 2 pictogramas. «¿Quieres <b>MÁS</b> agua?»</li>
@@ -1112,6 +1122,7 @@ var ayuda = document.getElementById('ayuda-modal');
 document.getElementById('btn-ayuda').onclick = function () { ayuda.classList.add('abierto'); ayuda.querySelector('.cerrar').focus(); };
 ayuda.addEventListener('click', function (e) { if (e.target === ayuda || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) ayuda.classList.remove('abierto'); });
 
+document.querySelector('#aviso-com button').onclick = function () { document.getElementById('aviso-com').remove(); };
 pintarRutinas(); pintarTablero();
 if (!CAA.leer('caa-tableros-visto')) { CAA.guardar('caa-tableros-visto', true); ayuda.classList.add('abierto'); }
 </script>

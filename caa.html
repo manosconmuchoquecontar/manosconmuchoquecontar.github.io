@@ -15,6 +15,7 @@
     --c-modelado: #D4F0EC; --t-modelado: #1A6E63;
     --c-alfabetizacion: #E8E0F5; --t-alfabetizacion: #5A3A9A;
     --c-familias: #FDE8EE; --t-familias: #A02A55;
+    --c-anticipacion: #DCEEFF; --t-anticipacion: #1D5A99;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; scroll-behavior: smooth; }
@@ -52,7 +53,7 @@
   .clave p { color: var(--ink2); line-height: 1.6; font-size: .95rem; }
 
   /* Caminos */
-  .caminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+  .caminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
   .camino { text-align: left; border: 2px solid transparent; border-radius: var(--radius); padding: 1.5rem; cursor: pointer; font-family: inherit; color: var(--ink); transition: transform .2s, border-color .2s; }
   .camino:hover { transform: translateY(-4px); }
   .camino[aria-pressed="true"] { border-color: currentColor; }
@@ -63,6 +64,7 @@
   .camino[data-area="modelado"] { background: var(--c-modelado); color: var(--t-modelado); }
   .camino[data-area="alfabetizacion"] { background: var(--c-alfabetizacion); color: var(--t-alfabetizacion); }
   .camino[data-area="familias"] { background: var(--c-familias); color: var(--t-familias); }
+  .camino[data-area="anticipacion"] { background: var(--c-anticipacion); color: var(--t-anticipacion); }
   .camino strong, .camino span.d { color: var(--ink); }
   .ver-todo { display: block; margin: -1.5rem auto 2.5rem; background: none; border: none; color: var(--coral); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: underline; }
 
@@ -83,6 +85,7 @@
   .bg-modelado { background: var(--c-modelado); } .tx-modelado { color: var(--t-modelado); }
   .bg-alfabetizacion { background: var(--c-alfabetizacion); } .tx-alfabetizacion { color: var(--t-alfabetizacion); }
   .bg-familias { background: var(--c-familias); } .tx-familias { color: var(--t-familias); }
+  .bg-anticipacion { background: var(--c-anticipacion); } .tx-anticipacion { color: var(--t-anticipacion); }
 
   .mito { background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .mito-box { max-width: 780px; margin: 0 auto; text-align: center; }
@@ -155,6 +158,7 @@
     <div class="caminos" id="caminos">
       <button class="camino" data-area="prerrequisitos" aria-pressed="false"><span class="emoji" aria-hidden="true">🌱</span><strong>Antes del comunicador</strong><span class="d">Causa-efecto, atención conjunta, elegir entre dos, del objeto al pictograma.</span></button>
       <button class="camino" data-area="modelado" aria-pressed="false"><span class="emoji" aria-hidden="true">🗣️</span><strong>Modelado</strong><span class="d">Tableros por rutinas y palabra núcleo de la semana para usar en casa.</span></button>
+      <button class="camino" data-area="anticipacion" aria-pressed="false"><span class="emoji" aria-hidden="true">📅</span><strong>Anticipar</strong><span class="d">Agendas visuales y secuencias para saber qué viene después.</span></button>
       <button class="camino" data-area="alfabetizacion" aria-pressed="false"><span class="emoji" aria-hidden="true">🔤</span><strong>Alfabetización</strong><span class="d">Lectura compartida, creador de cuentos, abecedario accesible y escritura emergente.</span></button>
       <button class="camino" data-area="familias" aria-pressed="false"><span class="emoji" aria-hidden="true">🏡</span><strong>Para familias</strong><span class="d">Guías cortas, primeros pasos y respuestas a las dudas más frecuentes.</span></button>
     </div>
@@ -190,6 +194,7 @@ var recursos = [
   { titulo: "Lectura compartida", descripcion: "Cuentos para leer juntos con un tablero para comentar la historia.", area: "alfabetizacion", emoji: "📖", url: "caa/lectura_compartida.html" },
   { titulo: "Creador de cuentos", descripcion: "Crea cuentos adaptados con sus personajes favoritos, fotos y pictogramas, y léelos con el tablero.", area: "alfabetizacion", emoji: "✏️", url: "caa/lectura_compartida.html#crear" },
   { titulo: "Abecedario accesible", descripcion: "Teclado de letras grande, con voz y con opción de barrido para escribir.", area: "alfabetizacion", emoji: "🔤", url: "caa/abecedario.html" },
+  { titulo: "Agenda visual", descripcion: "Agendas y secuencias con pictogramas o fotos: la mañana, ir al baño, lavarse las manos… Para usar en pantalla o imprimir.", area: "anticipacion", emoji: "📅", url: "caa/agenda.html" },
   { titulo: "Primeros pasos con la CAA", descripcion: "Guía de una página para familias que empiezan: qué es, cómo se usa y qué esperar.", area: "familias", emoji: "🧭", url: "caa/primeros_pasos.html" },
   { titulo: "Mitos y dudas frecuentes", descripcion: "¿Va a dejar de hablar? ¿Es demasiado pequeño? Respuestas claras y basadas en la evidencia.", area: "familias", emoji: "💡", url: "caa/mitos.html" },
   { titulo: "Buzón de sugerencias", descripcion: "¿Qué recurso te gustaría que creara o qué mejorarías? Cuéntamelo: solo lo leo yo.", area: "familias", emoji: "📮", url: "caa/sugerencias.html" }
@@ -199,6 +204,7 @@ var areaConfig = {
   prerrequisitos: "Antes del comunicador",
   modelado: "Modelado",
   alfabetizacion: "Alfabetización",
+  anticipacion: "Anticipar",
   familias: "Familias"
 };
 

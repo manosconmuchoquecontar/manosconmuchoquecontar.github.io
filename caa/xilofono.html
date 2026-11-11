@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>El xilófono de las letras · CAA · Manos con Mucho que Contar</title>
+<meta name="description" content="Juego musical de lectoescritura: contar sílabas con golpes de xilófono, reconocer letras y leer sílabas tocando las láminas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Playwrite+DE+Grund&family=Playwrite+HR+Lijeva&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
+}
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
+
+/* ── Letra escolar: MAYÚSCULAS (Playwrite DE Grund) · minúsculas (Playwrite HR Lijeva) ── */
+:root { --font-mayus: 'Playwrite DE Grund', 'Fredoka', cursive; --font-minus: 'Playwrite HR Lijeva', 'Fredoka', cursive; }
+.picto .txt, .letra-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+.frase-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+body.modo-minus .picto .txt, body.modo-minus .letra-nino { font-family: var(--font-minus); text-transform: lowercase; }
+body.modo-minus .frase-nino { font-family: var(--font-minus); text-transform: none; }
+.picto .txt { font-size: .86em; line-height: 1.45; }
+
+/* ── Barra: selector de letra, pantalla completa ── */
+.caa-barra .grupo-barra { display: flex; gap: .4rem; align-items: center; flex-shrink: 0; }
+.caa-letra { display: flex; background: white; border: 1px solid var(--border); border-radius: 100px; padding: 3px; }
+.caa-letra button { border: none; background: transparent; border-radius: 100px; padding: 3px 11px; font-size: 16px; line-height: 1.5; color: var(--ink2); }
+.caa-letra button[aria-pressed="true"] { background: var(--teal); color: white; }
+.caa-letra .may { font-family: var(--font-mayus); } .caa-letra .min { font-family: var(--font-minus); }
+.caa-barra .btn-icono { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; color: var(--teal-d); }
+.caa-barra .btn-icono svg { width: 20px; height: 20px; }
+body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { background: #000; color: #fff; border-color: #fff; }
+@media (max-width: 600px) { .caa-barra { gap: .4rem; padding: .5rem .6rem; } .caa-barra .volver span { display: none; } .caa-barra h1 { font-size: .95rem; text-align: left; } }
+@media (max-height: 520px) {
+  .caa-barra { padding: .25rem .7rem; }
+  .caa-barra .btn-ajustes, .caa-barra .btn-icono { width: 34px; height: 34px; font-size: 16px; }
+  .caa-barra .volver { padding: 5px 10px; font-size: 13px; }
+  .caa-barra h1 { font-size: .95rem; }
+  .caa-letra button { font-size: 13px; padding: 1px 9px; }
+  .caa-marca { font-size: 10px; padding: 3px 9px; bottom: 5px; left: 5px; }
+}
+
+/* ── Mirada ── */
+.caa-anillo { position: fixed; width: 92px; height: 92px; transform: translate(-50%, -50%); pointer-events: none; z-index: 9400; display: none; }
+.caa-anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.caa-anillo .fondo { fill: rgba(255,255,255,.55); stroke: rgba(26,58,56,.15); stroke-width: 8; }
+.caa-anillo .carga { fill: none; stroke: #2A9D8F; stroke-width: 9; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.caa-mirando { outline: 5px solid #2A9D8F !important; outline-offset: 2px; }
+.caa-mirada-ok { animation: caa-ok .45s ease-out; }
+@keyframes caa-ok { 0% { box-shadow: 0 0 0 0 rgba(45,190,96,.8); } 100% { box-shadow: 0 0 0 22px rgba(45,190,96,0); } }
+
+/* ── Elegir voz ── */
+.voz-elegir { display: flex; gap: .5rem; margin: .5rem 0 .3rem; }
+.voz-elegir select { flex: 1; min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 14px; background: white; color: #1A3A38; }
+.mini-rango { display: block; font-size: 13px; font-weight: 700; margin-top: .45rem; }
+.mini-rango small { font-weight: 600; color: #6E8F8C; }
+.mini-rango input { width: 100%; accent-color: #2A9D8F; }
+
+/* ── Contraseña del adulto ── */
+.caa-pin .caja { max-width: 340px; text-align: center; }
+.caa-pin .ico { font-size: 2.3rem; }
+.caa-pin h2 { margin: .2rem 0 .3rem; }
+.caa-pin .motivo { font-size: 13px; color: #4A706D; }
+.pin-puntos { display: flex; gap: 12px; justify-content: center; margin: 1rem 0; }
+.pin-puntos span { width: 15px; height: 15px; border-radius: 50%; background: #D4F0EC; transition: all .2s; }
+.pin-puntos span.lleno { background: #1F5249; transform: scale(1.15); }
+.pin-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pin-teclas button { padding: 13px; border: 2px solid #D4F0EC; border-radius: 12px; background: white; font-size: 1.25rem; font-weight: 800; color: #1A3A38; }
+.pin-teclas button:active { transform: scale(.94); }
+.pin-teclas .borrar { color: #C4372B; border-color: #F5C0C0; }
+.pin-error { color: #C4372B; font-weight: 800; font-size: 13px; min-height: 1.3em; margin-top: .6rem; }
+.pin-olvido { font-size: 11.5px; color: #6E8F8C; margin-top: .4rem; line-height: 1.45; }
+.caa-pin.temblor .caja { animation: caa-temblor .35s; }
+@keyframes caa-temblor { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.pin-cambiar { display: flex; gap: .5rem; flex-wrap: wrap; }
+.pin-cambiar input { width: 120px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 18px; letter-spacing: 6px; text-align: center; }
+.pin-msg { font-size: 13px; font-weight: 700; margin-top: .4rem; min-height: 1.2em; }
+@media (max-height: 560px) { .pin-teclas button { padding: 8px; font-size: 1.05rem; } .pin-puntos { margin: .5rem 0; } .caa-pin .ico { display: none; } }
+
+/* ── Bienvenida ── */
+.caa-bienv .caja { max-width: 440px; }
+.caa-bienv .bloque { display: flex; gap: .7rem; background: #E8F4F2; border-radius: 14px; padding: .75rem 1rem; margin-bottom: .55rem; font-size: 14px; line-height: 1.5; color: #1A3A38; }
+.caa-bienv .bloque .i { font-size: 1.35rem; flex-shrink: 0; }
+.caa-bienv .pin-chip { display: inline-block; background: #1F5249; color: white; font-weight: 900; padding: 0 8px; border-radius: 8px; letter-spacing: 2px; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  body { min-height: 100vh; min-height: 100dvh; }
+  .app { max-width: 1200px; margin: 0 auto; padding: .7rem 1rem 2.8rem; display: flex; flex-direction: column; gap: .8rem; min-height: calc(100dvh - 64px); }
+
+  /* ── Opciones del adulto ── */
+  .opciones { background: white; border: 1px solid var(--border); border-radius: 18px; padding: .7rem 1rem; display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center; }
+  body.caa-contraste .opciones { background: #000; }
+  .grupo-op { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .grupo-op .lbl { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink3); }
+  .seg { display: inline-flex; flex-wrap: wrap; background: var(--bg); border: 1.5px solid var(--border); border-radius: 100px; padding: 3px; }
+  .seg button { border: none; background: transparent; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--teal); color: white; }
+  .niveles .seg button { font-size: 14px; padding: 8px 14px; }
+  .sub-op { display: contents; }
+  .btn-mis { border: 1.5px solid var(--border); background: #FFF6D6; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; color: #5C4A12; white-space: nowrap; }
+  .btn-mis span { background: #E9A400; color: white; border-radius: 100px; padding: 0 7px; margin-left: 2px; font-size: 12px; }
+  .btn-mis span:empty { display: none; }
+  .mis-ayuda { font-size: 13px; color: #4A706D; line-height: 1.5; }
+  .mis-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: .5rem; align-items: end; margin-top: .8rem; }
+  .mis-form label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 800; color: #1A3A38; }
+  .mis-form button { white-space: nowrap; }
+  .mis-form input { padding: 10px 12px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 15px; min-width: 0; }
+  .mis-error { color: #C4372B; font-size: 13px; font-weight: 700; min-height: 1.2em; margin: .3rem 0; }
+  .mis-lista { display: flex; flex-direction: column; gap: .4rem; max-height: 38vh; overflow: auto; }
+  .mis-fila { display: grid; grid-template-columns: 52px 1fr auto auto; gap: .6rem; align-items: center; background: #F5FAFA; border-radius: 12px; padding: .4rem .6rem; }
+  .mis-fila .pv { width: 52px; height: 52px; border-radius: 10px; background: white; border: 1.5px solid rgba(26,58,56,.12); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; overflow: hidden; cursor: pointer; }
+  .mis-fila .pv img { max-width: 100%; max-height: 100%; }
+  .mis-fila b { font-size: 1.05rem; color: #1A3A38; } .mis-fila small { display: block; color: #4A706D; font-weight: 700; letter-spacing: .03em; }
+  .mis-fila button { border: none; background: white; border-radius: 8px; width: 34px; height: 34px; font-size: 15px; }
+  .mis-vacio { text-align: center; color: #6E8F8C; padding: 1rem; font-size: 14px; }
+  @media (max-width: 560px) { .mis-form { grid-template-columns: 1fr 1fr; } .mis-form button { grid-column: 1 / -1; } }
+
+  /* ── Zona de la tarea ── */
+  .tarea { flex: 1; display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 4vw, 3rem); flex-wrap: wrap; min-height: 0; }
+  .modelo { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+  .modelo .picto { width: clamp(130px, 22vh, 210px); height: clamp(140px, 24vh, 225px); border-width: 4px; font-size: clamp(16px, 2.4vw, 22px); }
+  .modelo .picto .img .emoji { font-size: clamp(60px, 11vh, 110px); }
+  .letra-grande { width: clamp(130px, 22vh, 210px); height: clamp(140px, 24vh, 225px); border-radius: 22px; background: white; border: 4px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: clamp(80px, 16vh, 150px); line-height: 1.2; color: var(--ink); }
+  .letra-grande.oculta { color: transparent; text-shadow: none; }
+  .letra-grande.oculta::after { content: '🔊'; color: var(--ink3); font-size: .5em; position: absolute; }
+  .btn-oir { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 7px 14px; font-weight: 800; font-size: 14px; }
+  .derecha { display: flex; flex-direction: column; align-items: center; gap: .8rem; }
+  .consigna { font-size: clamp(1.1rem, 2.6vw, 1.5rem); color: var(--teal-d); font-family: 'Fredoka', sans-serif; font-weight: 600; text-align: center; }
+  body.caa-contraste .consigna { color: #FFE14D; }
+
+  /* Golpes (nivel 1) */
+  .golpes { display: flex; gap: .7rem; min-height: 54px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .golpe { width: 46px; height: 46px; border-radius: 50%; border: 3px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .golpe.on { border-style: solid; animation: caa-pop .35s ease-out both; }
+  .golpe.extra { border-color: #FF9F1C; background: #FFF1DD; }
+
+  /* Casillas de sílabas (nivel 3) */
+  .casillas { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+  .casilla { min-width: clamp(70px, 10vw, 110px); height: clamp(64px, 10vh, 90px); border-radius: 16px; border: 3px dashed var(--border); background: white; display: flex; align-items: center; justify-content: center; font-size: clamp(1.6rem, 4vw, 2.6rem); padding: 0 .5rem; line-height: 1.4; }
+  .casilla.modelo-sil { border-style: solid; }
+  .casilla.hecha { border-style: solid; color: white; text-shadow: 0 1px 2px rgba(0,0,0,.3); animation: caa-pop .35s ease-out both; }
+  .casilla.actual { box-shadow: 0 0 0 4px rgba(42,157,143,.35); }
+  .palabra-escrita { font-size: clamp(1.4rem, 3.4vw, 2.2rem); letter-spacing: .04em; line-height: 1.5; }
+
+  .acciones { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+  .acciones .btn { padding: 9px 18px; }
+  .marcador { display: flex; gap: 5px; justify-content: center; }
+  .marcador span { width: 12px; height: 12px; border-radius: 50%; background: var(--border); }
+  .marcador span.ok { background: #2DBE60; }
+
+  /* ── El xilófono ── */
+  .xilofono { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: clamp(4px, 1vw, 12px); padding: 18px clamp(10px, 3vw, 36px) 14px; background: linear-gradient(#8D5A2B, #6E4220); border-radius: 22px; box-shadow: 0 10px 24px rgba(0,0,0,.18), inset 0 2px 0 rgba(255,255,255,.15); height: clamp(170px, 34vh, 330px); }
+  .xilofono::before, .xilofono::after { content: ''; position: absolute; left: 3%; right: 3%; height: 10px; border-radius: 6px; background: rgba(0,0,0,.25); }
+  .xilofono::before { top: 30%; } .xilofono::after { bottom: 24%; }
+  .lamina { position: relative; z-index: 1; flex: 1; max-width: 120px; border: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-shadow: 0 2px 3px rgba(0,0,0,.35); font-size: clamp(1.1rem, 3.2vw, 2.4rem); line-height: 1.3; box-shadow: inset 0 -6px 0 rgba(0,0,0,.18), inset 0 4px 0 rgba(255,255,255,.35), 0 4px 8px rgba(0,0,0,.25); transition: transform .08s, filter .2s, opacity .3s; padding: 0 2px; overflow: hidden; }
+  .lamina::before, .lamina::after { content: ''; position: absolute; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #aaa 60%, #777); }
+  .lamina::before { top: 8px; } .lamina::after { bottom: 8px; }
+  .lamina.toca { transform: translateY(4px) scale(.97); filter: brightness(1.25); }
+  .lamina.oscura { color: #3A2A00; text-shadow: 0 1px 1px rgba(255,255,255,.5); }
+  .lamina.apagada { opacity: .35; filter: grayscale(.6); }
+  .lamina.temblor { animation: temblor .35s; }
+  @keyframes temblor { 25% { transform: translateX(-5px) rotate(-1.5deg); } 75% { transform: translateX(5px) rotate(1.5deg); } }
+  .lamina .lbl { pointer-events: none; overflow-wrap: anywhere; text-align: center; }
+  .mensaje { min-height: 1.6em; font-weight: 800; text-align: center; color: var(--teal-d); font-size: 1.05rem; }
+  .mensaje.aviso { color: #B35A00; }
+
+  @media (max-width: 640px) {
+    .opciones { padding: .3rem .5rem; gap: .3rem .6rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .opciones::-webkit-scrollbar { display: none; }
+    .grupo-op, .seg { flex-wrap: nowrap; flex-shrink: 0; }
+    .grupo-op .lbl { display: none; }
+    .app { gap: .5rem; }
+    .tarea { flex-wrap: nowrap; gap: .8rem; flex: 0 1 auto; }
+    .modelo .picto, .letra-grande { width: 30vw; height: 33vw; }
+    .modelo .picto .img .emoji { font-size: 15vw; }
+    .letra-grande { font-size: 20vw; }
+    .consigna { font-size: 1rem; }
+    .golpes { min-height: 40px; gap: .4rem; }
+    .golpe { width: 34px; height: 34px; font-size: 16px; }
+    .casilla { min-width: 54px; height: 54px; font-size: 1.4rem; }
+    .acciones .btn { padding: 6px 12px; font-size: 13px; }
+    .seg button { padding: 5px 9px; font-size: 12px; }
+    .xilofono { height: 40vh; padding: 14px 8px 10px; gap: 4px; flex-shrink: 0; }
+    .lamina { font-size: clamp(.9rem, 4.6vw, 1.4rem); border-radius: 8px; }
+    .lamina::before, .lamina::after { width: 7px; height: 7px; margin-left: -3.5px; top: 5px; }
+    .lamina::after { top: auto; bottom: 5px; }
+  }
+  @media (max-height: 520px) {
+    .app { padding: .3rem .6rem 1.9rem; gap: .35rem .8rem; min-height: 0; height: calc(100dvh - 44px); display: grid; grid-template-columns: minmax(0, 42%) 1fr; grid-template-rows: auto auto 1fr auto; grid-template-areas: "op op" "mar xil" "tar xil" "msg xil"; max-width: none; }
+    .opciones { grid-area: op; } .marcador { grid-area: mar; } .tarea { grid-area: tar; } .mensaje { grid-area: msg; }
+    .xilofono { grid-area: xil; height: 100% !important; align-self: stretch; }
+    .tarea { flex-wrap: wrap !important; align-content: center; gap: .5rem; overflow: hidden; }
+    .opciones { padding: .25rem .5rem; gap: .3rem .6rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .opciones::-webkit-scrollbar { display: none; }
+    .grupo-op, .seg { flex-wrap: nowrap; flex-shrink: 0; }
+    .marcador span { width: 8px; height: 8px; }
+    .mensaje { min-height: 1.2em; font-size: .85rem; }
+    .derecha { gap: .35rem; }
+    .grupo-op .lbl { display: none; }
+    .seg button, .niveles .seg button { padding: 3px 9px; font-size: 11px; }
+    .tarea { gap: 1rem; flex-wrap: nowrap; }
+    .modelo .picto, .letra-grande { width: 19vh; height: 21vh; }
+    .golpes { min-height: 34px; }
+    .palabra-escrita { font-size: 1.2rem; }
+    .modelo .picto .img .emoji { font-size: 12vh; }
+    .letra-grande { font-size: 15vh; }
+    .golpe { width: 32px; height: 32px; font-size: 15px; }
+    .casilla { height: 13vh; min-width: 60px; font-size: 1.4rem; }
+    .xilofono { height: 36vh; padding: 8px 14px 6px; flex-shrink: 0; }
+    .tarea { flex: 0 1 auto; }
+    .casilla { height: 11vh; }
+    .consigna { font-size: 1rem; }
+    .acciones .btn { padding: 5px 12px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<main class="app" data-scan-raiz>
+  <div class="opciones adulto no-barrido">
+    <div class="grupo-op niveles">
+      <span class="lbl">Nivel</span>
+      <div class="seg" id="op-nivel">
+        <button data-v="silabas">👏 Contando sílabas</button><button data-v="letras">🔤 Reconociendo letras</button><button data-v="leer">📖 Leyendo sílabas</button>
+      </div>
+    </div>
+    <div class="grupo-op">
+      <span class="lbl">Palabras</span>
+      <div class="seg" id="op-fuente"><button data-v="todas">📚 Todas</button><button data-v="mias">⭐ Mis palabras</button></div>
+      <button class="btn-mis" id="btn-mis" type="button">✏️ Mis palabras <span id="n-mis"></span></button>
+    </div>
+    <div class="grupo-op" data-para="silabas">
+      <span class="lbl">Largo</span>
+      <div class="seg" id="op-largo"><button data-v="2">1-2 sílabas</button><button data-v="3">Hasta 3</button><button data-v="4">Hasta 4</button></div>
+      <span class="lbl">Ver la palabra</span>
+      <div class="seg" id="op-verpal"><button data-v="si">Sí</button><button data-v="no">No</button></div>
+    </div>
+    <div class="grupo-op" data-para="letras">
+      <span class="lbl">Juego</span>
+      <div class="seg" id="op-juego"><button data-v="busca">Busca la letra</button><button data-v="empieza">¿Con cuál empieza?</button></div>
+      <span class="lbl">Letras</span>
+      <div class="seg" id="op-letras"><button data-v="vocales">Vocales</button><button data-v="mixto">Vocales + m p l</button><button data-v="consonantes">m p l s t n d f</button></div>
+      <span class="lbl" data-solo="busca">La letra</span>
+      <div class="seg" id="op-verletra" data-solo="busca"><button data-v="ver">Se ve</button><button data-v="oir">Solo se oye</button></div>
+    </div>
+    <div class="grupo-op" data-para="leer">
+      <span class="lbl">La palabra</span>
+      <div class="seg" id="op-modo3"><button data-v="leer">Se lee</button><button data-v="dictado">Dictado (solo se oye)</button></div>
+      <span class="lbl">Ayuda de colores</span>
+      <div class="seg" id="op-colores"><button data-v="si">Sí</button><button data-v="no">No</button></div>
+    </div>
+  </div>
+
+  <div class="marcador" id="marcador" aria-hidden="true"></div>
+  <section class="tarea" id="tarea" aria-live="polite"></section>
+  <div class="mensaje" id="mensaje" aria-live="polite"></div>
+  <div class="xilofono scan-fila" id="xilofono" aria-label="Xilófono"></div>
+</main>
+
+<div class="caa-modal" id="mis-modal" role="dialog" aria-modal="true" aria-labelledby="mis-t">
+  <div class="caja" style="max-width:560px">
+    <button class="cerrar" aria-label="Cerrar">✕</button>
+    <h2 id="mis-t">✏️ Mis palabras</h2>
+    <p class="mis-ayuda">Escribe una palabra: se separa sola en sílabas (revísalas, separadas con guiones) y se busca su pictograma. Se guardan en este dispositivo.</p>
+    <form class="mis-form" id="mis-form" autocomplete="off">
+      <label>Palabra<input id="mis-palabra" maxlength="20" placeholder="Por ejemplo: guitarra"></label>
+      <label>Sílabas<input id="mis-silabas" maxlength="30" placeholder="gui-ta-rra"></label>
+      <button class="btn btn-p" type="submit">＋ Añadir</button>
+    </form>
+    <p class="mis-error" id="mis-error" role="alert"></p>
+    <div class="mis-lista" id="mis-lista"></div>
+    <p class="mis-ayuda" style="margin-top:.8rem">Consejos: toca el dibujo para elegir otro pictograma. Para «Leyendo sílabas» valen las palabras de 2 a 5 sílabas. Para «¿Con cuál empieza?», las que empiezan por una letra del grupo elegido.</p>
+    <button class="btn btn-p" style="width:100%;margin-top:.6rem" data-cerrar>Listo</button>
+  </div>
+</div>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1, permanencia: 1200 };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  /* Voces: se puede elegir una parecida a la del comunicador del niño.
+     Por defecto, voz femenina si el dispositivo la tiene. */
+  var FEM = /m[oó]nica|paulina|marisol|luc[ií]a|elvira|helena|laura|sabina|dalia|isabel|carmen|ximena|elena|in[eé]s|mar[ií]a|sandy|shelley|\bflo\b|grandma|abuela|google espa|female|mujer/i;
+  var MASC = /jorge|juan|diego|pablo|[aá]lvaro|ra[uú]l|carlos|alonso|enrique|jos[eé]|eddy|reed|rocko|grandpa|abuelo|gonzalo|dar[ií]o|jaime|tom[aá]s|andr[eé]s|\bmale\b|hombre/i;
+  var pintarVoces = null;
+  function generoVoz(v) { return FEM.test(v.name) ? 'f' : (MASC.test(v.name) ? 'm' : ''); }
+  function vocesEs() { return speechSynthesis.getVoices().filter(function (v) { return /^es/i.test(v.lang); }); }
+  function elegirVoz() {
+    var vs = vocesEs();
+    var fija = aj.vozNombre && vs.find(function (v) { return v.name === aj.vozNombre; });
+    voz = fija ||
+          vs.find(function (v) { return v.lang === 'es-ES' && generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) || vs[0] || null;
+    if (pintarVoces) pintarVoces();
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = voz ? voz.lang : 'es-ES'; u.rate = aj.vozVel || 0.85; u.pitch = aj.vozTono || 1; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido') || t.closest('.adulto')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || aj.acceso === 'mirada' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil' && aj.acceso !== 'mirada') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ═══ Acceso con la mirada: selección por permanencia ═══
+     Con un lector ocular (o ratón de cabeza) que mueve el puntero: mantener el puntero
+     sobre una opción (.scan o .mirable) durante «permanencia» milisegundos la activa.
+     Después hay que apartar la mirada para volver a activarla. */
+  var mir = { el: null, t0: 0, raf: 0, hecho: null, anillo: null };
+  function anilloMirada() {
+    if (mir.anillo) return mir.anillo;
+    var a = document.createElement('div'); a.className = 'caa-anillo'; a.setAttribute('aria-hidden', 'true');
+    a.innerHTML = '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" class="fondo"/><circle cx="40" cy="40" r="32" class="carga" pathLength="100"/></svg>';
+    document.body.appendChild(a); mir.anillo = a; return a;
+  }
+  function objetivoMirada(x, y) {
+    var el = document.elementFromPoint(x, y); if (!el || !el.closest) return null;
+    if (el.closest('.caa-modal') || el.closest('.caa-barra') || document.querySelector('.caa-modal.abierto')) return null;
+    var t = el.closest('.scan, .mirable');
+    if (!t || t.disabled || t.closest('[hidden]')) return null;
+    return t;
+  }
+  function soltarMirada() {
+    cancelAnimationFrame(mir.raf);
+    if (mir.el) mir.el.classList.remove('caa-mirando');
+    if (mir.anillo) mir.anillo.style.display = 'none';
+  }
+  function cicloMirada() {
+    if (!mir.el || aj.acceso !== 'mirada' || modoElegir) { soltarMirada(); return; }
+    if (!document.contains(mir.el)) { soltarMirada(); mir.el = null; return; }
+    var p = Math.min(1, (performance.now() - mir.t0) / (aj.permanencia || 1200));
+    var r = mir.el.getBoundingClientRect(), a = anilloMirada();
+    a.style.display = 'block'; a.style.left = (r.left + r.width / 2) + 'px'; a.style.top = (r.top + r.height / 2) + 'px';
+    a.querySelector('.carga').style.strokeDashoffset = String(100 - p * 100);
+    if (p >= 1) {
+      var el = mir.el; mir.hecho = el; mir.ultima = { el: el, t: Date.now() }; soltarMirada();
+      el.classList.add('caa-mirada-ok'); setTimeout(function () { el.classList.remove('caa-mirada-ok'); }, 450);
+      el.click();
+      return;
+    }
+    mir.raf = requestAnimationFrame(cicloMirada);
+  }
+  function moverMirada(x, y) {
+    if (aj.acceso !== 'mirada' || modoElegir) return;
+    var t = objetivoMirada(x, y);
+    if (t === mir.el) return;
+    soltarMirada();
+    mir.el = t;
+    if (t !== mir.hecho) mir.hecho = null;
+    if (!t || t === mir.hecho) return;
+    mir.t0 = performance.now(); t.classList.add('caa-mirando');
+    mir.raf = requestAnimationFrame(cicloMirada);
+  }
+  var punteroVisto = false;
+  document.addEventListener('pointermove', function (e) { if (e.pointerType !== 'touch') punteroVisto = true; moverMirada(e.clientX, e.clientY); }, { passive: true });
+  /* Si el sistema (iPad, Control ocular de Windows, Irisbond…) ya hace el clic por permanencia,
+     evitamos que se active dos veces: se ignora el clic real que llega justo después del nuestro,
+     y un clic real cancela la carga del anillo. */
+  document.addEventListener('click', function (e) {
+    if (aj.acceso !== 'mirada' || !e.isTrusted) return;
+    var u = mir.ultima;
+    if (u && Date.now() - u.t < 1500 && (u.el === e.target || u.el.contains(e.target))) { e.preventDefault(); e.stopPropagation(); return; }
+    var t = e.target.closest && e.target.closest('.scan, .mirable');
+    if (t && t === mir.el) { soltarMirada(); mir.hecho = t; }
+  }, true);
+  /* Aviso si en modo mirada no llega ningún puntero (p. ej. tablet sin control por permanencia del sistema) */
+  setTimeout(function () {
+    if (aj.acceso !== 'mirada' || punteroVisto) return;
+    modalInfo('👁️ No llega el puntero del lector ocular',
+      'El modo «Mirada» necesita que el lector ocular mueva un puntero por la pantalla, y no se detecta ninguno.<br><br>' +
+      '<b>En iPad con Irisbond Hiru:</b> Ajustes → Accesibilidad → Tocar → <b>AssistiveTouch</b> → activa el <b>Control de permanencia</b> y elige el tiempo. Después, aquí en ⚙️ pon <b>«Táctil / ratón»</b>: el iPad hará el clic por permanencia en toda la web.<br><br>' +
+      '<b>En Windows con Irisbond:</b> abre <b>EasyClick</b> para que la mirada mueva el ratón. Si EasyClick ya hace el clic por permanencia, pon aquí «Táctil / ratón». Si quieres ver el anillo de carga de la web, desactiva el clic de EasyClick y deja aquí «Mirada». El Control ocular de Windows no mueve el ratón de forma continua y no sirve para este modo.');
+  }, 9000);
+  document.addEventListener('mouseleave', function () { soltarMirada(); mir.el = null; mir.hecho = null; });
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil' || aj.acceso === 'mirada') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+
+  /* ═══ Letra escolar (se recuerda en todos los juegos) ═══ */
+  var letra = leer('caa-letra') === 'minus' ? 'minus' : 'mayus';
+  var oyentesLetra = [];
+  function aplicarLetra() {
+    document.body.classList.toggle('modo-minus', letra === 'minus');
+    document.querySelectorAll('.caa-letra button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.l === letra ? 'true' : 'false'); });
+  }
+  function ponerLetra(l) { letra = l === 'minus' ? 'minus' : 'mayus'; guardar('caa-letra', letra); aplicarLetra(); oyentesLetra.forEach(function (f) { f(letra); }); }
+
+  /* ═══ Pantalla completa ═══ */
+  var ICO_FS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICO_FS_SALIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function enPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function pantallaCompleta() {
+    var d = document.documentElement;
+    if (enPantallaCompleta()) {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!pedir) { avisoPantallaCompleta(); return; }
+    var pr;
+    try { pr = pedir.call(d, { navigationUI: 'hide' }); } catch (e) { avisoPantallaCompleta(); return; }
+    var girar = function () { if (opciones.horizontal && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); };
+    if (pr && pr.then) pr.then(girar).catch(avisoPantallaCompleta); else girar();
+  }
+  function iconoPantalla() {
+    var b = document.querySelector('.btn-fs'); if (!b) return;
+    var on = enPantallaCompleta();
+    b.innerHTML = on ? ICO_FS_SALIR : ICO_FS;
+    b.setAttribute('aria-label', on ? 'Salir de pantalla completa' : 'Pantalla completa'); b.title = b.getAttribute('aria-label');
+  }
+  document.addEventListener('fullscreenchange', iconoPantalla);
+  document.addEventListener('webkitfullscreenchange', iconoPantalla);
+  function avisoPantallaCompleta() {
+    modalInfo('📱 Pantalla completa',
+      'Este dispositivo no deja poner la web a pantalla completa desde el navegador (pasa en los iPhone).<br><br>' +
+      '<b>Para conseguirlo:</b> pulsa <b>Compartir</b> (el cuadrado con la flecha hacia arriba) → <b>Añadir a pantalla de inicio</b>. Abriendo la web desde ese icono se ve a pantalla completa.<br><br>' +
+      '<b>Para ponerla en horizontal:</b> desactiva el bloqueo de rotación en el Centro de control y gira el móvil.');
+  }
+  function modalInfo(titulo, html, alCerrar) {
+    var m = document.createElement('div'); m.className = 'caa-modal abierto'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+    m.innerHTML = '<div class="caja" style="max-width:460px"><button class="cerrar" aria-label="Cerrar">✕</button><h2>' + titulo + '</h2>' +
+      '<div style="font-size:15px;line-height:1.6;color:#1A3A38">' + html + '</div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:1.2rem" data-cerrar>Entendido</button></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { m.remove(); if (alCerrar) alCerrar(); api_scan.reiniciar(); } });
+    m.querySelector('[data-cerrar]').focus();
+    return m;
+  }
+
+  /* ═══ Contraseña del adulto (control parental) ═══ */
+  function pinGuardado() { var p = leer('caa-pin'); return /^\d{4}$/.test(p) ? p : '1234'; }
+  var desbloqueadoHasta = 0, pinM = null;
+  function pedirPin(cb, motivo) {
+    if (!aj.pinActivo || Date.now() < desbloqueadoHasta) { cb(); return; }
+    if (!pinM) construirPin();
+    pinM.cb = cb; pinM.valor = ''; puntosPin(); pinM.el.querySelector('.pin-error').textContent = '';
+    pinM.el.querySelector('.motivo').textContent = motivo || 'Esta opción es para el adulto.';
+    pinM.el.classList.add('abierto');
+    clearInterval(scan.timer); limpiar();
+    pinM.el.querySelector('.pin-teclas button').focus();
+  }
+  function construirPin() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal caa-pin'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-pin-t');
+    var teclas = '';
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', '0', '<'].forEach(function (k) {
+      if (k === 'x') teclas += '<button type="button" data-k="x" aria-label="Cancelar">✕</button>';
+      else if (k === '<') teclas += '<button type="button" class="borrar" data-k="<" aria-label="Borrar">⌫</button>';
+      else teclas += '<button type="button" data-k="' + k + '">' + k + '</button>';
+    });
+    m.innerHTML = '<div class="caja"><div class="ico" aria-hidden="true">🔒</div><h2 id="caa-pin-t">Zona del adulto</h2>' +
+      '<p class="motivo"></p><div class="pin-puntos" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+      '<div class="pin-teclas">' + teclas + '</div><p class="pin-error" role="alert"></p>' +
+      '<p class="pin-olvido">La contraseña de serie es <b>1234</b>. Se cambia en ⚙️ Ajustes → Control parental.</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]');
+      if (e.target === m) { cerrarPin(); return; }
+      if (!b) return;
+      var k = b.dataset.k;
+      if (k === 'x') cerrarPin(); else if (k === '<') { pinM.valor = pinM.valor.slice(0, -1); puntosPin(); } else teclaPin(k);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!m.classList.contains('abierto')) return;
+      if (/^\d$/.test(e.key)) { e.preventDefault(); teclaPin(e.key); }
+      else if (e.key === 'Backspace') { e.preventDefault(); pinM.valor = pinM.valor.slice(0, -1); puntosPin(); }
+      else if (e.key === 'Escape') cerrarPin();
+    });
+    pinM = { el: m, valor: '', cb: null };
+  }
+  function puntosPin() { pinM.el.querySelectorAll('.pin-puntos span').forEach(function (s, i) { s.classList.toggle('lleno', i < pinM.valor.length); }); }
+  function teclaPin(k) {
+    if (pinM.valor.length >= 4) return;
+    pinM.valor += k; puntosPin();
+    if (pinM.valor.length < 4) return;
+    if (pinM.valor === pinGuardado()) {
+      desbloqueadoHasta = Date.now() + 5 * 60 * 1000;
+      var cb = pinM.cb; cerrarPin(true); if (cb) cb();
+    } else {
+      pinM.el.querySelector('.pin-error').textContent = 'Contraseña incorrecta';
+      pinM.el.classList.add('temblor');
+      setTimeout(function () { pinM.el.classList.remove('temblor'); pinM.valor = ''; puntosPin(); }, 700);
+    }
+  }
+  function cerrarPin(ok) { pinM.el.classList.remove('abierto'); pinM.cb = null; if (!ok) api_scan.reiniciar(); }
+
+  /* Elementos con clase .adulto: piden la contraseña antes de funcionar (5 minutos sin volver a pedirla) */
+  var pasarAdulto = false;
+  document.addEventListener('click', function (e) {
+    if (pasarAdulto || !aj.pinActivo || Date.now() < desbloqueadoHasta || !e.target.closest) return;
+    if (!e.target.closest('.adulto') || e.target.closest('.caa-modal')) return;
+    e.preventDefault(); e.stopPropagation();
+    var obj = e.target.closest('button, a, summary, input, select, label, [data-k]') || e.target;
+    pedirPin(function () { pasarAdulto = true; try { obj.click(); if (obj.focus) obj.focus(); } finally { pasarAdulto = false; } });
+  }, true);
+
+  function bienvenida() {
+    if (leer('caa-bienvenida-v1')) return;
+    var m = modalInfo('👋 Antes de empezar',
+      '<div><div class="bloque"><span class="i">⛶</span><span>Usa el botón de <b>pantalla completa</b> (arriba a la derecha) para que el juego ocupe toda la pantalla. En el móvil, ponlo en horizontal.</span></div>' +
+      '<div class="bloque"><span class="i" style="font-family:var(--font-mayus)">Aa</span><span>Elige <b>MAYÚSCULAS o minúsculas</b>. Se usa la letra escolar y se recuerda en todos los juegos.</span></div>' +
+      '<div class="bloque"><span class="i">🔒</span><span>Los <b>ajustes ⚙️</b> y las opciones del adulto piden una contraseña para que el niño no las cambie sin querer. La contraseña es <span class="pin-chip">1234</span> y puedes cambiarla en ⚙️ Ajustes → Control parental.</span></div></div>',
+      function () { guardar('caa-bienvenida-v1', true); });
+    m.classList.add('caa-bienv');
+    m.querySelector('[data-cerrar]').textContent = '¡Entendido!';
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button>' +
+          '<button data-v="mirada">👁️ Mirada (permanencia)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' +
+        '<div class="ajuste" id="caa-aj-mir"><label for="caa-mir">Tiempo mirando para elegir: <span id="caa-mir-v"></span></label>' +
+          '<input type="range" id="caa-mir" min="500" max="3000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        '<div class="voz-elegir"><select id="caa-voz-sel" aria-label="Elegir voz"></select><button type="button" class="btn btn-s" data-probar>🔊 Probar</button></div>' +
+        '<p class="ayuda" style="margin:-.1rem 0 .4rem">Elige una voz parecida a la de su comunicador (♀ femenina · ♂ masculina). Las voces dependen de cada dispositivo.</p>' +
+        '<label class="mini-rango">Velocidad <input type="range" id="caa-voz-vel" min="0.6" max="1.2" step="0.05"></label>' +
+        '<label class="mini-rango">Tono <small>(más alto = suena más infantil)</small> <input type="range" id="caa-voz-tono" min="0.8" max="1.6" step="0.05"></label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">🔒 Control parental</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinActivo"> Pedir contraseña para los ajustes y las opciones del adulto</label>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinSalir"> Pedir contraseña también para salir del juego («Volver»)</label>' +
+        '<div class="lbl" style="margin-top:.7rem">Cambiar la contraseña</div>' +
+        '<div class="pin-cambiar"><input type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Nueva contraseña de 4 números" placeholder="••••" id="caa-pin-nuevo">' +
+        '<button class="btn btn-s" type="button" data-pin-guardar>Guardar</button></div>' +
+        '<p class="pin-msg" id="caa-pin-msg"></p></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.',
+      mirada: 'Para lector ocular o ratón de cabeza: mantener la mirada (el puntero) sobre una opción la elige. Se rellena un anillo mientras se mira. Para volver a elegir la misma, hay que apartar la mirada. Si tu lector ocular ya hace clic por sí solo, usa «Táctil / ratón».'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var mr = m.querySelector('#caa-mir'); if (mr) { mr.value = aj.permanencia; m.querySelector('#caa-mir-v').textContent = (aj.permanencia / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-mir').hidden = aj.acceso !== 'mirada'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+      m.querySelector('#caa-voz-vel').value = aj.vozVel; m.querySelector('#caa-voz-tono').value = aj.vozTono;
+      if (pintarVoces) pintarVoces();
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+      if (e.target.closest('[data-probar]')) hablar('Hola. Quiero más, otra vez', true);
+      if (e.target.closest('[data-pin-guardar]')) {
+        var nv = m.querySelector('#caa-pin-nuevo'), msg = m.querySelector('#caa-pin-msg');
+        if (/^\d{4}$/.test(nv.value)) { guardar('caa-pin', nv.value); nv.value = ''; msg.style.color = '#1F7A4A'; msg.textContent = '✔ Contraseña cambiada. Apúntala en un sitio seguro.'; }
+        else { msg.style.color = '#C4372B'; msg.textContent = 'Tienen que ser 4 números.'; }
+      }
+    });
+    pintarVoces = function () {
+      var sel = m.querySelector('#caa-voz-sel'); if (!sel || !('speechSynthesis' in window)) return;
+      var vs = vocesEs();
+      if (!vs.length) { sel.innerHTML = '<option>No hay voces en español en este dispositivo</option>'; sel.disabled = true; return; }
+      sel.disabled = false;
+      var auto = voz && !aj.vozNombre ? ' (' + voz.name + ')' : '';
+      sel.innerHTML = '<option value="">Automática: femenina si hay' + esc(auto) + '</option>' + vs.map(function (v) {
+        var g = generoVoz(v);
+        return '<option value="' + esc(v.name) + '"' + (v.name === aj.vozNombre ? ' selected' : '') + '>' + (g === 'f' ? '♀ ' : g === 'm' ? '♂ ' : '') + esc(v.name) + ' · ' + esc(v.lang) + '</option>';
+      }).join('');
+    };
+    m.addEventListener('change', function (e) {
+      if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-mir') { cambiar('permanencia', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-voz-vel') cambiar('vozVel', +e.target.value);
+      if (e.target.id === 'caa-voz-tono') cambiar('vozTono', +e.target.value);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  var opciones = {};
+  function init(o) {
+    o = o || {}; opciones = o;
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '" aria-label="Volver">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<div class="grupo-barra">' +
+        (o.letra !== false ? '<div class="caa-letra" role="group" aria-label="Tipo de letra">' +
+          '<button type="button" class="may" data-l="mayus" aria-label="Letra mayúscula" title="MAYÚSCULAS">Aa</button>' +
+          '<button type="button" class="min" data-l="minus" aria-label="Letra minúscula" title="minúsculas">aa</button></div>' : '') +
+        '<button type="button" class="btn-icono btn-fs"></button>' +
+        '<button type="button" class="btn-ajustes" aria-label="Ajustes (adulto)" title="Ajustes (adulto)">⚙️</button>' +
+      '</div>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', function () { pedirPin(panel.abrir, 'Los ajustes son para el adulto.'); });
+    barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
+    barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
+    barra.querySelector('.volver').addEventListener('click', function (e) {
+      if (!aj.pinSalir) return;
+      e.preventDefault(); var href = this.href;
+      pedirPin(function () { location.href = href; }, 'Para salir del juego hace falta la contraseña.');
+    });
+    CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
+    aplicarLetra(); iconoPantalla(); aplicar();
+    if (o.bienvenida !== false) bienvenida();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    get letra() { return letra; },
+    alCambiarLetra: function (f) { oyentesLetra.push(f); },
+    pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
+    alCambiar: function (f) { oyentes.push(f); }
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'El xilófono de las letras', horizontal: true });
+
+/* ════════════════ Láminas: colores de los xilófonos infantiles ════════════════ */
+var LAMINAS = [
+  { f: 523.25, c: '#E53935' }, { f: 587.33, c: '#FB8C00' }, { f: 659.25, c: '#FDD835', oscura: true }, { f: 698.46, c: '#43A047' },
+  { f: 783.99, c: '#29B6F6' }, { f: 880.00, c: '#3949AB' }, { f: 987.77, c: '#8E24AA' }, { f: 1046.5, c: '#EC407A' }
+];
+
+/* ════════════════ Palabras ════════════════ */
+var PAL = [
+  ['sol', '☀️'], ['pan', '🍞'], ['mar', '🌊'], ['flor', '🌸'], ['tren', '🚂'], ['luz', '💡'],
+  ['ga-to', '🐱'], ['lu-na', '🌙'], ['ma-no', '✋'], ['pa-to', '🦆'], ['so-pa', '🍲'], ['me-sa', '🪑'], ['ca-sa', '🏠'], ['mo-to', '🏍️'],
+  ['pe-ra', '🍐'], ['ro-sa', '🌹'], ['de-do', '☝️'], ['sa-po', '🐸'], ['ni-do', '🪺'], ['ca-ma', '🛏️'], ['bo-ca', '👄'], ['va-ca', '🐮'],
+  ['lo-ro', '🦜'], ['pi-ña', '🍍'], ['ra-na', '🐸'], ['ta-za', '☕'],
+  ['pe-lo-ta', '⚽'], ['to-ma-te', '🍅'], ['pa-lo-ma', '🕊️'], ['ca-mi-sa', '👕'], ['pa-ta-ta', '🥔'], ['co-ne-jo', '🐰'], ['za-pa-to', '👞'],
+  ['pe-pi-no', '🥒'], ['mo-ne-da', '🪙'], ['ca-ba-llo', '🐴'], ['ga-lle-ta', '🍪'], ['ma-le-ta', '🧳'],
+  ['ma-ri-po-sa', '🦋'], ['e-le-fan-te', '🐘'], ['co-co-dri-lo', '🐊'], ['bi-ci-cle-ta', '🚲'], ['te-lé-fo-no', '☎️'], ['pe-li-cu-la', '🎬']
+].map(function (x) { var s = x[0].split('-'); return { s: s, t: s.join('').replace('pelicula', 'película'), e: x[1] }; });
+PAL.forEach(function (p) { if (p.t === 'película') p.s = ['pe', 'lí', 'cu', 'la']; });
+
+/* Palabras que empiezan por cada letra (juego «¿Con cuál empieza?») */
+var EMPIEZA = {
+  a: [['avión', '✈️'], ['árbol', '🌳'], ['abeja', '🐝'], ['agua', '💧']], e: [['elefante', '🐘'], ['estrella', '⭐'], ['escalera', '🪜']],
+  i: [['iglú', '🧊'], ['isla', '🏝️'], ['iguana', '🦎']], o: [['oso', '🐻'], ['ojo', '👁️'], ['oveja', '🐑']], u: [['uva', '🍇'], ['uña', '💅'], ['uno', '1️⃣']],
+  m: [['mano', '✋'], ['mamá', '👩'], ['mesa', '🪑'], ['moto', '🏍️']], p: [['pato', '🦆'], ['pelota', '⚽'], ['pan', '🍞'], ['perro', '🐶']],
+  l: [['luna', '🌙'], ['león', '🦁'], ['libro', '📖'], ['lápiz', '✏️']], s: [['sol', '☀️'], ['sapo', '🐸'], ['silla', '🪑'], ['sopa', '🍲']],
+  t: [['tomate', '🍅'], ['taza', '☕'], ['tren', '🚂'], ['tijeras', '✂️']], n: [['nube', '☁️'], ['nariz', '👃'], ['nido', '🪺']],
+  d: [['dado', '🎲'], ['dedo', '☝️'], ['delfín', '🐬']], f: [['foca', '🦭'], ['fresa', '🍓'], ['flor', '🌸']]
+};
+var NOMBRE = { a: 'a', e: 'e', i: 'i', o: 'o', u: 'u', m: 'eme', p: 'pe', l: 'ele', s: 'ese', t: 'te', n: 'ene', d: 'de', f: 'efe' };
+var CONJ = { vocales: ['a', 'e', 'i', 'o', 'u'], mixto: ['a', 'e', 'i', 'o', 'u', 'm', 'p', 'l'], consonantes: ['m', 'p', 'l', 's', 't', 'n', 'd', 'f'] };
+var SILABAS = 'ma me mi mo mu pa pe pi po pu la le li lo lu sa se si so su ta te ti to tu na ne ni no nu da de di do du ca co cu ga go gu ra re ri ro ru ba be bi bo bu va ve vo fa fe fo ja jo ju'.split(' ');
+
+/* ════════════════ Separar en sílabas (español) ════════════════
+   Reglas habituales: grupos inseparables (pr, bl, tr…, ch, ll, rr), «qu» y «gu» + e/i,
+   diptongos y hiatos (dos vocales fuertes o vocal débil con tilde se separan). */
+function silabear(palabra) {
+  var w = palabra.toLowerCase().trim();
+  if (!w || /[^a-záéíóúüñ]/.test(w)) return null;
+  var FUERTE = 'aeoáéóíú', VOC = 'aeiouáéíóúü';
+  var u = [];
+  for (var i = 0; i < w.length; i++) {
+    var d = w.substr(i, 2);
+    if (d === 'ch' || d === 'll' || d === 'rr') { u.push(d); i++; continue; }
+    if ((d === 'qu' || d === 'gu') && 'eiéí'.indexOf(w[i + 2]) >= 0) { u.push(d); i++; continue; }
+    u.push(w[i]);
+  }
+  var esV = function (x) { return x.length === 1 && VOC.indexOf(x) >= 0; };
+  var INSEP = ['pr', 'pl', 'br', 'bl', 'fr', 'fl', 'tr', 'dr', 'cr', 'cl', 'gr', 'gl', 'kr', 'kl'];
+  // núcleos vocálicos
+  var nucleos = [], k = 0;
+  while (k < u.length) {
+    if (!esV(u[k])) { k++; continue; }
+    var ini = k; k++;
+    while (k < u.length && esV(u[k])) {
+      var a = u[k - 1], b = u[k];
+      var hiato = (FUERTE.indexOf(a) >= 0 && FUERTE.indexOf(b) >= 0) || 'íú'.indexOf(a) >= 0 || 'íú'.indexOf(b) >= 0;
+      if (hiato) break;
+      k++;
+    }
+    nucleos.push([ini, k - 1]);
+  }
+  if (!nucleos.length) return [w];
+  var cortes = [];
+  for (var n = 0; n < nucleos.length - 1; n++) {
+    var desde = nucleos[n][1] + 1, hasta = nucleos[n + 1][0];
+    var cons = u.slice(desde, hasta), c = cons.length;
+    var corte;
+    if (c === 0) corte = desde;
+    else if (c === 1) corte = desde;
+    else if (c === 2) corte = INSEP.indexOf(cons.join('')) >= 0 ? desde : desde + 1;
+    else if (c === 3) corte = INSEP.indexOf(cons.slice(1).join('')) >= 0 ? desde + 1 : desde + 2;
+    else corte = desde + 2;
+    cortes.push(corte);
+  }
+  var sil = [], prev = 0;
+  cortes.concat([u.length]).forEach(function (c) { sil.push(u.slice(prev, c).join('')); prev = c; });
+  return sil.filter(Boolean);
+}
+
+var MIS = CAA.leer('caa-xilo-palabras') || [];
+function guardarMis() { CAA.guardar('caa-xilo-palabras', MIS); document.getElementById('n-mis').textContent = MIS.length || ''; }
+function sinTilde(x) { return x.replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/[úü]/g, 'u'); }
+function misComoPal() { return MIS.map(function (m) { return { s: m.s, t: m.t, e: '⭐', mia: true }; }); }
+
+var misModal = document.getElementById('mis-modal');
+var inPal = document.getElementById('mis-palabra'), inSil = document.getElementById('mis-silabas'), silTocada = false;
+inPal.addEventListener('input', function () { if (!silTocada) { var s2 = silabear(inPal.value); inSil.value = s2 ? s2.join('-') : ''; } });
+inSil.addEventListener('input', function () { silTocada = !!inSil.value; });
+function pintarMis() {
+  var l = document.getElementById('mis-lista'); l.innerHTML = '';
+  if (!MIS.length) { l.innerHTML = '<p class="mis-vacio">Todavía no hay palabras. ¡Añade la primera!</p>'; return; }
+  MIS.forEach(function (m, i) {
+    var f = document.createElement('div'); f.className = 'mis-fila';
+    f.innerHTML = '<span class="pv" title="Toca para elegir otro pictograma">⭐</span><span><b class="letra-nino">' + CAA.esc(m.t) + '</b><small>' + CAA.esc(m.s.join(' - ')) + ' · ' + m.s.length + (m.s.length === 1 ? ' sílaba' : ' sílabas') + '</small></span>' +
+      '<button type="button" aria-label="Escuchar">🔊</button><button type="button" aria-label="Borrar">🗑️</button>';
+    var pv = f.querySelector('.pv'); CAA.ponerPicto(pv, { t: m.t });
+    pv.onclick = function () { CAA.elegirPicto(m.t); };
+    var bs = f.querySelectorAll('button');
+    bs[0].onclick = function () { CAA.hablar(m.s.join(', ') + '. ' + m.t, true); };
+    bs[1].onclick = function () { MIS.splice(i, 1); guardarMis(); pintarMis(); };
+    l.appendChild(f);
+  });
+}
+document.getElementById('mis-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var err = document.getElementById('mis-error'); err.textContent = '';
+  var t = inPal.value.trim().toLowerCase();
+  var s3 = inSil.value.trim().toLowerCase().split(/[-·\s]+/).filter(Boolean);
+  if (!t || /[^a-záéíóúüñ]/.test(t)) { err.textContent = 'Escribe una sola palabra, solo con letras.'; inPal.focus(); return; }
+  if (s3.join('') !== t) { err.textContent = 'Las sílabas tienen que formar la palabra «' + t + '». Sepáralas con guiones: ' + (silabear(t) || []).join('-'); inSil.focus(); return; }
+  if (s3.length > 5) { err.textContent = 'Como máximo 5 sílabas.'; return; }
+  if (MIS.some(function (m) { return m.t === t; })) { err.textContent = 'Esa palabra ya está.'; return; }
+  MIS.unshift({ t: t, s: s3 }); guardarMis(); pintarMis();
+  inPal.value = ''; inSil.value = ''; silTocada = false; inPal.focus();
+  CAA.hablar(s3.join(', ') + '. ' + t, true);
+});
+document.getElementById('btn-mis').onclick = function () { pintarMis(); misModal.classList.add('abierto'); setTimeout(function () { inPal.focus(); }, 50); };
+misModal.addEventListener('click', function (e) {
+  if (e.target === misModal || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { misModal.classList.remove('abierto'); empezarSerie(); }
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && misModal.classList.contains('abierto')) { misModal.classList.remove('abierto'); empezarSerie(); } });
+function sinPalabras() {
+  var t = document.getElementById('tarea');
+  t.innerHTML = '<div class="derecha"><div style="font-size:3.5rem">⭐</div><div class="consigna">Todavía no hay palabras tuyas para este nivel</div>' +
+    '<p style="color:var(--ink2);text-align:center;max-width:420px">Añádelas en «✏️ Mis palabras» o elige «📚 Todas».</p></div>';
+  document.getElementById('xilofono').innerHTML = ''; msg('');
+}
+
+var op = Object.assign({ fuente: 'todas', nivel: 'silabas', largo: '3', verpal: 'si', juego: 'busca', letras: 'vocales', verletra: 'ver', modo3: 'leer', colores: 'si' }, CAA.leer('caa-xilo') || {});
+var MAPA = { 'op-fuente': 'fuente', 'op-nivel': 'nivel', 'op-largo': 'largo', 'op-verpal': 'verpal', 'op-juego': 'juego', 'op-letras': 'letras', 'op-verletra': 'verletra', 'op-modo3': 'modo3', 'op-colores': 'colores' };
+function pintarOp() {
+  Object.keys(MAPA).forEach(function (id) { document.querySelectorAll('#' + id + ' button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === op[MAPA[id]] ? 'true' : 'false'); }); });
+  document.querySelectorAll('[data-para]').forEach(function (g) { g.hidden = g.dataset.para !== op.nivel; });
+  document.querySelectorAll('[data-solo]').forEach(function (g) { g.hidden = op.juego !== g.dataset.solo; });
+}
+Object.keys(MAPA).forEach(function (id) {
+  document.getElementById(id).addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    op[MAPA[id]] = b.dataset.v; CAA.guardar('caa-xilo', op); pintarOp(); empezarSerie();
+  });
+});
+
+/* ════════════════ Sonido de xilófono (Web Audio) ════════════════ */
+var ac = null;
+function nota(f, cuando, vol) {
+  if (!CAA.ajustes.sonidos) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    var t = ac.currentTime + (cuando || 0), v = vol || 0.45;
+    [[1, v, 1.3], [3.98, v * 0.18, 0.18], [9.2, v * 0.05, 0.06]].forEach(function (p) {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.value = f * p[0];
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(p[1], t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + p[2]);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + p[2] + 0.05);
+    });
+  } catch (e) {}
+}
+function melodia(indices, paso) { indices.forEach(function (i, k) { nota(LAMINAS[i].f, k * (paso || 0.28)); }); }
+
+/* ════════════════ Pintar el xilófono ════════════════ */
+var laminas = [];
+function pintarXilofono(etiquetas, alTocar) {
+  var x = document.getElementById('xilofono'); x.innerHTML = ''; laminas = [];
+  var n = etiquetas.length;
+  etiquetas.forEach(function (lbl, i) {
+    var L = LAMINAS[i], b = document.createElement('button'); b.type = 'button';
+    b.className = 'lamina scan' + (L.oscura ? ' oscura' : '');
+    b.style.background = 'linear-gradient(' + L.c + ', ' + L.c + 'DD)';
+    b.style.height = (100 - (i * 38 / Math.max(1, n - 1))) + '%';
+    b.dataset.i = i;
+    b.dataset.decir = lbl ? (NOMBRE[lbl] || lbl) : 'lámina ' + (i + 1);
+    b.setAttribute('aria-label', lbl ? lbl : 'Lámina ' + (i + 1));
+    b.innerHTML = lbl ? '<span class="lbl letra-nino">' + CAA.esc(lbl) + '</span>' : '';
+    b.onclick = function () {
+      b.classList.add('toca'); setTimeout(function () { b.classList.remove('toca'); }, 140);
+      nota(L.f); alTocar(i, lbl, b);
+    };
+    x.appendChild(b); laminas.push(b);
+  });
+  CAA.scan.reiniciar();
+}
+
+/* ════════════════ Utilidades ════════════════ */
+function mezclar(a) { return a.slice().sort(function () { return Math.random() - .5; }); }
+function azar(a, evitar) { var b = a.filter(function (x) { return x !== evitar; }); return (b.length ? b : a)[Math.floor(Math.random() * (b.length ? b : a).length)]; }
+function msg(t, aviso) { var m = document.getElementById('mensaje'); m.textContent = t; m.classList.toggle('aviso', !!aviso); }
+function modeloPicto(t, e) {
+  var c = CAA.celda({ t: t, e: e }); c.classList.remove('scan'); c.classList.add('no-barrido');
+  c.onclick = function () { CAA.hablar(t); };
+  var w = document.createElement('div'); w.className = 'modelo'; w.appendChild(c); return w;
+}
+var RONDAS = 8, ronda = 0, aciertos = 0, ultimo = null, temporizador = null;
+function pintarMarcador() {
+  var m = document.getElementById('marcador'); m.innerHTML = '';
+  for (var i = 0; i < RONDAS; i++) { var s = document.createElement('span'); if (i < aciertos) s.className = 'ok'; m.appendChild(s); }
+}
+function acierto(siguiente) {
+  aciertos++; pintarMarcador();
+  var x = document.getElementById('xilofono').getBoundingClientRect();
+  CAA.fiesta(x.left + x.width / 2, x.top, ['🎵', '🎶', '⭐', '✨'], 16); CAA.sonido('exito');
+  CAA.scan.pausar(2600);
+  setTimeout(function () {
+    if (aciertos >= RONDAS) { finSerie(); return; }
+    siguiente();
+  }, 2300);
+}
+function finSerie() {
+  var t = document.getElementById('tarea');
+  t.innerHTML = '<div class="derecha"><div style="font-size:5rem" class="pop">🏆</div><div class="consigna frase-nino">¡Concierto terminado!</div>' +
+    '<button class="btn btn-p scan" id="otra-serie" data-decir="Otra vez">🔁 Otra vez</button></div>';
+  msg(''); melodia([0, 2, 4, 7, 4, 7], 0.18);
+  CAA.fiesta(null, null, ['🎵', '🎶', '🏆', '🎉'], 26); CAA.hablar('¡Muy bien! Concierto terminado');
+  document.getElementById('otra-serie').onclick = empezarSerie;
+  CAA.scan.reiniciar();
+}
+function empezarSerie() {
+  clearTimeout(temporizador); aciertos = 0; ultimo = null; pintarMarcador(); msg('');
+  if (op.nivel === 'silabas') rondaSilabas();
+  else if (op.nivel === 'letras') rondaLetras();
+  else rondaLeer();
+}
+
+/* ════════════════ Nivel 1 · Contando sílabas ════════════════ */
+function rondaSilabas() {
+  clearTimeout(temporizador);
+  var max = +op.largo, lista;
+  if (op.fuente === 'mias') lista = misComoPal();
+  else lista = PAL.concat(misComoPal()).filter(function (p) { return p.s.length <= max && (max === 2 || p.s.length >= 2 || Math.random() < .3); });
+  if (!lista.length) { sinPalabras(); return; }
+  var p = azar(lista, ultimo); ultimo = p;
+  var golpes = [], terminado = false;
+  var t = document.getElementById('tarea'); t.innerHTML = '';
+  t.appendChild(modeloPicto(p.t, p.e));
+  var d = document.createElement('div'); d.className = 'derecha';
+  d.innerHTML = '<div class="consigna">Da un golpe por cada sílaba</div>' + (op.verpal === 'si' ? '<div class="palabra-escrita letra-nino">' + CAA.esc(p.t) + '</div>' : '') +
+    '<div class="golpes" id="golpes"></div><div class="acciones"><button class="btn scan" id="oir" data-decir="Escuchar">🔊 Escuchar</button><button class="btn scan" id="reset" data-decir="Empezar otra vez">🔁 Empezar otra vez</button></div>';
+  t.appendChild(d);
+  var cajaGolpes = d.querySelector('#golpes');
+  d.querySelector('#oir').onclick = function () { CAA.hablar(p.t); };
+  d.querySelector('#reset').onclick = function () { golpes = []; cajaGolpes.innerHTML = ''; terminado = false; msg(''); clearTimeout(temporizador); };
+  msg('');
+  pintarXilofono(LAMINAS.map(function () { return ''; }), function (i) {
+    if (terminado) return;
+    golpes.push(i);
+    var k = golpes.length, g = document.createElement('span');
+    g.className = 'golpe on' + (k > p.s.length ? ' extra' : ''); g.textContent = '♪'; g.style.borderColor = k > p.s.length ? '' : LAMINAS[i].c; g.style.color = LAMINAS[i].c;
+    cajaGolpes.appendChild(g);
+    clearTimeout(temporizador);
+    if (k <= p.s.length) {
+      setTimeout(function () { CAA.hablar(p.s[k - 1]); }, 120);
+      if (k === p.s.length) temporizador = setTimeout(function () {
+        terminado = true;
+        msg('🎵 ¡' + p.s.length + (p.s.length === 1 ? ' golpe' : ' golpes') + '! ' + p.s.join(' - ').toUpperCase());
+        melodia(golpes, 0.3);
+        setTimeout(function () { CAA.hablar(p.s.join(', ') + '. ¡' + p.t + '!'); }, p.s.length * 300 + 150);
+        acierto(rondaSilabas);
+      }, 1400);
+      else temporizador = setTimeout(function () { msg('¿Ya? Escucha otra vez: ' + p.t, true); CAA.hablar(p.t); }, 4500);
+    } else {
+      terminado = true;
+      msg('¡Uy! Son más golpes que sílabas. Vamos a contarlas: ' + p.s.join(' - ').toUpperCase(), true);
+      CAA.hablar('Vamos a contarlas: ' + p.s.join(', '));
+      setTimeout(function () { golpes = []; cajaGolpes.innerHTML = ''; terminado = false; }, 2600);
+    }
+  });
+  setTimeout(function () { CAA.hablar(p.t); }, 300);
+}
+
+/* ════════════════ Nivel 2 · Reconociendo letras ════════════════ */
+function rondaLetras() {
+  clearTimeout(temporizador);
+  var letras = mezclar(CONJ[op.letras]), objetivo, parMia = null;
+  if (op.juego === 'empieza') {
+    var cand = [];
+    if (op.fuente !== 'mias') letras.forEach(function (l) { EMPIEZA[l].forEach(function (w) { cand.push({ l: l, w: w }); }); });
+    MIS.forEach(function (m) { var l = sinTilde(m.t[0]); if (letras.indexOf(l) >= 0) cand.push({ l: l, w: [m.t, '⭐'] }); });
+    if (!cand.length) { sinPalabras(); return; }
+    var elegido = azar(cand.filter(function (c) { return c.l !== ultimo; }).length ? cand.filter(function (c) { return c.l !== ultimo; }) : cand);
+    objetivo = elegido.l; parMia = elegido.w;
+  } else objetivo = azar(letras, ultimo);
+  ultimo = objetivo;
+  var t = document.getElementById('tarea'); t.innerHTML = '';
+  var consigna, frase;
+  if (op.juego === 'empieza') {
+    var par = parMia;
+    t.appendChild(modeloPicto(par[0], par[1]));
+    consigna = '¿Con qué letra empieza?'; frase = '¿Con qué letra empieza ' + par[0] + '?';
+    var d = document.createElement('div'); d.className = 'derecha';
+    d.innerHTML = '<div class="consigna">' + consigna + '</div><div class="acciones"><button class="btn scan" id="oir" data-decir="Escuchar">🔊 Escuchar</button></div>';
+    t.appendChild(d);
+    d.querySelector('#oir').onclick = function () { CAA.hablar(par[0]); };
+    var palabra = par[0];
+  } else {
+    var oculta = op.verletra === 'oir';
+    var g = document.createElement('div'); g.className = 'modelo';
+    g.innerHTML = '<div class="letra-grande letra-nino' + (oculta ? ' oculta' : '') + '" style="position:relative">' + objetivo + '</div>';
+    t.appendChild(g);
+    frase = 'Busca la ' + NOMBRE[objetivo];
+    var d2 = document.createElement('div'); d2.className = 'derecha';
+    d2.innerHTML = '<div class="consigna">Toca la letra en el xilófono</div><div class="acciones"><button class="btn scan" id="oir" data-decir="Escuchar">🔊 Escuchar</button></div>';
+    t.appendChild(d2);
+    d2.querySelector('#oir').onclick = function () { CAA.hablar(frase); };
+  }
+  msg('');
+  pintarXilofono(letras, function (i, lbl, b) {
+    if (b.classList.contains('apagada')) return;
+    if (lbl === objetivo) {
+      laminas.forEach(function (x) { x.disabled = true; });
+      var txt = op.juego === 'empieza' ? '¡Sí! ' + palabra + ' empieza por ' + (('aeiou').indexOf(lbl) >= 0 ? lbl : 'la ' + NOMBRE[lbl]) : '¡Sí! Es la ' + NOMBRE[lbl];
+      msg('🎵 ' + txt.replace('¡Sí! ', '¡Sí! '));
+      var lg = document.querySelector('.letra-grande'); if (lg) lg.classList.remove('oculta');
+      setTimeout(function () { CAA.hablar(txt); }, 150);
+      acierto(rondaLetras);
+    } else {
+      b.classList.add('temblor', 'apagada'); setTimeout(function () { b.classList.remove('temblor'); }, 400);
+      msg('Esa es la ' + lbl.toUpperCase() + '. Prueba otra.', true);
+      setTimeout(function () { CAA.hablar('Esa es la ' + NOMBRE[lbl]); }, 150);
+    }
+  });
+  setTimeout(function () { CAA.hablar(frase); }, 300);
+}
+
+/* ════════════════ Nivel 3 · Leyendo sílabas ════════════════ */
+function rondaLeer() {
+  clearTimeout(temporizador);
+  var base = PAL.filter(function (p) { return p.s.length >= 2 && p.s.length <= 3 && p.s.every(function (x) { return x.length === 2 && SILABAS.indexOf(x) >= 0; }); });
+  var mias = misComoPal().filter(function (p) { return p.s.length >= 2 && p.s.length <= 5; });
+  var lista = op.fuente === 'mias' ? mias : base.concat(mias);
+  if (!lista.length) { sinPalabras(); return; }
+  var p = azar(lista, ultimo); ultimo = p;
+  var propias = p.s.filter(function (x, i, a) { return a.indexOf(x) === i; });
+  var nLam = Math.min(8, propias.length + 3);
+  var otras = mezclar(SILABAS.filter(function (x) { return propias.indexOf(x) < 0; }));
+  // la mitad de los distractores se parecen (misma consonante o misma vocal)
+  var parecidas = otras.filter(function (x) { return propias.some(function (y) { return x[0] === y[0] || x[1] === y[1]; }); });
+  var distr = parecidas.slice(0, Math.ceil((nLam - propias.length) / 2));
+  otras.forEach(function (x) { if (distr.length < nLam - propias.length && distr.indexOf(x) < 0) distr.push(x); });
+  var etiquetas = mezclar(propias.concat(distr));
+  var colorDe = {}; etiquetas.forEach(function (x, i) { colorDe[x] = LAMINAS[i]; });
+  var dictado = op.modo3 === 'dictado', colores = op.colores === 'si';
+  var pos = 0, tocadas = [];
+
+  var t = document.getElementById('tarea'); t.innerHTML = '';
+  t.appendChild(modeloPicto(p.t, p.e));
+  var d = document.createElement('div'); d.className = 'derecha';
+  d.innerHTML = '<div class="consigna">' + (dictado ? 'Escucha y escribe la palabra con el xilófono' : 'Lee y toca las sílabas en orden') + '</div>' +
+    '<div class="casillas" id="casillas"></div><div class="acciones"><button class="btn scan" id="oir" data-decir="Escuchar">🔊 Escuchar</button></div>';
+  t.appendChild(d);
+  d.querySelector('#oir').onclick = function () { CAA.hablar(p.t); };
+  var cas = d.querySelector('#casillas');
+  p.s.forEach(function (sil, i) {
+    var c = document.createElement('div'); c.className = 'casilla letra-nino' + (dictado ? '' : ' modelo-sil') + (i === 0 ? ' actual' : '');
+    if (!dictado) { c.textContent = sil; if (colores) { c.style.color = colorDe[sil].c; c.style.borderColor = colorDe[sil].c; if (colorDe[sil].oscura) c.style.textShadow = '0 0 1px #8a7400'; } }
+    cas.appendChild(c);
+  });
+  msg('');
+  pintarXilofono(etiquetas, function (i, sil, b) {
+    if (pos >= p.s.length) return;
+    setTimeout(function () { CAA.hablar(sil); }, 120);
+    if (sil === p.s[pos]) {
+      var c = cas.children[pos];
+      c.textContent = sil; c.classList.remove('actual'); c.classList.add('hecha'); c.style.background = LAMINAS[i].c; c.style.borderColor = LAMINAS[i].c; c.style.color = '#fff';
+      tocadas.push(i); pos++;
+      if (cas.children[pos]) cas.children[pos].classList.add('actual');
+      msg('');
+      if (pos === p.s.length) {
+        laminas.forEach(function (x) { x.disabled = true; });
+        setTimeout(function () {
+          msg('🎵 ¡' + p.t.toUpperCase() + '!'); melodia(tocadas, 0.32);
+          setTimeout(function () { CAA.hablar('¡' + p.t + '!'); }, tocadas.length * 320 + 150);
+        }, 700);
+        acierto(rondaLeer);
+      }
+    } else {
+      b.classList.add('temblor'); setTimeout(function () { b.classList.remove('temblor'); }, 400);
+      msg('Esa es «' + sil.toUpperCase() + '». ' + (dictado ? 'Escucha otra vez: ' + p.t : 'Busca «' + p.s[pos].toUpperCase() + '»'), true);
+    }
+  });
+  setTimeout(function () { CAA.hablar(p.t); }, 300);
+}
+
+CAA.alCambiarLetra(function () { /* las etiquetas usan la letra escolar automáticamente */ });
+guardarMis();
+pintarOp(); empezarSerie();
+</script>
+</body>
+</html>

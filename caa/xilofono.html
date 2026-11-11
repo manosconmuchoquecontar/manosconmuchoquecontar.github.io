@@ -282,6 +282,14 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   .casilla.actual { box-shadow: 0 0 0 4px rgba(42,157,143,.35); }
   .palabra-escrita { font-size: clamp(1.4rem, 3.4vw, 2.2rem); letter-spacing: .04em; line-height: 1.5; }
 
+  .derecha { min-width: 0; }
+  .tira-comp { max-width: 100%; display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; align-items: center; min-height: clamp(64px, 10vh, 90px); min-width: min(100%, 420px); padding: .5rem .8rem; background: white; border: 3px dashed var(--border); border-radius: 18px; }
+  .tira-comp .vacio { color: var(--ink3); font-weight: 700; font-size: 14px; }
+  .tira-comp .pieza { color: white; border-radius: 12px; padding: 0 .55rem; font-size: clamp(1.5rem, 4vw, 2.4rem); line-height: 1.5; text-shadow: 0 1px 2px rgba(0,0,0,.3); animation: caa-pop .3s ease-out both; }
+  .tira-comp .pieza.oscura { color: #3A2A00; text-shadow: none; }
+  .creaciones { display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; max-width: 520px; }
+  .creaciones button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 4px 12px; font-size: 1rem; line-height: 1.5; }
+  .creaciones .titulo { width: 100%; text-align: center; font-size: 12px; font-weight: 800; color: var(--ink3); text-transform: uppercase; letter-spacing: .04em; }
   .acciones { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
   .acciones .btn { padding: 9px 18px; }
   .marcador { display: flex; gap: 5px; justify-content: center; }
@@ -300,7 +308,8 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   .lamina.apagada { opacity: .35; filter: grayscale(.6); }
   .lamina.temblor { animation: temblor .35s; }
   @keyframes temblor { 25% { transform: translateX(-5px) rotate(-1.5deg); } 75% { transform: translateX(5px) rotate(1.5deg); } }
-  .lamina .lbl { pointer-events: none; overflow-wrap: anywhere; text-align: center; }
+  .lamina { container-type: inline-size; }
+  .lamina .lbl { pointer-events: none; text-align: center; white-space: nowrap; font-size: clamp(13px, 38cqw, 44px); letter-spacing: -.01em; }
   .mensaje { min-height: 1.6em; font-weight: 800; text-align: center; color: var(--teal-d); font-size: 1.05rem; }
   .mensaje.aviso { color: #B35A00; }
 
@@ -319,6 +328,9 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     .golpe { width: 34px; height: 34px; font-size: 16px; }
     .casilla { min-width: 54px; height: 54px; font-size: 1.4rem; }
     .acciones .btn { padding: 6px 12px; font-size: 13px; }
+    .tarea:has(.tira-comp) { flex-wrap: wrap; }
+    #comp-picto .letra-grande, #comp-picto .picto { width: 22vw; height: 24vw; }
+    .tira-comp { min-width: 0; width: 100%; }
     .seg button { padding: 5px 9px; font-size: 12px; }
     .xilofono { height: 40vh; padding: 14px 8px 10px; gap: 4px; flex-shrink: 0; }
     .lamina { font-size: clamp(.9rem, 4.6vw, 1.4rem); border-radius: 8px; }
@@ -360,7 +372,7 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     <div class="grupo-op niveles">
       <span class="lbl">Nivel</span>
       <div class="seg" id="op-nivel">
-        <button data-v="silabas">👏 Contando sílabas</button><button data-v="letras">🔤 Reconociendo letras</button><button data-v="leer">📖 Leyendo sílabas</button>
+        <button data-v="silabas">👏 Contando sílabas</button><button data-v="letras">🔤 Reconociendo letras</button><button data-v="leer">📖 Leyendo sílabas</button><button data-v="componer">🎼 Componer</button>
       </div>
     </div>
     <div class="grupo-op">
@@ -381,6 +393,13 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
       <div class="seg" id="op-letras"><button data-v="vocales">Vocales</button><button data-v="mixto">Vocales + m p l</button><button data-v="consonantes">m p l s t n d f</button></div>
       <span class="lbl" data-solo="busca">La letra</span>
       <div class="seg" id="op-verletra" data-solo="busca"><button data-v="ver">Se ve</button><button data-v="oir">Solo se oye</button></div>
+    </div>
+    <div class="grupo-op" data-para="componer">
+      <span class="lbl">Láminas</span>
+      <div class="seg" id="op-grupo">
+        <button data-v="mpl">ma me mi mo · pa pe · la lo</button><button data-v="stn">sa se so · ta te to · na no</button>
+        <button data-v="letras">Letras: a e i o u m p l</button><button data-v="mias">Sílabas de mis palabras</button>
+      </div>
     </div>
     <div class="grupo-op" data-para="leer">
       <span class="lbl">La palabra</span>
@@ -1243,8 +1262,8 @@ function sinPalabras() {
   document.getElementById('xilofono').innerHTML = ''; msg('');
 }
 
-var op = Object.assign({ fuente: 'todas', nivel: 'silabas', largo: '3', verpal: 'si', juego: 'busca', letras: 'vocales', verletra: 'ver', modo3: 'leer', colores: 'si' }, CAA.leer('caa-xilo') || {});
-var MAPA = { 'op-fuente': 'fuente', 'op-nivel': 'nivel', 'op-largo': 'largo', 'op-verpal': 'verpal', 'op-juego': 'juego', 'op-letras': 'letras', 'op-verletra': 'verletra', 'op-modo3': 'modo3', 'op-colores': 'colores' };
+var op = Object.assign({ grupo: 'mpl', fuente: 'todas', nivel: 'silabas', largo: '3', verpal: 'si', juego: 'busca', letras: 'vocales', verletra: 'ver', modo3: 'leer', colores: 'si' }, CAA.leer('caa-xilo') || {});
+var MAPA = { 'op-grupo': 'grupo', 'op-fuente': 'fuente', 'op-nivel': 'nivel', 'op-largo': 'largo', 'op-verpal': 'verpal', 'op-juego': 'juego', 'op-letras': 'letras', 'op-verletra': 'verletra', 'op-modo3': 'modo3', 'op-colores': 'colores' };
 function pintarOp() {
   Object.keys(MAPA).forEach(function (id) { document.querySelectorAll('#' + id + ' button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === op[MAPA[id]] ? 'true' : 'false'); }); });
   document.querySelectorAll('[data-para]').forEach(function (g) { g.hidden = g.dataset.para !== op.nivel; });
@@ -1333,8 +1352,10 @@ function finSerie() {
 }
 function empezarSerie() {
   clearTimeout(temporizador); aciertos = 0; ultimo = null; pintarMarcador(); msg('');
+  document.getElementById('marcador').hidden = op.nivel === 'componer';
   if (op.nivel === 'silabas') rondaSilabas();
   else if (op.nivel === 'letras') rondaLetras();
+  else if (op.nivel === 'componer') rondaComponer();
   else rondaLeer();
 }
 
@@ -1495,6 +1516,89 @@ function rondaLeer() {
     }
   });
   setTimeout(function () { CAA.hablar(p.t); }, 300);
+}
+
+/* ════════════════ Nivel 4 · Componer (escritura libre) ════════════════ */
+var GRUPOS = {
+  mpl: ['ma', 'me', 'mi', 'mo', 'pa', 'pe', 'la', 'lo'],
+  stn: ['sa', 'se', 'so', 'ta', 'te', 'to', 'na', 'no'],
+  letras: ['a', 'e', 'i', 'o', 'u', 'm', 'p', 'l']
+};
+/* Palabras reales que se pueden formar con cada grupo (para reconocerlas y poner su pictograma) */
+var REALES = ('mama papa mapa palo pala malo mala pelo pela lomo loma mimo pepa lapa mole lame lamo memo pomo mima ' +
+  'sota nata tasa sano sana nota seta tose toso nana sosa soso tata tasa nato sota sona ' +
+  'pila lupa puma mula polo lima pipa ola alma palma pulpo mapa leo lee ama amo mio mia ' +
+  'palomo paloma tomate patata pepino moneda maleta camisa conejo pelota').split(' ');
+var CON_TILDE = { mama: 'mamá', papa: 'papá', mio: 'mío', mia: 'mía' };
+var creaciones = CAA.leer('caa-xilo-creaciones') || [];
+function rondaComponer() {
+  clearTimeout(temporizador);
+  var etiquetas;
+  if (op.grupo === 'mias') {
+    var sil = [];
+    MIS.forEach(function (m) { m.s.forEach(function (x) { if (sil.indexOf(x) < 0) sil.push(x); }); });
+    if (!sil.length) { sinPalabras(); return; }
+    etiquetas = sil.slice(0, 8).sort();
+  } else etiquetas = GRUPOS[op.grupo];
+  var piezas = [];
+  var t = document.getElementById('tarea'); t.innerHTML = '';
+  var izq = document.createElement('div'); izq.className = 'modelo'; izq.id = 'comp-picto';
+  izq.innerHTML = '<div class="letra-grande" style="font-size:clamp(50px,9vh,90px)">🎼</div>';
+  var d = document.createElement('div'); d.className = 'derecha';
+  d.innerHTML = '<div class="consigna">Toca las láminas y escribe tu palabra</div>' +
+    '<div class="tira-comp" id="tira"><span class="vacio">Aquí aparece lo que escribes</span></div>' +
+    '<div class="acciones"><button class="btn scan" id="c-leer" data-decir="Leer">🔊 Leer</button><button class="btn scan" id="c-borrar" data-decir="Borrar">⌫ Borrar</button>' +
+    '<button class="btn btn-p scan" id="c-ya" data-decir="Ya">✓ ¡Ya!</button><button class="btn scan" id="c-nueva" data-decir="Otra palabra">🗑️ Otra</button></div>' +
+    '<div class="creaciones" id="creaciones"></div>';
+  t.appendChild(izq); t.appendChild(d);
+  var tira = d.querySelector('#tira');
+  function pintarTira() {
+    tira.innerHTML = piezas.length ? '' : '<span class="vacio">Aquí aparece lo que escribes</span>';
+    piezas.forEach(function (pz) {
+      var e = document.createElement('span'); e.className = 'pieza letra-nino' + (LAMINAS[pz.i].oscura ? ' oscura' : '');
+      e.style.background = LAMINAS[pz.i].c; e.textContent = pz.t; tira.appendChild(e);
+    });
+  }
+  function palabra() { return piezas.map(function (x) { return x.t; }).join(''); }
+  function pintarCreaciones() {
+    var c = d.querySelector('#creaciones'); c.innerHTML = creaciones.length ? '<span class="titulo">Mis creaciones</span>' : '';
+    creaciones.slice(0, 12).forEach(function (cr) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'letra-nino'; b.textContent = cr.t;
+      b.onclick = function () { melodia(cr.n, 0.28); setTimeout(function () { CAA.hablar(CON_TILDE[cr.t] || cr.t); }, cr.n.length * 280 + 120); };
+      c.appendChild(b);
+    });
+  }
+  function reset() { piezas = []; pintarTira(); msg(''); izq.innerHTML = '<div class="letra-grande" style="font-size:clamp(50px,9vh,90px)">🎼</div>'; }
+  d.querySelector('#c-leer').onclick = function () { if (piezas.length) CAA.hablar(CON_TILDE[palabra()] || palabra()); };
+  d.querySelector('#c-borrar').onclick = function () { piezas.pop(); pintarTira(); };
+  d.querySelector('#c-nueva').onclick = reset;
+  d.querySelector('#c-ya').onclick = function () {
+    if (!piezas.length) { CAA.hablar('Primero toca el xilófono'); return; }
+    var w = palabra(), notas = piezas.map(function (x) { return x.i; });
+    var conocidas = REALES.concat(PAL.map(function (x) { return sinTilde(x.t); }), MIS.map(function (x) { return sinTilde(x.t); }));
+    var real = conocidas.indexOf(sinTilde(w)) >= 0;
+    var mostrar = CON_TILDE[w] || (MIS.find(function (x) { return sinTilde(x.t) === sinTilde(w); }) || PAL.find(function (x) { return sinTilde(x.t) === sinTilde(w); }) || { t: w }).t;
+    melodia(notas, 0.28);
+    setTimeout(function () {
+      if (real) {
+        msg('🎵 ¡Has escrito ' + mostrar.toUpperCase() + '!');
+        izq.innerHTML = ''; var c = modeloPicto(mostrar, '⭐'); izq.appendChild(c.firstChild);
+        CAA.hablar('¡Has escrito ' + mostrar + '!');
+        var x = document.getElementById('xilofono').getBoundingClientRect(); CAA.fiesta(x.left + x.width / 2, x.top, ['🎵', '⭐', '✨'], 14); CAA.sonido('exito');
+      } else {
+        msg('🎵 «' + w.toUpperCase() + '»: ¡qué palabra tan divertida!');
+        CAA.hablar(w + '. ¡Qué palabra tan divertida!');
+      }
+    }, notas.length * 280 + 150);
+    creaciones = [{ t: mostrar, n: notas }].concat(creaciones.filter(function (c) { return c.t !== mostrar; })).slice(0, 30);
+    CAA.guardar('caa-xilo-creaciones', creaciones); pintarCreaciones();
+  };
+  msg(''); pintarCreaciones();
+  pintarXilofono(etiquetas, function (i, lbl) {
+    if (piezas.length >= 8) { msg('¡Palabra muy larga! Pulsa «¡Ya!» o «Borrar».', true); return; }
+    piezas.push({ i: i, t: lbl }); pintarTira(); msg('');
+    setTimeout(function () { CAA.hablar(NOMBRE[lbl] && lbl.length === 1 && 'aeiou'.indexOf(lbl) < 0 ? NOMBRE[lbl] : lbl); }, 120);
+  });
 }
 
 CAA.alCambiarLetra(function () { /* las etiquetas usan la letra escolar automáticamente */ });

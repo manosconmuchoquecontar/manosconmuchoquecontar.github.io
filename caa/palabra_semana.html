@@ -321,8 +321,11 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   /* ── Ajustes ── */
-  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1 };
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: false, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1 };
   var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  /* La contraseña viene desactivada de serie (las familias no la conocen). Quien ya hubiera usado
+     los juegos la tenía activada por defecto: se desactiva una sola vez; quien la quiera, la activa en Ajustes. */
+  if (!leer('caa-pin-v2')) { if (leer('caa-ajustes')) { aj.pinActivo = false; aj.pinSalir = false; guardar('caa-ajustes', aj); } guardar('caa-pin-v2', 1); }
   var oyentes = [];
   function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
 
@@ -854,7 +857,13 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     };
     m.addEventListener('change', function (e) {
       if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
-      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+      if (e.target.dataset.c) {
+        cambiar(e.target.dataset.c, e.target.checked); pintar();
+        if (e.target.dataset.c === 'pinActivo' && e.target.checked) {
+          var pm = m.querySelector('#caa-pin-msg'); pm.style.color = '#1F5249';
+          pm.textContent = '🔒 Activado. La contraseña es ' + (leer('caa-pin') ? 'la que guardaste' : '1234') + '. Puedes cambiarla aquí abajo.';
+        }
+      }
     });
     m.addEventListener('input', function (e) {
       if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }

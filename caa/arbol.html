@@ -270,6 +270,8 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   .frase .mini { flex-shrink: 0; width: 56px; height: 60px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; border: 1.5px solid var(--border); padding: 3px; text-align: center; line-height: 1; }
   .frase .mini .img { height: 36px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
   .frase .mini .img img { max-height: 36px; max-width: 48px; }
+  .frase .mini .img .emoji { font-size: 24px; }
+  .frase .mini .txt { font-size: 10px; }
   .acc-msg { display: flex; gap: .4rem; }
   .acc-msg button { width: 60px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg2); font-size: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
   .acc-msg button span { font-size: 10px; font-weight: 800; }
@@ -386,14 +388,14 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     .frase .mini { width: 42px; height: 44px; } .frase .mini .img { height: 24px; font-size: 20px; } .frase .mini .img img { max-height: 24px; }
     .acc-msg button { width: 44px; font-size: 17px; } .acc-msg button span { display: none; }
     .tablero, .tablero .scan-fila { gap: .3rem; }
-    .tablero .picto { height: calc((100vh - 150px) / 4); flex-direction: row; gap: 3px; padding: 2px 5px; border-radius: 9px; border-width: 2px; }
+    .tablero .picto { height: calc((100vh - 190px) / var(--filas, 4)); flex-direction: row; gap: 3px; padding: 2px 5px; border-radius: 9px; border-width: 2px; }
     .tablero .picto .img { flex: 0 0 38%; height: 100%; }
     .tablero .picto .txt { font-size: clamp(8px, 1.15vw, 12px); text-align: left; overflow: visible; }
     #virtual { grid-template-columns: auto 1fr; padding: .3rem .6rem 1.9rem; gap: .3rem .8rem; }
     .arbol { width: calc((100vh - 150px) * .6); }
     .opciones-barra { gap: .2rem .4rem; } .opciones-barra .seg button { padding: 4px 9px; font-size: 11px; }
     .semaforo-h i { width: 18px; height: 18px; } .semaforo-h { padding: 4px 8px; }
-    .tablero .fila-num .picto { height: calc((100vh - 150px) / 7); flex-direction: column; } .tablero .fila-num .picto .img { flex: 1; } .picto.numero .img { font-size: 5vh; }
+    .tablero .fila-num .picto { height: calc((100vh - 190px) / var(--filas, 4)); flex-direction: column; } .tablero .fila-num .picto .img { flex: 1; } .picto.numero .img { font-size: 5vh; }
     .col-panel { gap: .35rem; }
     .mensaje-v { min-height: 1.8em; font-size: 1rem; }
     .elige { aspect-ratio: auto; height: calc((100vh - 70px) * .26); font-size: 11px; }
@@ -526,8 +528,11 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   /* ── Ajustes ── */
-  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1, permanencia: 1200 };
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: false, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1, permanencia: 1200 };
   var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  /* La contraseña viene desactivada de serie (las familias no la conocen). Quien ya hubiera usado
+     los juegos la tenía activada por defecto: se desactiva una sola vez; quien la quiera, la activa en Ajustes. */
+  if (!leer('caa-pin-v2')) { if (leer('caa-ajustes')) { aj.pinActivo = false; aj.pinSalir = false; guardar('caa-ajustes', aj); } guardar('caa-pin-v2', 1); }
   var oyentes = [];
   function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
 
@@ -1135,7 +1140,13 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     };
     m.addEventListener('change', function (e) {
       if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
-      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+      if (e.target.dataset.c) {
+        cambiar(e.target.dataset.c, e.target.checked); pintar();
+        if (e.target.dataset.c === 'pinActivo' && e.target.checked) {
+          var pm = m.querySelector('#caa-pin-msg'); pm.style.color = '#1F5249';
+          pm.textContent = '🔒 Activado. La contraseña es ' + (leer('caa-pin') ? 'la que guardaste' : '1234') + '. Puedes cambiarla aquí abajo.';
+        }
+      }
     });
     m.addEventListener('input', function (e) {
       if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
@@ -1221,7 +1232,7 @@ var COLORES = [
 function col(k) { return COLORES.find(function (c) { return c.k === k; }); }
 var NUM = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'];
 var OBJ = {
-  comentar: { t: '💬 Pedir y comentar', ayuda: 'Pedir la canica, «otra vez», «más», y comentar lo que pasa: «¡guau!», «¡se ha caído!», «¡escucha!».',
+  comentar: { t: '💬 Pedir y comentar', ayuda: 'Pedir la canica (también por su color), «otra vez», «más», y comentar lo que pasa: «¡guau!», «¡se ha caído!», «¡escucha!».',
     consejo: '<b>Con el árbol de madera:</b> ten las canicas en tu mano, a la vista, para que tenga que pedirlas. Modela «QUIERO + CANICA». Antes de soltarla, haz la pausa del semáforo y espera su «¡YA!». Mientras baja, comenta: «¡ESCUCHA!», «¡GUAU!».' },
   espacial: { t: '⬆️⬇️ Arriba / abajo y esperar', ayuda: 'Conceptos espaciales (arriba, abajo, dentro, fuera) y la espera: no se suelta la canica hasta el «¡ya!».',
     consejo: '<b>Con el árbol de madera:</b> sube la canica despacio diciendo «ARRIBA» y espera con ella en la mano: «ESPERAR… PREPARADOS… LISTOS…». Cuando caiga a la bandeja, «¡ABAJO!». Para trabajar la espera, usa el semáforo.' },
@@ -1299,7 +1310,8 @@ function filaNumeros(a, b) { var f = []; for (var n = a; n <= b; n++) f.push({ t
 var TABLEROS = {
   comentar: [
     [CANICA, { t: 'echar', b: 'meter', e: '👇', k: 'accion' }, { t: 'mirar', e: '👀', k: 'accion' }, { t: '¡escucha!', b: 'escuchar', e: '👂', k: 'accion', d: 'escucha' }, { t: '¡guau!', b: 'sorpresa', e: '🤩', k: 'social', d: 'guau' }, { t: '¡se ha caído!', b: 'caer', e: '💥', k: 'accion', d: 'se ha caído' }],
-    [{ t: 'rápido', e: '🐇', k: 'describe' }, { t: 'despacio', b: 'lento', e: '🐢', k: 'describe' }, { t: 'me gusta', b: 'gustar', e: '👍', k: 'accion' }, { t: '¡qué bonito!', b: 'bonito', e: '😍', k: 'describe', d: 'qué bonito' }, { t: '¿dónde?', b: 'dónde', e: '❓', k: 'pregunta', d: 'dónde' }, { t: 'se acabó', b: 'terminar', e: '✋', k: 'no' }]
+    [{ t: 'rápido', e: '🐇', k: 'describe' }, { t: 'despacio', b: 'lento', e: '🐢', k: 'describe' }, { t: 'me gusta', b: 'gustar', e: '👍', k: 'accion' }, { t: '¡qué bonito!', b: 'bonito', e: '😍', k: 'describe', d: 'qué bonito' }, { t: '¿dónde?', b: 'dónde', e: '❓', k: 'pregunta', d: 'dónde' }, { t: 'se acabó', b: 'terminar', e: '✋', k: 'no' }],
+    COLORES.map(function (c) { return { t: c.k, e: c.e, k: 'describe', color: c }; }).concat([{ t: 'esta', b: 'este', e: '👉', k: 'describe' }, { t: '¿cuál?', b: 'cuál', e: '❓', k: 'pregunta', d: 'cuál' }])
   ],
   espacial: [
     [{ t: 'arriba', e: '⬆️', k: 'lugar' }, { t: 'abajo', e: '⬇️', k: 'lugar' }, { t: 'esperar', e: '⏳', k: 'accion' }, { t: 'preparados', b: 'preparado', e: '🚦', k: 'social' }, { t: 'listos', b: 'listo', e: '👌', k: 'social' }, { t: 'parar', e: '🛑', k: 'accion' }],
@@ -1324,6 +1336,7 @@ function celdaT(it) {
 }
 function pintarTablero() {
   var t = document.getElementById('tablero'); t.innerHTML = '';
+  t.style.setProperty('--filas', 1 + TABLEROS[op.obj].length);
   [NUCLEO].concat(TABLEROS[op.obj]).forEach(function (fila) {
     var f = document.createElement('div'); f.className = 'scan-fila' + (fila.length > 6 ? ' fila-num' : '');
     f.style.setProperty('--cols', Math.max(6, fila.length));

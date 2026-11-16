@@ -840,7 +840,7 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     a.style.display = 'block'; a.style.left = (r.left + r.width / 2) + 'px'; a.style.top = (r.top + r.height / 2) + 'px';
     a.querySelector('.carga').style.strokeDashoffset = String(100 - p * 100);
     if (p >= 1) {
-      var el = mir.el; mir.hecho = el; soltarMirada();
+      var el = mir.el; mir.hecho = el; mir.ultima = { el: el, t: Date.now() }; soltarMirada();
       el.classList.add('caa-mirada-ok'); setTimeout(function () { el.classList.remove('caa-mirada-ok'); }, 450);
       el.click();
       return;
@@ -858,7 +858,26 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     mir.t0 = performance.now(); t.classList.add('caa-mirando');
     mir.raf = requestAnimationFrame(cicloMirada);
   }
-  document.addEventListener('pointermove', function (e) { moverMirada(e.clientX, e.clientY); }, { passive: true });
+  var punteroVisto = false;
+  document.addEventListener('pointermove', function (e) { if (e.pointerType !== 'touch') punteroVisto = true; moverMirada(e.clientX, e.clientY); }, { passive: true });
+  /* Si el sistema (iPad, Control ocular de Windows, Irisbond…) ya hace el clic por permanencia,
+     evitamos que se active dos veces: se ignora el clic real que llega justo después del nuestro,
+     y un clic real cancela la carga del anillo. */
+  document.addEventListener('click', function (e) {
+    if (aj.acceso !== 'mirada' || !e.isTrusted) return;
+    var u = mir.ultima;
+    if (u && Date.now() - u.t < 1500 && (u.el === e.target || u.el.contains(e.target))) { e.preventDefault(); e.stopPropagation(); return; }
+    var t = e.target.closest && e.target.closest('.scan, .mirable');
+    if (t && t === mir.el) { soltarMirada(); mir.hecho = t; }
+  }, true);
+  /* Aviso si en modo mirada no llega ningún puntero (p. ej. tablet sin control por permanencia del sistema) */
+  setTimeout(function () {
+    if (aj.acceso !== 'mirada' || punteroVisto) return;
+    modalInfo('👁️ No llega el puntero del lector ocular',
+      'El modo «Mirada» necesita que el lector ocular mueva un puntero por la pantalla, y no se detecta ninguno.<br><br>' +
+      '<b>En iPad con Irisbond Hiru:</b> Ajustes → Accesibilidad → Tocar → <b>AssistiveTouch</b> → activa el <b>Control de permanencia</b> y elige el tiempo. Después, aquí en ⚙️ pon <b>«Táctil / ratón»</b>: el iPad hará el clic por permanencia en toda la web.<br><br>' +
+      '<b>En Windows con Irisbond:</b> abre <b>EasyClick</b> para que la mirada mueva el ratón. Si EasyClick ya hace el clic por permanencia, pon aquí «Táctil / ratón». Si quieres ver el anillo de carga de la web, desactiva el clic de EasyClick y deja aquí «Mirada». El Control ocular de Windows no mueve el ratón de forma continua y no sirve para este modo.');
+  }, 9000);
   document.addEventListener('mouseleave', function () { soltarMirada(); mir.el = null; mir.hecho = null; });
 
   /* ── Aplicar ajustes ── */
@@ -1103,7 +1122,9 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   }
 
   /* ── Inicio ── */
-  var opciones = {};
+  var opciones = {}, volverInterno = null;
+  function alVolver(dentro, atras) { volverInterno = { dentro: dentro, atras: atras }; }
+  function entrar() { try { if (!(history.state && history.state.caaSub)) history.pushState({ caaSub: 1 }, ''); } catch (e) {} }
   function init(o) {
     o = o || {}; opciones = o;
     var barra = document.createElement('header');
@@ -1130,10 +1151,17 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
     barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
     barra.querySelector('.volver').addEventListener('click', function (e) {
-      if (!aj.pinSalir) return;
+      // Dentro de una pantalla del juego, «Volver» regresa al menú del juego; desde el menú, a la web
+      var interno = volverInterno && volverInterno.dentro();
+      if (!interno && !aj.pinSalir) return;
       e.preventDefault(); var href = this.href;
-      pedirPin(function () { location.href = href; }, 'Para salir del juego hace falta la contraseña.');
+      var ir = interno ? function () { if (history.state && history.state.caaSub) history.back(); else volverInterno.atras(); }
+                       : function () { location.href = href; };
+      if (aj.pinSalir) pedirPin(ir, interno ? 'Para volver al menú del juego hace falta la contraseña.' : 'Para salir del juego hace falta la contraseña.');
+      else ir();
     });
+    // Botón «atrás» del móvil o del navegador: también vuelve al menú del juego
+    window.addEventListener('popstate', function () { if (volverInterno && volverInterno.dentro()) volverInterno.atras(); });
     CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
     aplicarLetra(); iconoPantalla(); aplicar();
     if (o.bienvenida !== false) bienvenida();
@@ -1147,7 +1175,8 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     get letra() { return letra; },
     alCambiarLetra: function (f) { oyentesLetra.push(f); },
     pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
-    alCambiar: function (f) { oyentes.push(f); }
+    alCambiar: function (f) { oyentes.push(f); },
+    alVolver: alVolver, entrar: entrar
   };
 })();
 
@@ -1211,7 +1240,7 @@ function pintarOp() {
   document.getElementById(x[0]).addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { op[x[1]] = b.dataset.v; guardarOp(); pintarOp(); } });
 });
 
-function mostrar(id) { ['inicio', 'madera', 'virtual', 'fin'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
+function mostrar(id) { ['inicio', 'madera', 'virtual', 'fin'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); if (id !== 'inicio') CAA.entrar(); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
 
 /* Tarjeta de receta como la de papel */
 function tarjeta(r, estados) {
@@ -1450,6 +1479,13 @@ document.getElementById('ir-imprimir').onclick = function () {
     setTimeout(function () { window.print(); }, 150);
   })();
 };
+
+/* «Volver» de la barra: desde una pantalla del juego regresa al menú del juego */
+CAA.alVolver(function () { return document.getElementById('inicio').hidden; }, function () {
+  if (!document.getElementById('madera').hidden) document.getElementById('m-salir').onclick();
+  else if (!document.getElementById('virtual').hidden) document.getElementById('v-salir').onclick();
+  else document.getElementById('fin-inicio').onclick();
+});
 
 pintarOp();
 </script>

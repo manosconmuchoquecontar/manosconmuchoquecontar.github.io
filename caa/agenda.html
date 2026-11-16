@@ -981,7 +981,9 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
   }
 
   /* ── Inicio ── */
-  var opciones = {};
+  var opciones = {}, volverInterno = null;
+  function alVolver(dentro, atras) { volverInterno = { dentro: dentro, atras: atras }; }
+  function entrar() { try { if (!(history.state && history.state.caaSub)) history.pushState({ caaSub: 1 }, ''); } catch (e) {} }
   function init(o) {
     o = o || {}; opciones = o;
     var barra = document.createElement('header');
@@ -1008,10 +1010,17 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
     barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
     barra.querySelector('.volver').addEventListener('click', function (e) {
-      if (!aj.pinSalir) return;
+      // Dentro de una pantalla del juego, «Volver» regresa al menú del juego; desde el menú, a la web
+      var interno = volverInterno && volverInterno.dentro();
+      if (!interno && !aj.pinSalir) return;
       e.preventDefault(); var href = this.href;
-      pedirPin(function () { location.href = href; }, 'Para salir del juego hace falta la contraseña.');
+      var ir = interno ? function () { if (history.state && history.state.caaSub) history.back(); else volverInterno.atras(); }
+                       : function () { location.href = href; };
+      if (aj.pinSalir) pedirPin(ir, interno ? 'Para volver al menú del juego hace falta la contraseña.' : 'Para salir del juego hace falta la contraseña.');
+      else ir();
     });
+    // Botón «atrás» del móvil o del navegador: también vuelve al menú del juego
+    window.addEventListener('popstate', function () { if (volverInterno && volverInterno.dentro()) volverInterno.atras(); });
     CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
     aplicarLetra(); iconoPantalla(); aplicar();
     if (o.bienvenida !== false) bienvenida();
@@ -1025,7 +1034,8 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     get letra() { return letra; },
     alCambiarLetra: function (f) { oyentesLetra.push(f); },
     pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
-    alCambiar: function (f) { oyentes.push(f); }
+    alCambiar: function (f) { oyentes.push(f); },
+    alVolver: alVolver, entrar: entrar
   };
 })();
 
@@ -1067,7 +1077,12 @@ function guardarMis() {
   try { localStorage.setItem('caa-agendas', JSON.stringify(MIS)); return true; }
   catch (e) { alert('No queda espacio en este dispositivo. Prueba con menos fotos o borra alguna agenda.'); return false; }
 }
-function mostrar(id) { ['biblioteca', 'uso', 'editor'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
+function mostrar(id) { ['biblioteca', 'uso', 'editor'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); if (id !== 'biblioteca') CAA.entrar(); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
+/* «Volver» de la barra: desde una agenda o el editor regresa a la lista de agendas */
+CAA.alVolver(function () { return document.getElementById('biblioteca').hidden; }, function () {
+  if (!document.getElementById('uso').hidden) document.getElementById('u-salir').onclick();
+  else document.getElementById('ed-cancelar').onclick();
+});
 function copia(o) { return JSON.parse(JSON.stringify(o)); }
 
 /* Imagen de un paso: foto propia, pictograma ARASAAC o emoji */

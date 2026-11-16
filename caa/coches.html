@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Los coches · CAA · Manos con Mucho que Contar</title>
+<meta name="description" content="Juego de la rampa de coches para pedir, comentar y aprender conceptos con CAA: con la rampa de madera, en la pantalla o imprimiendo el tablero.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Playwrite+DE+Grund&family=Playwrite+HR+Lijeva&display=swap">
+<style>
+/* ── Estilos comunes CAA ── */
+/* ═══════════════════════════════════════════════
+   CAA · Estilos comunes · Manos con Mucho que Contar
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg: #F5FAFA; --bg2: #E8F4F2; --ink: #1A3A38; --ink2: #4A706D; --ink3: #6E8F8C;
+  --teal: #2A9D8F; --teal-d: #1F5249; --border: rgba(26,58,56,0.12); --radius: 20px;
+  --foco: #FFB800;
+  /* Clave de colores (Fitzgerald modificada) */
+  --k-persona: #FFF3B0; --k-accion: #C9F2C7; --k-cosa: #FFD8B0;
+  --k-describe: #C7E3FF; --k-social: #FFD1E8; --k-no: #FFC2C2; --k-pregunta: #E3D4FF; --k-lugar: #E8E2D0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, .fredoka { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 600; }
+button { font-family: inherit; cursor: pointer; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; }
+
+/* ── Barra superior ── */
+.caa-barra {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: .8rem;
+  padding: .6rem 1rem; background: rgba(245,250,250,.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.caa-barra .volver {
+  display: flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink2);
+  font-weight: 700; font-size: 14px; padding: 8px 12px; border-radius: 100px; background: white; border: 1px solid var(--border);
+}
+.caa-barra h1 { font-size: 1.15rem; flex: 1; text-align: center; color: var(--teal-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.caa-barra .btn-ajustes {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Marca de agua ── */
+.caa-marca {
+  position: fixed; bottom: 10px; left: 10px; z-index: 8500; pointer-events: none;
+  background: #2A9D8F; color: #fff; font-family: 'Nunito', sans-serif; font-size: 12px; font-weight: 800;
+  padding: 5px 12px; border-radius: 100px; box-shadow: 0 2px 8px rgba(0,0,0,.15); opacity: .95;
+}
+body.caa-contraste .caa-marca { background: #FFE14D; color: #000; }
+
+/* ── Botones genéricos ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 100px; border: 1.5px solid var(--border); background: white;
+  font-weight: 700; font-size: 15px; transition: transform .15s, background .2s;
+}
+.btn:active { transform: scale(.96); }
+.btn-p { background: var(--teal); color: white; border-color: var(--teal); }
+.btn-p:hover { background: #21867A; }
+.btn-s { background: var(--bg2); color: var(--teal-d); border-color: transparent; }
+
+/* ── Celda de pictograma ── */
+.picto {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px; background: white; border: 2.5px solid var(--border); border-radius: 16px;
+  font-weight: 800; font-size: clamp(12px, 1.6vw, 16px); line-height: 1.1; text-align: center;
+  user-select: none; transition: transform .12s, box-shadow .2s; min-width: 0;
+}
+.picto:active { transform: scale(.95); }
+.picto .img { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.picto .img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.picto .img .emoji { font-size: clamp(28px, 5vw, 56px); line-height: 1; }
+.picto .txt { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.picto.persona { background: var(--k-persona); } .picto.accion { background: var(--k-accion); }
+.picto.cosa { background: var(--k-cosa); } .picto.describe { background: var(--k-describe); }
+.picto.social { background: var(--k-social); } .picto.no { background: var(--k-no); }
+.picto.pregunta { background: var(--k-pregunta); } .picto.lugar { background: var(--k-lugar); }
+.picto.vacio { visibility: hidden; }
+
+/* ── Barrido (pulsador) ── */
+.caa-foco {
+  outline: 6px solid var(--foco) !important; outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255,184,0,.28) !important; position: relative; z-index: 5;
+}
+.caa-foco-fila { outline: 5px dashed var(--foco) !important; outline-offset: 4px; border-radius: 16px; }
+body.caa-barrido-activo { cursor: pointer; }
+
+/* ── Alto contraste ── */
+body.caa-contraste { --bg: #000; --bg2: #111; --ink: #fff; --ink2: #eee; --ink3: #ccc; --border: #fff; background: #000; }
+body.caa-contraste .caa-barra, body.caa-contraste .btn, body.caa-contraste .caa-barra .volver,
+body.caa-contraste .caa-barra .btn-ajustes { background: #000; color: #fff; border-color: #fff; }
+body.caa-contraste .picto { border-color: #fff; border-width: 3px; color: #000; }
+body.caa-contraste .caa-barra h1 { color: #FFE14D; }
+
+/* ── Panel de ajustes ── */
+.caa-modal { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; background: rgba(26,58,56,.55); backdrop-filter: blur(4px); padding: 1rem; }
+.caa-modal.abierto { display: flex; }
+.caa-modal .caja { background: white; color: #1A3A38; border-radius: 24px; padding: 1.8rem; width: 100%; max-width: 520px; max-height: 90vh; overflow: auto; position: relative; }
+.caa-modal h2 { margin-bottom: 1.2rem; color: var(--teal-d); }
+.caa-modal .cerrar { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: none; background: #E8F4F2; font-size: 16px; }
+.ajuste { margin-bottom: 1.3rem; }
+.ajuste > label, .ajuste > .lbl { display: block; font-weight: 800; margin-bottom: .5rem; font-size: 14px; }
+.ajuste .ayuda { font-size: 13px; color: #4A706D; margin-top: .4rem; line-height: 1.5; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { padding: 9px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); background: white; font-weight: 700; font-size: 13px; color: #1A3A38; }
+.seg button[aria-pressed="true"] { background: #2A9D8F; color: white; border-color: #2A9D8F; }
+.ajuste input[type=range] { width: 100%; accent-color: #2A9D8F; }
+.ajuste .fila-check { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; margin-bottom: .4rem; }
+.ajuste .fila-check input { width: 20px; height: 20px; accent-color: #2A9D8F; }
+
+
+/* ── Elegir pictograma ── */
+.caa-sel-busca { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.caa-sel-busca input { flex: 1; padding: 10px 14px; border-radius: 100px; border: 1.5px solid rgba(26,58,56,.15); font: inherit; }
+.caa-sel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: .5rem; max-height: 52vh; overflow: auto; padding: 4px; }
+.caa-sel-op { aspect-ratio: 1; background: white; border: 2.5px solid rgba(26,58,56,.12); border-radius: 14px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+.caa-sel-op img { max-width: 100%; max-height: 100%; }
+.caa-sel-op:hover { border-color: #2A9D8F; }
+.caa-sel-op.actual { border-color: #2A9D8F; border-width: 4px; background: #E3F6F3; }
+.caa-sel-msg { grid-column: 1 / -1; color: #4A706D; text-align: center; padding: 1.5rem; }
+.caa-sel-pie { display: flex; gap: .5rem; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; }
+.caa-aviso-elegir { position: fixed; top: 72px; left: 50%; transform: translateX(-50%); z-index: 8600; background: #FFF1C2; border: 2px solid #E9A400; color: #3E3008; border-radius: 100px; padding: 8px 8px 8px 18px; font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.15); max-width: 94vw; }
+.caa-aviso-elegir button { border: none; background: #2A9D8F; color: white; border-radius: 100px; padding: 8px 14px; font-weight: 800; }
+body.caa-eligiendo .picto, body.caa-eligiendo [data-picto-key] { outline: 3px dashed #E9A400; outline-offset: -3px; cursor: pointer; }
+
+
+/* ── Letra escolar: MAYÚSCULAS (Playwrite DE Grund) · minúsculas (Playwrite HR Lijeva) ── */
+:root { --font-mayus: 'Playwrite DE Grund', 'Fredoka', cursive; --font-minus: 'Playwrite HR Lijeva', 'Fredoka', cursive; }
+.picto .txt, .letra-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+.frase-nino { font-family: var(--font-mayus); text-transform: uppercase; font-weight: 400; }
+body.modo-minus .picto .txt, body.modo-minus .letra-nino { font-family: var(--font-minus); text-transform: lowercase; }
+body.modo-minus .frase-nino { font-family: var(--font-minus); text-transform: none; }
+.picto .txt { font-size: .86em; line-height: 1.45; }
+
+/* ── Barra: selector de letra, pantalla completa ── */
+.caa-barra .grupo-barra { display: flex; gap: .4rem; align-items: center; flex-shrink: 0; }
+.caa-letra { display: flex; background: white; border: 1px solid var(--border); border-radius: 100px; padding: 3px; }
+.caa-letra button { border: none; background: transparent; border-radius: 100px; padding: 3px 11px; font-size: 16px; line-height: 1.5; color: var(--ink2); }
+.caa-letra button[aria-pressed="true"] { background: var(--teal); color: white; }
+.caa-letra .may { font-family: var(--font-mayus); } .caa-letra .min { font-family: var(--font-minus); }
+.caa-barra .btn-icono { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; color: var(--teal-d); }
+.caa-barra .btn-icono svg { width: 20px; height: 20px; }
+body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { background: #000; color: #fff; border-color: #fff; }
+@media (max-width: 600px) { .caa-barra { gap: .4rem; padding: .5rem .6rem; } .caa-barra .volver span { display: none; } .caa-barra h1 { font-size: .95rem; text-align: left; } }
+@media (max-height: 520px) {
+  .caa-barra { padding: .25rem .7rem; }
+  .caa-barra .btn-ajustes, .caa-barra .btn-icono { width: 34px; height: 34px; font-size: 16px; }
+  .caa-barra .volver { padding: 5px 10px; font-size: 13px; }
+  .caa-barra h1 { font-size: .95rem; }
+  .caa-letra button { font-size: 13px; padding: 1px 9px; }
+  .caa-marca { font-size: 10px; padding: 3px 9px; bottom: 5px; left: 5px; }
+}
+
+/* ── Mirada ── */
+.caa-anillo { position: fixed; width: 92px; height: 92px; transform: translate(-50%, -50%); pointer-events: none; z-index: 9400; display: none; }
+.caa-anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.caa-anillo .fondo { fill: rgba(255,255,255,.55); stroke: rgba(26,58,56,.15); stroke-width: 8; }
+.caa-anillo .carga { fill: none; stroke: #2A9D8F; stroke-width: 9; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.caa-mirando { outline: 5px solid #2A9D8F !important; outline-offset: 2px; }
+.caa-mirada-ok { animation: caa-ok .45s ease-out; }
+@keyframes caa-ok { 0% { box-shadow: 0 0 0 0 rgba(45,190,96,.8); } 100% { box-shadow: 0 0 0 22px rgba(45,190,96,0); } }
+
+/* ── Elegir voz ── */
+.voz-elegir { display: flex; gap: .5rem; margin: .5rem 0 .3rem; }
+.voz-elegir select { flex: 1; min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 14px; background: white; color: #1A3A38; }
+.mini-rango { display: block; font-size: 13px; font-weight: 700; margin-top: .45rem; }
+.mini-rango small { font-weight: 600; color: #6E8F8C; }
+.mini-rango input { width: 100%; accent-color: #2A9D8F; }
+
+/* ── Contraseña del adulto ── */
+.caa-pin .caja { max-width: 340px; text-align: center; }
+.caa-pin .ico { font-size: 2.3rem; }
+.caa-pin h2 { margin: .2rem 0 .3rem; }
+.caa-pin .motivo { font-size: 13px; color: #4A706D; }
+.pin-puntos { display: flex; gap: 12px; justify-content: center; margin: 1rem 0; }
+.pin-puntos span { width: 15px; height: 15px; border-radius: 50%; background: #D4F0EC; transition: all .2s; }
+.pin-puntos span.lleno { background: #1F5249; transform: scale(1.15); }
+.pin-teclas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pin-teclas button { padding: 13px; border: 2px solid #D4F0EC; border-radius: 12px; background: white; font-size: 1.25rem; font-weight: 800; color: #1A3A38; }
+.pin-teclas button:active { transform: scale(.94); }
+.pin-teclas .borrar { color: #C4372B; border-color: #F5C0C0; }
+.pin-error { color: #C4372B; font-weight: 800; font-size: 13px; min-height: 1.3em; margin-top: .6rem; }
+.pin-olvido { font-size: 11.5px; color: #6E8F8C; margin-top: .4rem; line-height: 1.45; }
+.caa-pin.temblor .caja { animation: caa-temblor .35s; }
+@keyframes caa-temblor { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.pin-cambiar { display: flex; gap: .5rem; flex-wrap: wrap; }
+.pin-cambiar input { width: 120px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid rgba(26,58,56,.2); font: inherit; font-size: 18px; letter-spacing: 6px; text-align: center; }
+.pin-msg { font-size: 13px; font-weight: 700; margin-top: .4rem; min-height: 1.2em; }
+@media (max-height: 560px) { .pin-teclas button { padding: 8px; font-size: 1.05rem; } .pin-puntos { margin: .5rem 0; } .caa-pin .ico { display: none; } }
+
+/* ── Bienvenida ── */
+.caa-bienv .caja { max-width: 440px; }
+.caa-bienv .bloque { display: flex; gap: .7rem; background: #E8F4F2; border-radius: 14px; padding: .75rem 1rem; margin-bottom: .55rem; font-size: 14px; line-height: 1.5; color: #1A3A38; }
+.caa-bienv .bloque .i { font-size: 1.35rem; flex-shrink: 0; }
+.caa-bienv .pin-chip { display: inline-block; background: #1F5249; color: white; font-weight: 900; padding: 0 8px; border-radius: 8px; letter-spacing: 2px; }
+
+/* ── Aviso para adultos ── */
+.consejo {
+  background: #FFF8E1; border: 1.5px solid #F2D27A; border-radius: 16px; padding: 1rem 1.2rem;
+  font-size: 14px; line-height: 1.55; color: #5C4A12;
+}
+.consejo b { color: #3E3008; }
+
+/* ── Celebración ── */
+@keyframes caa-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.pop { animation: caa-pop .45s ease-out both; }
+
+@media print {
+  .caa-barra, .caa-marca, .no-print, .caa-modal { display: none !important; }
+  body { background: white; }
+  .picto { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<style>
+  .pantalla { max-width: 1100px; margin: 0 auto; padding: 1.4rem 1rem 3.5rem; }
+  .titulo-sec { font-size: 1.6rem; color: var(--teal-d); margin-bottom: .35rem; }
+  body.caa-contraste .titulo-sec { color: #FFE14D; }
+  .sub { color: var(--ink2); margin-bottom: 1.3rem; line-height: 1.55; max-width: 760px; }
+  [hidden] { display: none !important; }
+
+  /* ── Inicio ── */
+  .modos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.4rem; }
+  .modo { text-align: left; border: 2.5px solid transparent; border-radius: 22px; padding: 1.3rem; display: flex; flex-direction: column; gap: .4rem; transition: transform .2s; color: var(--ink); }
+  .modo:hover { transform: translateY(-4px); }
+  .modo .ico { font-size: 2.4rem; }
+  .modo strong { font-size: 1.15rem; }
+  .modo span.d { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+  .modo.madera { background: #FFE9C7; } .modo.pantalla { background: #D4F0EC; } .modo.imprimir { background: #E8E0F5; }
+  .opciones-ini { background: white; border: 1px solid var(--border); border-radius: 18px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; }
+  body.caa-contraste .opciones-ini { background: #000; }
+  .grupo-op { display: flex; flex-direction: column; gap: .4rem; }
+  .grupo-op .lbl { font-weight: 800; font-size: 13px; }
+  .seg { display: inline-flex; flex-wrap: wrap; background: white; border: 1.5px solid var(--border); border-radius: 22px; padding: 3px; }
+  .seg button { border: none; background: transparent; border-radius: 100px; padding: 7px 13px; font-weight: 800; font-size: 13px; }
+  .seg button[aria-pressed="true"] { background: var(--teal); color: white; }
+  .grupo-op small { color: var(--ink3); font-size: 12px; max-width: 520px; line-height: 1.4; }
+
+  /* ── Semáforo ── */
+  .semaforo { display: flex; flex-direction: column; align-items: center; gap: .5rem; background: none; border: none; padding: 0; }
+  .semaforo .caja { background: #2B2B2B; border-radius: 22px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 8px 18px rgba(0,0,0,.2); }
+  .semaforo .luz { width: clamp(44px, 9vh, 76px); height: clamp(44px, 9vh, 76px); border-radius: 50%; opacity: .25; transition: opacity .15s, box-shadow .15s; }
+  .semaforo .luz.r { background: #E53935; } .semaforo .luz.a { background: #FFB300; } .semaforo .luz.v { background: #2DBE60; }
+  .semaforo .luz.on { opacity: 1; box-shadow: 0 0 22px currentColor; }
+  .semaforo .luz.r.on { color: #E53935; } .semaforo .luz.a.on { color: #FFB300; } .semaforo .luz.v.on { color: #2DBE60; }
+  .semaforo .rotulo { font-weight: 900; font-size: 1.05rem; color: var(--teal-d); min-height: 1.4em; text-align: center; }
+  .semaforo.scan, .semaforo.mirable { border-radius: 22px; padding: 6px; }
+
+  /* ── Modo madera (tablero CAA) ── */
+  #madera { display: grid; grid-template-columns: minmax(170px, 230px) 1fr; gap: 1rem; padding: .8rem 1rem 2.8rem; max-width: 1400px; margin: 0 auto; align-items: start; }
+  .col-izq { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .nav-m { display: flex; gap: .4rem; justify-content: center; flex-wrap: wrap; }
+  .nav-m button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; }
+  .pista { font-size: 13px; font-weight: 700; color: #5C4A12; background: #FFF6D6; border: 1.5px solid #F2D27A; border-radius: 14px; padding: .5rem .8rem; line-height: 1.45; }
+  .zona-tablero { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
+  .mensaje { display: flex; gap: .5rem; align-items: stretch; background: white; border: 2px solid var(--border); border-radius: 16px; padding: .4rem; min-height: 72px; }
+  .frase { flex: 1; display: flex; gap: .3rem; align-items: center; overflow-x: auto; min-width: 0; padding: 0 .3rem; }
+  .frase .vacio-txt { color: var(--ink3); font-weight: 600; font-size: 14px; }
+  .frase .mini { flex-shrink: 0; width: 56px; height: 60px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; border: 1.5px solid var(--border); padding: 3px; text-align: center; line-height: 1; }
+  .frase .mini .img { height: 36px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+  .frase .mini .img img { max-height: 36px; max-width: 48px; }
+  .frase .mini .img .emoji { font-size: 24px; }
+  .frase .mini .txt { font-size: 10px; }
+  .acc-msg { display: flex; gap: .4rem; }
+  .acc-msg button { width: 60px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg2); font-size: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .acc-msg button span { font-size: 10px; font-weight: 800; }
+  .acc-msg .hablar { background: var(--teal); color: white; border-color: var(--teal); }
+  .tablero { display: flex; flex-direction: column; gap: .45rem; }
+  .tablero .scan-fila { display: grid; grid-template-columns: repeat(6, 1fr); gap: .45rem; border-radius: 14px; }
+  .tablero .picto { height: clamp(78px, 13.5vh, 122px); padding: 4px; border-radius: 12px; }
+  .tablero .picto .img .emoji { font-size: clamp(24px, 4.6vh, 42px); }
+  .picto.pulsado { animation: pulso .6s ease-out; }
+  @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(42,157,143,.7); transform: scale(1.05); } 100% { box-shadow: 0 0 0 16px rgba(42,157,143,0); transform: scale(1); } }
+
+  /* ── Modo pantalla ── */
+  #virtual { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, 1fr); gap: .8rem 1.2rem; padding: .6rem 1rem 2.8rem; max-width: 1300px; margin: 0 auto; align-items: start; }
+  .col-pista { display: flex; justify-content: center; }
+  .pista-coches { position: relative; width: min(100%, 64vh, 560px); aspect-ratio: 5 / 6; background: linear-gradient(#F4FBFF, #EAF6F3); border-radius: 22px; border: 1.5px solid var(--border); overflow: hidden; }
+  .pista-coches .poste { position: absolute; top: 9%; bottom: 4%; width: 7%; background: repeating-conic-gradient(#222 0 25%, #fff 0 50%) 0 0 / 14px 14px; border: 3px solid #E4C9A0; border-radius: 4px; }
+  .pista-coches .poste.izq { left: 22%; } .pista-coches .poste.der { left: 71%; }
+  .pista-coches .base { position: absolute; left: 6%; right: 6%; bottom: 1.5%; height: 4%; background: #E9D1A8; border-radius: 6px; }
+  .pista-coches .plataforma { position: absolute; left: 20%; right: 4%; top: 5%; height: 6%; background: #F2B33D; border-radius: 10px 10px 6px 6px; box-shadow: 0 4px 0 #D9962A; }
+  .pista-coches .rampa { position: absolute; height: 3.6%; border-radius: 10px; transform-origin: 0 50%; box-shadow: 0 3px 0 rgba(0,0,0,.15); }
+  .pista-coches .luces { position: absolute; left: 22.6%; top: 14%; display: flex; flex-direction: column; gap: 3px; z-index: 3; }
+  .pista-coches .luces i { display: block; width: clamp(9px, 2.4vh, 18px); height: clamp(9px, 2.4vh, 18px); border-radius: 50%; opacity: .3; }
+  .pista-coches .luces i:nth-child(1) { background: #E53935; } .pista-coches .luces i:nth-child(2) { background: #FFB300; } .pista-coches .luces i:nth-child(3) { background: #2DBE60; }
+  .pista-coches .luces i.on { opacity: 1; box-shadow: 0 0 10px currentColor; }
+  .coche { position: absolute; width: 14%; translate: -50% -100%; z-index: 4; pointer-events: none; transform-origin: 50% 100%; }
+  .coche svg { width: 100%; display: block; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+  .coche.llega { animation: rebote .45s ease-out; }
+  @keyframes rebote { 40% { translate: -50% -125%; } }
+
+  .col-panel { display: flex; flex-direction: column; gap: .7rem; min-width: 0; }
+  .mensaje-v { min-height: 2.6em; font-weight: 800; color: var(--teal-d); text-align: center; font-size: clamp(1.05rem, 2.4vw, 1.35rem); display: flex; align-items: center; justify-content: center; gap: .5rem; }
+  .mensaje-v.aviso { color: #B35A00; }
+  .mensaje-v .muestra { display: inline-block; width: 1.4em; height: 1.4em; border-radius: 50%; border: 2px solid rgba(0,0,0,.2); vertical-align: middle; }
+  .marcador { display: flex; gap: 6px; justify-content: center; }
+  .marcador span { width: 14px; height: 14px; border-radius: 50%; background: var(--border); }
+  .marcador span.ok { background: #2DBE60; }
+  .rotulo-g { font-weight: 800; font-size: 13px; color: var(--ink2); text-align: center; }
+  .garaje { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+  .elige { aspect-ratio: 1.15; border-radius: 16px; border: 2.5px solid var(--border); background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px; font-weight: 800; font-size: 13px; color: var(--ink); }
+  .elige svg { width: 82%; }
+  .elige[disabled] { opacity: .35; }
+  .elige.ok { border-color: #2DBE60; background: #E5F8EC; }
+  .elige.mal { animation: no .4s; }
+  @keyframes no { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .controles { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: .5rem; }
+  .controles .vel { border-radius: 16px; border: 2.5px solid var(--border); background: white; font-weight: 800; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; gap: 2px; }
+  .controles .vel .e { font-size: 28px; line-height: 1; }
+  .controles .vel[aria-pressed="true"] { border-color: var(--teal); background: #DDF3EF; }
+  .btn-ya { border: none; border-radius: 18px; background: #2DBE60; color: white; font-weight: 900; font-size: clamp(1.2rem, 2.8vw, 1.7rem); padding: 10px; box-shadow: 0 6px 18px rgba(45,190,96,.35); display: flex; align-items: center; justify-content: center; gap: .4rem; }
+  .btn-ya[disabled] { background: #9BB8A6; box-shadow: none; }
+  .respuestas { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .5rem; }
+  .respuestas .picto { height: clamp(90px, 15vh, 130px); }
+  .respuestas .picto.ok { outline: 4px solid #2DBE60; }
+  .respuestas .picto.mal { animation: no .4s; }
+  .respuestas .num .img { font-size: clamp(34px, 7vh, 58px); font-weight: 900; color: #1D4E89; }
+  .nav-v { display: flex; gap: .4rem; justify-content: center; flex-wrap: wrap; }
+  .nav-v button { border: 1.5px solid var(--border); background: white; border-radius: 100px; padding: 6px 12px; font-weight: 800; font-size: 13px; }
+
+  #fin { text-align: center; display: flex; flex-direction: column; align-items: center; gap: .8rem; padding: 2rem 1rem; }
+  #fin .grande { font-size: 5rem; }
+
+  /* ── Impresión ── */
+  #impresion { display: none; }
+  @media print {
+    @page { size: A4 portrait; margin: 9mm; }
+    body > *:not(#impresion) { display: none !important; }
+    #impresion { display: block !important; }
+    .hoja h1 { font-family: 'Fredoka', sans-serif; text-align: center; font-size: 16pt; color: #1F5249; margin-bottom: 4mm; }
+    .imp-tablero { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+    .imp-tablero .picto { height: 37mm; border: 1.5px solid #333; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11pt; }
+    .imp-tablero .picto .img img { max-height: 24mm; }
+    .imp-tablero .picto .img .emoji { font-size: 22mm; }
+    .imp-pie { text-align: center; font-size: 8pt; color: #555; margin-top: 3mm; }
+  }
+
+  @media (max-width: 900px) {
+    #madera { grid-template-columns: 1fr; }
+    .col-izq { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    .col-izq .pista { flex: 1 1 260px; }
+    #virtual { grid-template-columns: 1fr; }
+    .pista-coches { width: min(100%, 52vh); }
+  }
+  @media (max-width: 560px) {
+    .tablero .scan-fila { gap: .25rem; }
+    .tablero .picto { height: 64px; border-width: 1.5px; border-radius: 8px; }
+    .tablero .picto .txt { font-size: 9px; }
+    .elige { font-size: 11px; }
+  }
+  @media (max-height: 520px) {
+    #madera { grid-template-columns: 120px 1fr; padding: .3rem .6rem 1.9rem; gap: .6rem; }
+    .col-izq { flex-direction: column; }
+    .semaforo .luz { width: 34px; height: 34px; }
+    .semaforo .caja { gap: 5px; padding: 6px; border-radius: 16px; }
+    .semaforo .rotulo { font-size: .85rem; }
+    .pista { display: none; }
+    .mensaje { min-height: 50px; padding: .25rem; }
+    .frase .mini { width: 42px; height: 44px; } .frase .mini .img { height: 24px; font-size: 20px; } .frase .mini .img img { max-height: 24px; }
+    .acc-msg button { width: 44px; font-size: 17px; } .acc-msg button span { display: none; }
+    .tablero, .tablero .scan-fila { gap: .3rem; }
+    .tablero .picto { height: calc((100vh - 150px) / 4); flex-direction: row; gap: 3px; padding: 2px 5px; border-radius: 9px; border-width: 2px; }
+    .tablero .picto .img { flex: 0 0 38%; height: 100%; }
+    .tablero .picto .txt { font-size: clamp(8px, 1.15vw, 12px); text-align: left; overflow: visible; }
+    #virtual { grid-template-columns: auto 1fr; padding: .3rem .6rem 1.9rem; gap: .3rem .8rem; }
+    .pista-coches { width: calc((100vh - 70px) * 5 / 6); }
+    .col-panel { gap: .35rem; }
+    .mensaje-v { min-height: 1.8em; font-size: 1rem; }
+    .elige { aspect-ratio: auto; height: calc((100vh - 70px) * .26); font-size: 11px; }
+    .elige svg { width: auto; height: 62%; }
+    .controles .vel .e { font-size: 20px; } .controles .vel { font-size: 11px; padding: 3px; }
+    .btn-ya { padding: 6px; font-size: 1.1rem; }
+    .respuestas .picto { height: calc((100vh - 70px) * .26); }
+  }
+</style>
+</head>
+<body>
+<section id="inicio" class="pantalla">
+  <h2 class="titulo-sec">🏎️ Los coches</h2>
+  <p class="sub">Un juego para pedir, comentar y aprender conceptos con una <b>rampa de coches</b>. Funciona con la <b>rampa de madera</b> (el niño pide con el tablero y tú sueltas los coches), <b>en la pantalla</b>, o <b>imprimiendo</b> el tablero para tenerlo junto al juguete.</p>
+
+  <div class="modos">
+    <button class="modo madera" id="ir-madera"><span class="ico" aria-hidden="true">🪵</span><strong>Con la rampa de madera</strong><span class="d">Un tablero de CAA para pedir y comentar («quiero el coche rojo», «otra vez», «¡qué rápido!») y un semáforo para el «preparados, listos… ¡ya!».</span></button>
+    <button class="modo pantalla" id="ir-virtual"><span class="ico" aria-hidden="true">📱</span><strong>Rampa en la pantalla</strong><span class="d">El niño elige un coche, espera al semáforo y lo ve bajar. Con juegos de colores, arriba/abajo, primero/último y contar.</span></button>
+    <button class="modo imprimir adulto" id="ir-imprimir"><span class="ico" aria-hidden="true">🖨️</span><strong>Descargar para imprimir</strong><span class="d">El tablero de comunicación en una hoja A4. En la ventana de imprimir, elige «Guardar como PDF».</span></button>
+  </div>
+
+  <div class="opciones-ini adulto">
+    <div class="grupo-op">
+      <span class="lbl">Rampa en la pantalla: juego</span>
+      <div class="seg" id="op-nivel">
+        <button data-v="libre">🚗 Juego libre</button><button data-v="colores">🎨 Colores</button><button data-v="donde">⬆️⬇️ Arriba / abajo</button><button data-v="orden">🥇 Primero / último</button><button data-v="contar">🔢 Contar</button>
+      </div>
+      <small id="op-nivel-ayuda"></small>
+    </div>
+  </div>
+
+  <div class="consejo">
+    <b>Con la rampa de madera:</b> deja los coches a la vista pero fuera de su alcance, para que tenga que pedirlos. Modela tú primero en el tablero: «QUIERO + COCHE + ROJO». Antes de soltarlo, haz la <b>pausa</b>: «preparados… listos…» y espera a que te mire o pulse <b>¡YA!</b>. Cuando baje, comenta: «¡RÁPIDO!», «¡ABAJO!», «¡SE HA CAÍDO!», y pregunta «¿OTRA VEZ?».
+  </div>
+</section>
+
+<section id="madera" hidden data-scan-raiz>
+  <div class="col-izq">
+    <button type="button" class="semaforo scan" id="m-semaforo" data-decir="Preparados, listos, ya" aria-label="Semáforo: preparados, listos, ya">
+      <span class="caja" aria-hidden="true"><span class="luz r"></span><span class="luz a"></span><span class="luz v"></span></span>
+      <span class="rotulo frase-nino" id="m-rotulo">¿Preparados?</span>
+    </button>
+    <div class="nav-m adulto no-barrido"><button id="m-salir">🏠 Inicio</button></div>
+    <p class="pista" id="m-pista"></p>
+  </div>
+  <div class="zona-tablero">
+    <div class="mensaje scan-fila" aria-label="Frase">
+      <div class="frase" id="frase" aria-live="polite"><span class="vacio-txt">Toca los pictogramas para pedir y comentar</span></div>
+      <div class="acc-msg">
+        <button class="hablar scan" id="decir" data-decir="Decir">🔊<span>Decir</span></button>
+        <button class="scan" id="borrar" data-decir="Borrar">⌫<span>Borrar</span></button>
+        <button class="scan" id="limpiar" data-decir="Limpiar todo">🗑️<span>Todo</span></button>
+      </div>
+    </div>
+    <div class="tablero" id="tablero"></div>
+  </div>
+</section>
+
+<section id="virtual" hidden data-scan-raiz>
+  <div class="col-pista">
+    <div class="pista-coches" id="pista" aria-label="Rampa de coches">
+      <div class="base"></div>
+      <div class="poste izq"></div><div class="poste der"></div>
+      <div class="luces" id="luces" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="plataforma"></div>
+    </div>
+  </div>
+  <div class="col-panel">
+    <div class="marcador" id="marcador" aria-hidden="true"></div>
+    <div class="mensaje-v" id="v-msg" aria-live="polite"></div>
+    <div class="rotulo-g" id="rotulo-garaje">Elige un coche</div>
+    <div class="garaje scan-fila" id="garaje"></div>
+    <div class="controles scan-fila" id="controles">
+      <button type="button" class="vel scan" data-vel="rapido" data-decir="Rápido"><span class="e" aria-hidden="true">🐇</span>Rápido</button>
+      <button type="button" class="vel scan" data-vel="despacio" data-decir="Despacio"><span class="e" aria-hidden="true">🐢</span>Despacio</button>
+      <button type="button" class="btn-ya scan" id="v-ya" data-decir="Ya">🚦 ¡Ya!</button>
+    </div>
+    <div class="respuestas scan-fila" id="respuestas" hidden></div>
+    <div class="nav-v no-barrido">
+      <button id="v-repetir">🔊 Repetir</button>
+      <button id="v-salir" class="adulto">🏠 Inicio</button>
+    </div>
+  </div>
+</section>
+
+<section id="fin" class="pantalla" hidden>
+  <div class="grande pop">🏁</div>
+  <h2 class="titulo-sec frase-nino">¡Carrera terminada!</h2>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center">
+    <button class="btn btn-p" id="fin-otra">🔁 Otra vez</button>
+    <button class="btn" id="fin-inicio">🏠 Inicio</button>
+  </div>
+</section>
+
+<section id="impresion" aria-hidden="true"></section>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CAA · Funciones comunes · Manos con Mucho que Contar
+   © Creado por Inma Merino Rus
+
+   Qué ofrece a cada juego (objeto global CAA):
+   - CAA.init({ titulo, volver, barrido, ajustesExtra })
+   - CAA.hablar(texto)            → voz en español (es-ES, 0.85)
+   - CAA.celda(item, clase)       → botón con pictograma ARASAAC
+       item = { t:'texto', b:'búsqueda opcional', e:'emoji de reserva', id: nº ARASAAC opcional, k:'clave color', d:'lo que dice' }
+   - CAA.ponerPicto(contenedor, item)
+   - CAA.sonido('exito' | 'pop' | 'campana' | 'suave')
+   - CAA.fiesta(x, y, emojis)     → explosión de emojis
+   - CAA.scan.reiniciar()         → recalcula elementos tras cambiar la pantalla
+   - CAA.ajustes                  → ajustes guardados del usuario
+
+   Barrido: cualquier elemento con clase .scan entra en el barrido.
+   Si se agrupan dentro de .scan-fila se hace barrido fila-columna.
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  function leer(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function guardar(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ── Ajustes ── */
+  var DEF = { acceso: 'tactil', velocidad: 1800, voz: true, vozBarrido: false, contraste: false, sonidos: true, pinActivo: true, pinSalir: false, vozNombre: '', vozVel: 0.85, vozTono: 1, permanencia: 1200 };
+  var aj = Object.assign({}, DEF, leer('caa-ajustes') || {});
+  var oyentes = [];
+  function cambiar(k, v) { aj[k] = v; guardar('caa-ajustes', aj); aplicar(); oyentes.forEach(function (f) { f(aj); }); }
+
+  /* ── Voz ── */
+  var voz = null;
+  /* Voces: se puede elegir una parecida a la del comunicador del niño.
+     Por defecto, voz femenina si el dispositivo la tiene. */
+  var FEM = /m[oó]nica|paulina|marisol|luc[ií]a|elvira|helena|laura|sabina|dalia|isabel|carmen|ximena|elena|in[eé]s|mar[ií]a|sandy|shelley|\bflo\b|grandma|abuela|google espa|female|mujer/i;
+  var MASC = /jorge|juan|diego|pablo|[aá]lvaro|ra[uú]l|carlos|alonso|enrique|jos[eé]|eddy|reed|rocko|grandpa|abuelo|gonzalo|dar[ií]o|jaime|tom[aá]s|andr[eé]s|\bmale\b|hombre/i;
+  var pintarVoces = null;
+  function generoVoz(v) { return FEM.test(v.name) ? 'f' : (MASC.test(v.name) ? 'm' : ''); }
+  function vocesEs() { return speechSynthesis.getVoices().filter(function (v) { return /^es/i.test(v.lang); }); }
+  function elegirVoz() {
+    var vs = vocesEs();
+    var fija = aj.vozNombre && vs.find(function (v) { return v.name === aj.vozNombre; });
+    voz = fija ||
+          vs.find(function (v) { return v.lang === 'es-ES' && generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return generoVoz(v) === 'f'; }) ||
+          vs.find(function (v) { return v.lang === 'es-ES'; }) || vs[0] || null;
+    if (pintarVoces) pintarVoces();
+  }
+  if ('speechSynthesis' in window) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
+
+  function hablar(texto, forzar) {
+    if (!texto || (!aj.voz && !forzar) || !('speechSynthesis' in window)) return Promise.resolve();
+    return new Promise(function (ok) {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(texto);
+      u.lang = voz ? voz.lang : 'es-ES'; u.rate = aj.vozVel || 0.85; u.pitch = aj.vozTono || 1; if (voz) u.voice = voz;
+      var hecho = false; function fin() { if (!hecho) { hecho = true; ok(); } }
+      u.onend = fin; u.onerror = fin;
+      setTimeout(function () { speechSynthesis.speak(u); }, 30);
+      setTimeout(fin, 1200 + texto.length * 110);
+    });
+  }
+
+  /* ── Pictogramas ARASAAC ── */
+  var cache = leer('caa-pictos') || {};
+  var elegidos = leer('caa-picto-elegido') || {};
+  var pendientes = {};
+  function buscar(tipo, p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/' + tipo + '/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) && d.length ? d[0]._id : null; });
+  }
+  function pictoId(p) {
+    p = String(p).toLowerCase().trim();
+    if (elegidos[p] != null) return Promise.resolve(elegidos[p]);
+    if (cache[p] != null) return Promise.resolve(cache[p]);
+    if (pendientes[p]) return pendientes[p];
+    pendientes[p] = buscar('bestsearch', p)
+      .then(function (id) { return id != null ? id : buscar('search', p); })
+      .then(function (id) { if (id != null) { cache[p] = id; guardar('caa-pictos', cache); } return id; })
+      .catch(function () { return null; });
+    return pendientes[p];
+  }
+  function pictoUrl(id) { return 'https://static.arasaac.org/pictograms/' + id + '/' + id + '_300.png'; }
+
+  function ponerPicto(cont, it) {
+    if (!cont || it.sinPicto) return;
+    var clave = it.id != null ? null : String(it.b || it.t).toLowerCase().trim();
+    if (clave) cont.dataset.pictoKey = clave;
+    var prom = it.id != null ? Promise.resolve(it.id) : pictoId(clave);
+    prom.then(function (id) { if (id != null) pintarImg(cont, id); });
+  }
+  function pintarImg(cont, id) {
+    var img = new Image(); img.alt = ''; img.decoding = 'async';
+    img.onload = function () { cont.innerHTML = ''; cont.appendChild(img); };
+    img.src = pictoUrl(id);
+  }
+
+  function celda(it, clase) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'picto scan ' + (it.k || '') + ' ' + (clase || '');
+    b.dataset.decir = it.d || it.t;
+    b.setAttribute('aria-label', it.t);
+    b.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span>' +
+                  '<span class="txt">' + esc(it.t) + '</span>';
+    ponerPicto(b.querySelector('.img'), it);
+    return b;
+  }
+
+  /* ── Sonidos (Web Audio) ── */
+  var ac = null;
+  function tono(f, t0, dur, tipo, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, ac.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.25, ac.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t0 + dur);
+    o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + dur + 0.05);
+  }
+  function sonido(tipo) {
+    if (!aj.sonidos) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      if (tipo === 'exito') { [523, 659, 784, 1047].forEach(function (f, i) { tono(f, i * 0.09, 0.35, 'triangle'); }); }
+      else if (tipo === 'pop') { tono(880, 0, 0.12, 'sine', 0.3); tono(1320, 0.04, 0.1, 'sine', 0.15); }
+      else if (tipo === 'campana') { tono(1047, 0, 1.2, 'sine', 0.2); tono(1568, 0, 0.8, 'sine', 0.08); }
+      else { tono(440, 0, 0.25, 'sine', 0.15); }
+    } catch (e) {}
+  }
+
+  /* ── Fiesta de emojis ── */
+  function fiesta(x, y, emojis, n) {
+    emojis = emojis || ['⭐', '✨', '🎉', '💛', '🌟'];
+    n = n || 14;
+    if (x == null) { x = innerWidth / 2; y = innerHeight / 2; }
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span');
+      s.textContent = emojis[i % emojis.length];
+      s.setAttribute('aria-hidden', 'true');
+      var ang = Math.random() * Math.PI * 2, dist = 80 + Math.random() * 160;
+      s.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;font-size:' + (24 + Math.random() * 26) +
+        'px;pointer-events:none;z-index:8000;transition:transform 1s cubic-bezier(.2,.8,.3,1),opacity 1s;transform:translate(-50%,-50%)';
+      document.body.appendChild(s);
+      (function (s, dx, dy) {
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          s.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + (Math.random() * 90 - 45) + 'deg)';
+          s.style.opacity = '0';
+        }); });
+        setTimeout(function () { s.remove(); }, 1100);
+      })(s, Math.cos(ang) * dist, Math.sin(ang) * dist);
+    }
+  }
+
+
+  /* ═══ Elegir pictograma (se recuerda en todos los juegos del dispositivo) ═══ */
+  function buscarVarios(p) {
+    return fetch('https://api.arasaac.org/v1/pictograms/es/search/' + encodeURIComponent(p))
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return Array.isArray(d) ? d.map(function (x) { return x._id; }) : []; });
+  }
+  var selector = null, modoElegir = false, aviso = null;
+  function construirSelector() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-sel-h');
+    m.innerHTML = '<div class="caja" style="max-width:640px">' +
+      '<button class="cerrar" aria-label="Cerrar">✕</button>' +
+      '<h2 id="caa-sel-h">Elige el pictograma para <span id="caa-sel-t"></span></h2>' +
+      '<form class="caa-sel-busca"><input id="caa-sel-q" aria-label="Buscar con otra palabra" placeholder="Buscar con otra palabra (p. ej. balón)"><button class="btn btn-s" type="submit">🔍 Buscar</button></form>' +
+      '<div class="caa-sel-grid"></div>' +
+      '<div class="caa-sel-pie"><button class="btn" data-serie>↺ Volver al de serie</button><button class="btn btn-p" data-cancelar>Cancelar</button></div>' +
+      '<p style="font-size:11px;color:#6E8F8C;margin-top:.8rem">Pictogramas de Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cancelar]')) cerrarSelector();
+      if (e.target.closest('[data-serie]')) elegir(selector.clave, null);
+    });
+    m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var q = m.querySelector('#caa-sel-q').value.trim(); if (q) cargarOpciones(q); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrarSelector(); });
+    selector = { el: m };
+  }
+  function abrirSelector(clave, alElegir) {
+    clave = String(clave).toLowerCase().trim(); if (!clave) return;
+    if (!selector) construirSelector();
+    selector.clave = clave; selector.alElegir = alElegir;
+    selector.el.querySelector('#caa-sel-t').textContent = '«' + clave + '»';
+    selector.el.querySelector('#caa-sel-q').value = '';
+    cargarOpciones(clave);
+    selector.el.classList.add('abierto');
+    selector.el.querySelector('.cerrar').focus();
+  }
+  function cerrarSelector() { if (selector) selector.el.classList.remove('abierto'); }
+  function cargarOpciones(q) {
+    var g = selector.el.querySelector('.caa-sel-grid');
+    g.innerHTML = '<p class="caa-sel-msg">Buscando en ARASAAC…</p>';
+    buscarVarios(q).then(function (ids) {
+      if (!ids.length) { g.innerHTML = '<p class="caa-sel-msg">No hay pictogramas para «' + esc(q) + '». Prueba con otra palabra.</p>'; return; }
+      var actual = elegidos[selector.clave] != null ? elegidos[selector.clave] : cache[selector.clave];
+      g.innerHTML = '';
+      ids.slice(0, 48).forEach(function (id) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'caa-sel-op' + (id === actual ? ' actual' : '');
+        b.setAttribute('aria-label', 'Pictograma ' + (id === actual ? '(el actual)' : 'opción'));
+        b.innerHTML = '<img alt="" loading="lazy" src="' + pictoUrl(id) + '">';
+        b.onclick = function () { elegir(selector.clave, id); };
+        g.appendChild(b);
+      });
+    }).catch(function () { g.innerHTML = '<p class="caa-sel-msg">No se ha podido conectar con ARASAAC. Comprueba la conexión a internet.</p>'; });
+  }
+  function elegir(clave, id) {
+    if (id == null) delete elegidos[clave]; else elegidos[clave] = id;
+    guardar('caa-picto-elegido', elegidos);
+    document.querySelectorAll('[data-picto-key]').forEach(function (c) {
+      if (c.dataset.pictoKey !== clave) return;
+      if (id != null) pintarImg(c, id);
+      else pictoId(clave).then(function (i) { if (i != null) pintarImg(c, i); });
+    });
+    var cb = selector.alElegir; cerrarSelector(); sonido('pop');
+    if (cb) cb(id);
+  }
+  function activarElegir(on) {
+    modoElegir = !!on;
+    document.body.classList.toggle('caa-eligiendo', modoElegir);
+    if (modoElegir && !aviso) {
+      aviso = document.createElement('div'); aviso.className = 'caa-aviso-elegir'; aviso.setAttribute('role', 'status');
+      aviso.innerHTML = '<span>✏️ Toca un pictograma para cambiarlo</span><button type="button">Terminar</button>';
+      aviso.querySelector('button').onclick = function () { activarElegir(false); };
+      document.body.appendChild(aviso);
+    }
+    if (aviso) aviso.hidden = !modoElegir;
+    if (modoElegir) { clearInterval(scan.timer); limpiar(); } else api_scan.reiniciar();
+  }
+  document.addEventListener('click', function (e) {
+    if (!modoElegir || e.target.closest('.caa-modal') || e.target.closest('.caa-aviso-elegir') || e.target.closest('.caa-barra')) return;
+    var k = e.target.closest('[data-picto-key]');
+    if (!k) { var p = e.target.closest('.picto, button'); k = p && p.querySelector('[data-picto-key]'); }
+    if (!k) return;
+    e.preventDefault(); e.stopPropagation();
+    abrirSelector(k.dataset.pictoKey);
+  }, true);
+
+  /* ═══ Barrido ═══ */
+  var scan = { activo: false, i: -1, fila: null, vueltas: 0, timer: null, pausaHasta: 0, propio: false, items: [] };
+
+  function visible(el) {
+    if (el.disabled || el.closest('[hidden]') || el.closest('.caa-barra') || el.closest('.caa-modal')) return false;
+    if (!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)) return false;
+    return getComputedStyle(el).visibility !== 'hidden';
+  }
+  function raiz() {
+    var r = [].filter.call(document.querySelectorAll('[data-scan-raiz]'), function (x) { return !x.hidden && x.offsetParent !== null; });
+    return r.length ? r[r.length - 1] : document;
+  }
+  function unidades() {
+    var r = raiz();
+    if (scan.fila) {
+      if (!r.contains(scan.fila) || !visible(scan.fila)) scan.fila = null;
+    }
+    if (scan.fila) return [].filter.call(scan.fila.querySelectorAll('.scan'), visible);
+    return [].filter.call(r.querySelectorAll('.scan-fila, .scan'), function (el) {
+      if (!visible(el)) return false;
+      if (el.classList.contains('scan-fila')) return [].some.call(el.querySelectorAll('.scan'), visible);
+      return !el.parentElement.closest('.scan-fila');
+    });
+  }
+  function limpiar() {
+    document.querySelectorAll('.caa-foco, .caa-foco-fila').forEach(function (e) { e.classList.remove('caa-foco', 'caa-foco-fila'); });
+  }
+  function marcar() {
+    limpiar();
+    var el = scan.items[scan.i]; if (!el) return;
+    el.classList.add(el.classList.contains('scan-fila') ? 'caa-foco-fila' : 'caa-foco');
+    el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    if (aj.vozBarrido && !el.classList.contains('scan-fila')) hablar(el.dataset.decir || el.getAttribute('aria-label') || el.textContent.trim());
+  }
+  function avanzar() {
+    scan.items = unidades();
+    if (!scan.items.length) { limpiar(); return; }
+    scan.i++;
+    if (scan.i >= scan.items.length) {
+      scan.i = 0; scan.vueltas++;
+      if (scan.fila && scan.vueltas >= 2) {
+        var f = scan.fila; scan.fila = null; scan.vueltas = 0;
+        scan.items = unidades(); scan.i = Math.max(0, scan.items.indexOf(f));
+      }
+    }
+    marcar();
+  }
+  function seleccionar() {
+    var el = scan.items[scan.i];
+    if (!el || !document.contains(el)) { avanzar(); return; }
+    if (el.classList.contains('scan-fila')) {
+      scan.fila = el; scan.i = -1; scan.vueltas = 0; avanzar(); reloj(); return;
+    }
+    scan.propio = true; el.click(); scan.propio = false;
+    scan.fila = null; scan.vueltas = 0; scan.i = -1;
+    scan.pausaHasta = Date.now() + Math.max(1500, aj.velocidad);
+    limpiar();
+    setTimeout(function () { if (scan.activo && aj.acceso === 'pasos') avanzar(); }, 400);
+    reloj();
+  }
+  function reloj() {
+    clearInterval(scan.timer);
+    if (!scan.activo || aj.acceso !== 'barrido') return;
+    scan.timer = setInterval(function () {
+      if (modoElegir || document.hidden || Date.now() < scan.pausaHasta || document.querySelector('.caa-modal.abierto')) return;
+      avanzar();
+    }, aj.velocidad);
+  }
+  function exento(t) { return t.closest && (t.closest('.caa-barra') || t.closest('.caa-modal') || t.closest('.no-barrido') || t.closest('.adulto')); }
+  function escribiendo(t) { return t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable); }
+
+  document.addEventListener('keydown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso === 'tactil' || aj.acceso === 'mirada' || escribiendo(e.target) || document.querySelector('.caa-modal.abierto') || !unidades().length) return;
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+      e.preventDefault();
+      if (e.repeat) return;
+      if (aj.acceso === 'barrido') seleccionar();
+      else if (e.code === 'Space') avanzar();
+      else seleccionar();
+    }
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); seleccionar();
+  });
+  document.addEventListener('click', function (e) {
+    if (modoElegir || !scan.activo || aj.acceso !== 'barrido' || scan.propio || exento(e.target) || !unidades().length) return;
+    e.preventDefault(); e.stopPropagation();
+  }, true);
+
+  var api_scan = {
+    reiniciar: function () { scan.fila = null; scan.i = -1; scan.vueltas = 0; limpiar(); if (scan.activo && aj.acceso !== 'tactil' && aj.acceso !== 'mirada') { reloj(); if (aj.acceso === 'pasos') avanzar(); } },
+    pausar: function (ms) { scan.pausaHasta = Date.now() + ms; }
+  };
+
+  /* ═══ Acceso con la mirada: selección por permanencia ═══
+     Con un lector ocular (o ratón de cabeza) que mueve el puntero: mantener el puntero
+     sobre una opción (.scan o .mirable) durante «permanencia» milisegundos la activa.
+     Después hay que apartar la mirada para volver a activarla. */
+  var mir = { el: null, t0: 0, raf: 0, hecho: null, anillo: null };
+  function anilloMirada() {
+    if (mir.anillo) return mir.anillo;
+    var a = document.createElement('div'); a.className = 'caa-anillo'; a.setAttribute('aria-hidden', 'true');
+    a.innerHTML = '<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" class="fondo"/><circle cx="40" cy="40" r="32" class="carga" pathLength="100"/></svg>';
+    document.body.appendChild(a); mir.anillo = a; return a;
+  }
+  function objetivoMirada(x, y) {
+    var el = document.elementFromPoint(x, y); if (!el || !el.closest) return null;
+    if (el.closest('.caa-modal') || el.closest('.caa-barra') || document.querySelector('.caa-modal.abierto')) return null;
+    var t = el.closest('.scan, .mirable');
+    if (!t || t.disabled || t.closest('[hidden]')) return null;
+    return t;
+  }
+  function soltarMirada() {
+    cancelAnimationFrame(mir.raf);
+    if (mir.el) mir.el.classList.remove('caa-mirando');
+    if (mir.anillo) mir.anillo.style.display = 'none';
+  }
+  function cicloMirada() {
+    if (!mir.el || aj.acceso !== 'mirada' || modoElegir) { soltarMirada(); return; }
+    if (!document.contains(mir.el)) { soltarMirada(); mir.el = null; return; }
+    var p = Math.min(1, (performance.now() - mir.t0) / (aj.permanencia || 1200));
+    var r = mir.el.getBoundingClientRect(), a = anilloMirada();
+    a.style.display = 'block'; a.style.left = (r.left + r.width / 2) + 'px'; a.style.top = (r.top + r.height / 2) + 'px';
+    a.querySelector('.carga').style.strokeDashoffset = String(100 - p * 100);
+    if (p >= 1) {
+      var el = mir.el; mir.hecho = el; mir.ultima = { el: el, t: Date.now() }; soltarMirada();
+      el.classList.add('caa-mirada-ok'); setTimeout(function () { el.classList.remove('caa-mirada-ok'); }, 450);
+      el.click();
+      return;
+    }
+    mir.raf = requestAnimationFrame(cicloMirada);
+  }
+  function moverMirada(x, y) {
+    if (aj.acceso !== 'mirada' || modoElegir) return;
+    var t = objetivoMirada(x, y);
+    if (t === mir.el) return;
+    soltarMirada();
+    mir.el = t;
+    if (t !== mir.hecho) mir.hecho = null;
+    if (!t || t === mir.hecho) return;
+    mir.t0 = performance.now(); t.classList.add('caa-mirando');
+    mir.raf = requestAnimationFrame(cicloMirada);
+  }
+  var punteroVisto = false;
+  document.addEventListener('pointermove', function (e) { if (e.pointerType !== 'touch') punteroVisto = true; moverMirada(e.clientX, e.clientY); }, { passive: true });
+  /* Si el sistema (iPad, Control ocular de Windows, Irisbond…) ya hace el clic por permanencia,
+     evitamos que se active dos veces: se ignora el clic real que llega justo después del nuestro,
+     y un clic real cancela la carga del anillo. */
+  document.addEventListener('click', function (e) {
+    if (aj.acceso !== 'mirada' || !e.isTrusted) return;
+    var u = mir.ultima;
+    if (u && Date.now() - u.t < 1500 && (u.el === e.target || u.el.contains(e.target))) { e.preventDefault(); e.stopPropagation(); return; }
+    var t = e.target.closest && e.target.closest('.scan, .mirable');
+    if (t && t === mir.el) { soltarMirada(); mir.hecho = t; }
+  }, true);
+  /* Aviso si en modo mirada no llega ningún puntero (p. ej. tablet sin control por permanencia del sistema) */
+  setTimeout(function () {
+    if (aj.acceso !== 'mirada' || punteroVisto) return;
+    modalInfo('👁️ No llega el puntero del lector ocular',
+      'El modo «Mirada» necesita que el lector ocular mueva un puntero por la pantalla, y no se detecta ninguno.<br><br>' +
+      '<b>En iPad con Irisbond Hiru:</b> Ajustes → Accesibilidad → Tocar → <b>AssistiveTouch</b> → activa el <b>Control de permanencia</b> y elige el tiempo. Después, aquí en ⚙️ pon <b>«Táctil / ratón»</b>: el iPad hará el clic por permanencia en toda la web.<br><br>' +
+      '<b>En Windows con Irisbond:</b> abre <b>EasyClick</b> para que la mirada mueva el ratón. Si EasyClick ya hace el clic por permanencia, pon aquí «Táctil / ratón». Si quieres ver el anillo de carga de la web, desactiva el clic de EasyClick y deja aquí «Mirada». El Control ocular de Windows no mueve el ratón de forma continua y no sirve para este modo.');
+  }, 9000);
+  document.addEventListener('mouseleave', function () { soltarMirada(); mir.el = null; mir.hecho = null; });
+
+  /* ── Aplicar ajustes ── */
+  function aplicar() {
+    document.body.classList.toggle('caa-contraste', !!aj.contraste);
+    document.body.classList.toggle('caa-barrido-activo', scan.activo && aj.acceso === 'barrido');
+    if (!scan.activo || aj.acceso === 'tactil' || aj.acceso === 'mirada') { clearInterval(scan.timer); limpiar(); }
+    else api_scan.reiniciar();
+  }
+
+
+  /* ═══ Letra escolar (se recuerda en todos los juegos) ═══ */
+  var letra = leer('caa-letra') === 'minus' ? 'minus' : 'mayus';
+  var oyentesLetra = [];
+  function aplicarLetra() {
+    document.body.classList.toggle('modo-minus', letra === 'minus');
+    document.querySelectorAll('.caa-letra button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.l === letra ? 'true' : 'false'); });
+  }
+  function ponerLetra(l) { letra = l === 'minus' ? 'minus' : 'mayus'; guardar('caa-letra', letra); aplicarLetra(); oyentesLetra.forEach(function (f) { f(letra); }); }
+
+  /* ═══ Pantalla completa ═══ */
+  var ICO_FS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICO_FS_SALIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function enPantallaCompleta() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function pantallaCompleta() {
+    var d = document.documentElement;
+    if (enPantallaCompleta()) {
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!pedir) { avisoPantallaCompleta(); return; }
+    var pr;
+    try { pr = pedir.call(d, { navigationUI: 'hide' }); } catch (e) { avisoPantallaCompleta(); return; }
+    var girar = function () { if (opciones.horizontal && screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); };
+    if (pr && pr.then) pr.then(girar).catch(avisoPantallaCompleta); else girar();
+  }
+  function iconoPantalla() {
+    var b = document.querySelector('.btn-fs'); if (!b) return;
+    var on = enPantallaCompleta();
+    b.innerHTML = on ? ICO_FS_SALIR : ICO_FS;
+    b.setAttribute('aria-label', on ? 'Salir de pantalla completa' : 'Pantalla completa'); b.title = b.getAttribute('aria-label');
+  }
+  document.addEventListener('fullscreenchange', iconoPantalla);
+  document.addEventListener('webkitfullscreenchange', iconoPantalla);
+  function avisoPantallaCompleta() {
+    modalInfo('📱 Pantalla completa',
+      'Este dispositivo no deja poner la web a pantalla completa desde el navegador (pasa en los iPhone).<br><br>' +
+      '<b>Para conseguirlo:</b> pulsa <b>Compartir</b> (el cuadrado con la flecha hacia arriba) → <b>Añadir a pantalla de inicio</b>. Abriendo la web desde ese icono se ve a pantalla completa.<br><br>' +
+      '<b>Para ponerla en horizontal:</b> desactiva el bloqueo de rotación en el Centro de control y gira el móvil.');
+  }
+  function modalInfo(titulo, html, alCerrar) {
+    var m = document.createElement('div'); m.className = 'caa-modal abierto'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+    m.innerHTML = '<div class="caja" style="max-width:460px"><button class="cerrar" aria-label="Cerrar">✕</button><h2>' + titulo + '</h2>' +
+      '<div style="font-size:15px;line-height:1.6;color:#1A3A38">' + html + '</div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:1.2rem" data-cerrar>Entendido</button></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) { m.remove(); if (alCerrar) alCerrar(); api_scan.reiniciar(); } });
+    m.querySelector('[data-cerrar]').focus();
+    return m;
+  }
+
+  /* ═══ Contraseña del adulto (control parental) ═══ */
+  function pinGuardado() { var p = leer('caa-pin'); return /^\d{4}$/.test(p) ? p : '1234'; }
+  var desbloqueadoHasta = 0, pinM = null;
+  function pedirPin(cb, motivo) {
+    if (!aj.pinActivo || Date.now() < desbloqueadoHasta) { cb(); return; }
+    if (!pinM) construirPin();
+    pinM.cb = cb; pinM.valor = ''; puntosPin(); pinM.el.querySelector('.pin-error').textContent = '';
+    pinM.el.querySelector('.motivo').textContent = motivo || 'Esta opción es para el adulto.';
+    pinM.el.classList.add('abierto');
+    clearInterval(scan.timer); limpiar();
+    pinM.el.querySelector('.pin-teclas button').focus();
+  }
+  function construirPin() {
+    var m = document.createElement('div');
+    m.className = 'caa-modal caa-pin'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-pin-t');
+    var teclas = '';
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', '0', '<'].forEach(function (k) {
+      if (k === 'x') teclas += '<button type="button" data-k="x" aria-label="Cancelar">✕</button>';
+      else if (k === '<') teclas += '<button type="button" class="borrar" data-k="<" aria-label="Borrar">⌫</button>';
+      else teclas += '<button type="button" data-k="' + k + '">' + k + '</button>';
+    });
+    m.innerHTML = '<div class="caja"><div class="ico" aria-hidden="true">🔒</div><h2 id="caa-pin-t">Zona del adulto</h2>' +
+      '<p class="motivo"></p><div class="pin-puntos" aria-hidden="true"><span></span><span></span><span></span><span></span></div>' +
+      '<div class="pin-teclas">' + teclas + '</div><p class="pin-error" role="alert"></p>' +
+      '<p class="pin-olvido">La contraseña de serie es <b>1234</b>. Se cambia en ⚙️ Ajustes → Control parental.</p></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]');
+      if (e.target === m) { cerrarPin(); return; }
+      if (!b) return;
+      var k = b.dataset.k;
+      if (k === 'x') cerrarPin(); else if (k === '<') { pinM.valor = pinM.valor.slice(0, -1); puntosPin(); } else teclaPin(k);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!m.classList.contains('abierto')) return;
+      if (/^\d$/.test(e.key)) { e.preventDefault(); teclaPin(e.key); }
+      else if (e.key === 'Backspace') { e.preventDefault(); pinM.valor = pinM.valor.slice(0, -1); puntosPin(); }
+      else if (e.key === 'Escape') cerrarPin();
+    });
+    pinM = { el: m, valor: '', cb: null };
+  }
+  function puntosPin() { pinM.el.querySelectorAll('.pin-puntos span').forEach(function (s, i) { s.classList.toggle('lleno', i < pinM.valor.length); }); }
+  function teclaPin(k) {
+    if (pinM.valor.length >= 4) return;
+    pinM.valor += k; puntosPin();
+    if (pinM.valor.length < 4) return;
+    if (pinM.valor === pinGuardado()) {
+      desbloqueadoHasta = Date.now() + 5 * 60 * 1000;
+      var cb = pinM.cb; cerrarPin(true); if (cb) cb();
+    } else {
+      pinM.el.querySelector('.pin-error').textContent = 'Contraseña incorrecta';
+      pinM.el.classList.add('temblor');
+      setTimeout(function () { pinM.el.classList.remove('temblor'); pinM.valor = ''; puntosPin(); }, 700);
+    }
+  }
+  function cerrarPin(ok) { pinM.el.classList.remove('abierto'); pinM.cb = null; if (!ok) api_scan.reiniciar(); }
+
+  /* Elementos con clase .adulto: piden la contraseña antes de funcionar (5 minutos sin volver a pedirla) */
+  var pasarAdulto = false;
+  document.addEventListener('click', function (e) {
+    if (pasarAdulto || !aj.pinActivo || Date.now() < desbloqueadoHasta || !e.target.closest) return;
+    if (!e.target.closest('.adulto') || e.target.closest('.caa-modal')) return;
+    e.preventDefault(); e.stopPropagation();
+    var obj = e.target.closest('button, a, summary, input, select, label, [data-k]') || e.target;
+    pedirPin(function () { pasarAdulto = true; try { obj.click(); if (obj.focus) obj.focus(); } finally { pasarAdulto = false; } });
+  }, true);
+
+  function bienvenida() {
+    if (leer('caa-bienvenida-v1')) return;
+    var m = modalInfo('👋 Antes de empezar',
+      '<div><div class="bloque"><span class="i">⛶</span><span>Usa el botón de <b>pantalla completa</b> (arriba a la derecha) para que el juego ocupe toda la pantalla. En el móvil, ponlo en horizontal.</span></div>' +
+      '<div class="bloque"><span class="i" style="font-family:var(--font-mayus)">Aa</span><span>Elige <b>MAYÚSCULAS o minúsculas</b>. Se usa la letra escolar y se recuerda en todos los juegos.</span></div>' +
+      '<div class="bloque"><span class="i">🔒</span><span>Los <b>ajustes ⚙️</b> y las opciones del adulto piden una contraseña para que el niño no las cambie sin querer. La contraseña es <span class="pin-chip">1234</span> y puedes cambiarla en ⚙️ Ajustes → Control parental.</span></div></div>',
+      function () { guardar('caa-bienvenida-v1', true); });
+    m.classList.add('caa-bienv');
+    m.querySelector('[data-cerrar]').textContent = '¡Entendido!';
+  }
+
+  /* ── Panel de ajustes ── */
+  function construirAjustes(extra, conBarrido) {
+    var m = document.createElement('div');
+    m.className = 'caa-modal'; m.id = 'caa-ajustes';
+    m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'caa-aj-t');
+    m.innerHTML =
+      '<div class="caja">' +
+      '<button class="cerrar" aria-label="Cerrar ajustes">✕</button>' +
+      '<h2 id="caa-aj-t">⚙️ Ajustes</h2>' +
+      (conBarrido ?
+        '<div class="ajuste"><span class="lbl">Forma de acceso</span><div class="seg" data-k="acceso">' +
+          '<button data-v="tactil">👆 Táctil / ratón</button>' +
+          '<button data-v="barrido">🔘 Barrido automático (1 pulsador)</button>' +
+          '<button data-v="pasos">🔘🔘 Paso a paso (2 pulsadores)</button>' +
+          '<button data-v="mirada">👁️ Mirada (permanencia)</button></div>' +
+          '<p class="ayuda" id="caa-ayuda-acceso"></p></div>' +
+        '<div class="ajuste" id="caa-aj-vel"><label for="caa-vel">Velocidad del barrido: <span id="caa-vel-v"></span></label>' +
+          '<input type="range" id="caa-vel" min="800" max="5000" step="100"></div>' +
+        '<div class="ajuste" id="caa-aj-mir"><label for="caa-mir">Tiempo mirando para elegir: <span id="caa-mir-v"></span></label>' +
+          '<input type="range" id="caa-mir" min="500" max="3000" step="100"></div>' : '') +
+      '<div class="ajuste"><span class="lbl">Voz y sonido</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="voz"> Voz (lee en voz alta)</label>' +
+        '<div class="voz-elegir"><select id="caa-voz-sel" aria-label="Elegir voz"></select><button type="button" class="btn btn-s" data-probar>🔊 Probar</button></div>' +
+        '<p class="ayuda" style="margin:-.1rem 0 .4rem">Elige una voz parecida a la de su comunicador (♀ femenina · ♂ masculina). Las voces dependen de cada dispositivo.</p>' +
+        '<label class="mini-rango">Velocidad <input type="range" id="caa-voz-vel" min="0.6" max="1.2" step="0.05"></label>' +
+        '<label class="mini-rango">Tono <small>(más alto = suena más infantil)</small> <input type="range" id="caa-voz-tono" min="0.8" max="1.6" step="0.05"></label>' +
+        (conBarrido ? '<label class="fila-check"><input type="checkbox" data-c="vozBarrido"> Decir cada opción al recorrerla (barrido auditivo)</label>' : '') +
+        '<label class="fila-check"><input type="checkbox" data-c="sonidos"> Efectos de sonido</label></div>' +
+      '<div class="ajuste"><span class="lbl">Vista</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="contraste"> Alto contraste (fondo negro)</label></div>' +
+      '<div class="ajuste"><span class="lbl">🔒 Control parental</span>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinActivo"> Pedir contraseña para los ajustes y las opciones del adulto</label>' +
+        '<label class="fila-check"><input type="checkbox" data-c="pinSalir"> Pedir contraseña también para salir del juego («Volver»)</label>' +
+        '<div class="lbl" style="margin-top:.7rem">Cambiar la contraseña</div>' +
+        '<div class="pin-cambiar"><input type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="Nueva contraseña de 4 números" placeholder="••••" id="caa-pin-nuevo">' +
+        '<button class="btn btn-s" type="button" data-pin-guardar>Guardar</button></div>' +
+        '<p class="pin-msg" id="caa-pin-msg"></p></div>' +
+      '<div class="ajuste"><span class="lbl">Pictogramas</span>' +
+        '<button class="btn btn-s" data-elegir style="width:100%">✏️ Elegir otros pictogramas</button>' +
+        '<p class="ayuda">Toca cualquier pictograma para ver todas las opciones de ARASAAC y quedarte con la que más os guste. Se recuerda en todos los juegos de este dispositivo.</p></div>' +
+      '<div id="caa-aj-extra"></div>' +
+      '<button class="btn btn-p" style="width:100%;margin-top:.5rem" data-cerrar>Listo</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    if (typeof extra === 'function') extra(m.querySelector('#caa-aj-extra'));
+
+    var AYUDA = {
+      tactil: 'Se toca directamente la opción en la pantalla o se hace clic con el ratón.',
+      barrido: 'Las opciones se iluminan una a una. Para elegir: pulsador conectado como ESPACIO o ENTER, o tocar en cualquier parte de la pantalla.',
+      pasos: 'ESPACIO pasa a la siguiente opción y ENTER la elige. Ideal con dos pulsadores.',
+      mirada: 'Para lector ocular o ratón de cabeza: mantener la mirada (el puntero) sobre una opción la elige. Se rellena un anillo mientras se mira. Para volver a elegir la misma, hay que apartar la mirada. Si tu lector ocular ya hace clic por sí solo, usa «Táctil / ratón».'
+    };
+    function pintar() {
+      m.querySelectorAll('.seg[data-k] button').forEach(function (b) { b.setAttribute('aria-pressed', aj[b.parentNode.dataset.k] === b.dataset.v ? 'true' : 'false'); });
+      m.querySelectorAll('[data-c]').forEach(function (c) { c.checked = !!aj[c.dataset.c]; });
+      var vel = m.querySelector('#caa-vel');
+      if (vel) { vel.value = aj.velocidad; m.querySelector('#caa-vel-v').textContent = (aj.velocidad / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-vel').hidden = aj.acceso !== 'barrido'; }
+      var mr = m.querySelector('#caa-mir'); if (mr) { mr.value = aj.permanencia; m.querySelector('#caa-mir-v').textContent = (aj.permanencia / 1000).toFixed(1) + ' s'; m.querySelector('#caa-aj-mir').hidden = aj.acceso !== 'mirada'; }
+      var ay = m.querySelector('#caa-ayuda-acceso'); if (ay) ay.textContent = AYUDA[aj.acceso];
+      m.querySelector('#caa-voz-vel').value = aj.vozVel; m.querySelector('#caa-voz-tono').value = aj.vozTono;
+      if (pintarVoces) pintarVoces();
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg[data-k] button');
+      if (b) { cambiar(b.parentNode.dataset.k, b.dataset.v); pintar(); }
+      if (e.target === m || e.target.closest('.cerrar') || e.target.closest('[data-cerrar]')) cerrar();
+      if (e.target.closest('[data-elegir]')) { cerrar(); activarElegir(true); }
+      if (e.target.closest('[data-probar]')) hablar('Hola. Quiero más, otra vez', true);
+      if (e.target.closest('[data-pin-guardar]')) {
+        var nv = m.querySelector('#caa-pin-nuevo'), msg = m.querySelector('#caa-pin-msg');
+        if (/^\d{4}$/.test(nv.value)) { guardar('caa-pin', nv.value); nv.value = ''; msg.style.color = '#1F7A4A'; msg.textContent = '✔ Contraseña cambiada. Apúntala en un sitio seguro.'; }
+        else { msg.style.color = '#C4372B'; msg.textContent = 'Tienen que ser 4 números.'; }
+      }
+    });
+    pintarVoces = function () {
+      var sel = m.querySelector('#caa-voz-sel'); if (!sel || !('speechSynthesis' in window)) return;
+      var vs = vocesEs();
+      if (!vs.length) { sel.innerHTML = '<option>No hay voces en español en este dispositivo</option>'; sel.disabled = true; return; }
+      sel.disabled = false;
+      var auto = voz && !aj.vozNombre ? ' (' + voz.name + ')' : '';
+      sel.innerHTML = '<option value="">Automática: femenina si hay' + esc(auto) + '</option>' + vs.map(function (v) {
+        var g = generoVoz(v);
+        return '<option value="' + esc(v.name) + '"' + (v.name === aj.vozNombre ? ' selected' : '') + '>' + (g === 'f' ? '♀ ' : g === 'm' ? '♂ ' : '') + esc(v.name) + ' · ' + esc(v.lang) + '</option>';
+      }).join('');
+    };
+    m.addEventListener('change', function (e) {
+      if (e.target.id === 'caa-voz-sel') { cambiar('vozNombre', e.target.value); elegirVoz(); hablar('Hola. Quiero más, otra vez', true); return; }
+      if (e.target.dataset.c) { cambiar(e.target.dataset.c, e.target.checked); pintar(); }
+    });
+    m.addEventListener('input', function (e) {
+      if (e.target.id === 'caa-vel') { cambiar('velocidad', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-mir') { cambiar('permanencia', +e.target.value); pintar(); }
+      if (e.target.id === 'caa-voz-vel') cambiar('vozVel', +e.target.value);
+      if (e.target.id === 'caa-voz-tono') cambiar('vozTono', +e.target.value);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.classList.contains('abierto')) cerrar(); });
+    var previo = null;
+    function abrir() { previo = document.activeElement; pintar(); m.classList.add('abierto'); m.querySelector('.cerrar').focus(); }
+    function cerrar() { m.classList.remove('abierto'); if (previo) previo.focus(); api_scan.reiniciar(); }
+    return { abrir: abrir, cerrar: cerrar };
+  }
+
+  /* ── Inicio ── */
+  var opciones = {}, volverInterno = null;
+  function alVolver(dentro, atras) { volverInterno = { dentro: dentro, atras: atras }; }
+  function entrar() { try { if (!(history.state && history.state.caaSub)) history.pushState({ caaSub: 1 }, ''); } catch (e) {} }
+  function init(o) {
+    o = o || {}; opciones = o;
+    var barra = document.createElement('header');
+    barra.className = 'caa-barra';
+    barra.innerHTML =
+      '<a class="volver" href="' + (o.volver || '../caa.html') + '" aria-label="Volver">← <span>Volver</span></a>' +
+      '<h1>' + esc(o.titulo || document.title) + '</h1>' +
+      '<div class="grupo-barra">' +
+        (o.letra !== false ? '<div class="caa-letra" role="group" aria-label="Tipo de letra">' +
+          '<button type="button" class="may" data-l="mayus" aria-label="Letra mayúscula" title="MAYÚSCULAS">Aa</button>' +
+          '<button type="button" class="min" data-l="minus" aria-label="Letra minúscula" title="minúsculas">aa</button></div>' : '') +
+        '<button type="button" class="btn-icono btn-fs"></button>' +
+        '<button type="button" class="btn-ajustes" aria-label="Ajustes (adulto)" title="Ajustes (adulto)">⚙️</button>' +
+      '</div>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    var marca = document.createElement('div');
+    marca.className = 'caa-marca'; marca.textContent = '© Creado por Inma Merino Rus';
+    document.body.appendChild(marca);
+
+    scan.activo = o.barrido !== false;
+    var panel = construirAjustes(o.ajustesExtra, scan.activo);
+    barra.querySelector('.btn-ajustes').addEventListener('click', function () { pedirPin(panel.abrir, 'Los ajustes son para el adulto.'); });
+    barra.querySelectorAll('.caa-letra button').forEach(function (b) { b.addEventListener('click', function () { ponerLetra(b.dataset.l); }); });
+    barra.querySelector('.btn-fs').addEventListener('click', pantallaCompleta);
+    barra.querySelector('.volver').addEventListener('click', function (e) {
+      // Dentro de una pantalla del juego, «Volver» regresa al menú del juego; desde el menú, a la web
+      var interno = volverInterno && volverInterno.dentro();
+      if (!interno && !aj.pinSalir) return;
+      e.preventDefault(); var href = this.href;
+      var ir = interno ? function () { if (history.state && history.state.caaSub) history.back(); else volverInterno.atras(); }
+                       : function () { location.href = href; };
+      if (aj.pinSalir) pedirPin(ir, interno ? 'Para volver al menú del juego hace falta la contraseña.' : 'Para salir del juego hace falta la contraseña.');
+      else ir();
+    });
+    // Botón «atrás» del móvil o del navegador: también vuelve al menú del juego
+    window.addEventListener('popstate', function () { if (volverInterno && volverInterno.dentro()) volverInterno.atras(); });
+    CAA.abrirAjustes = function () { pedirPin(panel.abrir); };
+    aplicarLetra(); iconoPantalla(); aplicar();
+    if (o.bienvenida !== false) bienvenida();
+  }
+
+  window.CAA = {
+    init: init, hablar: hablar, celda: celda, ponerPicto: ponerPicto, pictoId: pictoId, pictoUrl: pictoUrl,
+    elegirPicto: abrirSelector, modoElegir: activarElegir,
+    sonido: sonido, fiesta: fiesta, scan: api_scan, esc: esc, leer: leer, guardar: guardar,
+    get ajustes() { return aj; },
+    get letra() { return letra; },
+    alCambiarLetra: function (f) { oyentesLetra.push(f); },
+    pedirPin: pedirPin, pantallaCompleta: pantallaCompleta,
+    alCambiar: function (f) { oyentes.push(f); },
+    alVolver: alVolver, entrar: entrar
+  };
+})();
+
+</script>
+<script>
+CAA.init({ titulo: 'Los coches', horizontal: true });
+
+/* ════════════════ Coches y colores ════════════════ */
+var COLORES = [
+  { k: 'rojo', c: '#E53935', e: '🔴' }, { k: 'azul', c: '#1E88E5', e: '🔵' },
+  { k: 'amarillo', c: '#FDD835', e: '🟡' }, { k: 'verde', c: '#43A047', e: '🟢' }
+];
+function col(k) { return COLORES.find(function (c) { return c.k === k; }); }
+function cocheSVG(color) {
+  return '<svg viewBox="0 0 100 62" aria-hidden="true">' +
+    '<path d="M8 40 Q8 26 22 24 L31 24 Q37 8 53 8 L63 8 Q76 8 80 24 L86 25 Q95 27 95 40 L95 45 Q95 49 91 49 L12 49 Q8 49 8 45Z" fill="' + color + '" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>' +
+    '<path d="M37 24 Q41 13 53 13 L56 13 L56 24Z M60 13 L63 13 Q72 13 75 24 L60 24Z" fill="#D8F0FF"/>' +
+    '<circle cx="27" cy="49" r="11" fill="#333"/><circle cx="76" cy="49" r="11" fill="#333"/>' +
+    '<circle cx="27" cy="49" r="4.5" fill="#ccc"/><circle cx="76" cy="49" r="4.5" fill="#ccc"/>' +
+    '<path d="M50 31 l2.4 4.8 5.3.8-3.8 3.7.9 5.2-4.8-2.5-4.8 2.5.9-5.2-3.8-3.7 5.3-.8z" fill="#fff" opacity=".85"/></svg>';
+}
+
+/* ════════════════ Sonidos propios (madera) ════════════════ */
+var ac = null;
+function tonito(f, t0, dur, tipo, vol) {
+  if (!CAA.ajustes.sonidos) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    var t = ac.currentTime + t0, o = ac.createOscillator(), g = ac.createGain();
+    o.type = tipo || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.3, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + 0.05);
+  } catch (e) {}
+}
+function toc() { tonito(620, 0, 0.07, 'triangle', 0.35); tonito(180, 0, 0.12, 'sine', 0.3); }
+function pitido(f) { tonito(f, 0, 0.25, 'square', 0.08); }
+
+/* ════════════════ Semáforo: «preparados, listos… ¡ya!» ════════════════ */
+function espera(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function semaforo(luces, rotulo) {
+  var L = [].slice.call(luces), pasos = [['Preparados…', 'Preparados', 440], ['Listos…', 'Listos', 440], ['¡Ya!', '¡Ya!', 880]];
+  L.forEach(function (l) { l.classList.remove('on'); });
+  var p = Promise.resolve();
+  pasos.forEach(function (x, i) {
+    p = p.then(function () {
+      L.forEach(function (l) { l.classList.remove('on'); }); L[i].classList.add('on');
+      if (rotulo) rotulo.textContent = x[0];
+      pitido(x[2]); CAA.hablar(x[1]);
+      return espera(i < 2 ? 1100 : 250);
+    });
+  });
+  return p;
+}
+
+/* ════════════════ Pantallas ════════════════ */
+function mostrar(id) { ['inicio', 'madera', 'virtual', 'fin'].forEach(function (x) { document.getElementById(x).hidden = x !== id; }); if (id !== 'inicio') CAA.entrar(); window.scrollTo(0, 0); CAA.scan.reiniciar(); }
+
+/* ════════════════ Modo rampa de madera: tablero de CAA ════════════════ */
+var NUCLEO = [
+  [{ t: 'quiero', e: '🤲', k: 'accion' }, { t: 'más', e: '➕', k: 'describe' }, { t: 'otra vez', e: '🔁', k: 'describe' },
+   { t: 'no', e: '🚫', k: 'no' }, { t: 'ayuda', b: 'ayudar', e: '🆘', k: 'social' }, { t: '¡ya!', b: 'ya', e: '🏁', k: 'social', d: 'ya' }],
+  [{ t: 'coche', e: '🚗', k: 'cosa' }, { t: 'poner', e: '👇', k: 'accion' }, { t: 'soltar', e: '✋', k: 'accion' },
+   { t: 'mirar', e: '👀', k: 'accion' }, { t: 'rápido', e: '🐇', k: 'describe' }, { t: 'despacio', b: 'lento', e: '🐢', k: 'describe' }],
+  [{ t: 'arriba', e: '⬆️', k: 'lugar' }, { t: 'abajo', e: '⬇️', k: 'lugar' }, { t: 'primero', e: '🥇', k: 'describe' },
+   { t: 'último', e: '🏁', k: 'describe' }, { t: '¡se ha caído!', b: 'caer', e: '💥', k: 'accion', d: 'se ha caído' }, { t: '¡guau!', b: 'sorpresa', e: '🤩', k: 'social', d: 'guau' }],
+  COLORES.map(function (c) { return { t: c.k, e: c.e, k: 'describe', color: true }; }).concat(
+   [{ t: '¿dónde?', b: 'dónde', e: '❓', k: 'pregunta', d: 'dónde' }, { t: '¿cuántos?', b: 'cuántos', e: '🔢', k: 'pregunta', d: 'cuántos' }])
+];
+var VERBOS = ['quiero', 'poner', 'soltar', 'mirar'];
+var frase = [];
+function pulso(c) { c.classList.remove('pulsado'); void c.offsetWidth; c.classList.add('pulsado'); }
+function pintarTablero() {
+  var t = document.getElementById('tablero'); t.innerHTML = '';
+  NUCLEO.forEach(function (fila) {
+    var f = document.createElement('div'); f.className = 'scan-fila';
+    fila.forEach(function (it) {
+      var c = CAA.celda(it);
+      c.onclick = function () { pulso(c); CAA.hablar(it.d || it.t); anadir(it); };
+      f.appendChild(c);
+    });
+    t.appendChild(f);
+  });
+}
+/* «quiero + coche + rojo» → «quiero el coche rojo»; «más + coche» → «más coches» */
+function textoFrase() {
+  var out = [];
+  for (var i = 0; i < frase.length; i++) {
+    var x = frase[i], ant = frase[i - 1], sig = frase[i + 1];
+    if (x.t === 'coche') {
+      var pl = ant && ant.t === 'más', s = pl ? 'coches' : 'coche';
+      if (ant && VERBOS.indexOf(ant.t) >= 0) s = 'el ' + s;
+      if (sig && sig.color) { s += ' ' + sig.t + (pl ? (/[aeiou]$/.test(sig.t) ? 's' : 'es') : ''); i++; }
+      out.push(s);
+    } else out.push(x.d || x.t);
+  }
+  return out.join(' ');
+}
+function pintarFrase() {
+  var c = document.getElementById('frase'); c.innerHTML = '';
+  if (!frase.length) { c.innerHTML = '<span class="vacio-txt">Toca los pictogramas para pedir y comentar</span>'; return; }
+  frase.forEach(function (it) {
+    var m = document.createElement('div'); m.className = 'mini picto ' + (it.k || '');
+    m.innerHTML = '<span class="img"><span class="emoji" aria-hidden="true">' + (it.e || '') + '</span></span><span class="txt">' + CAA.esc(it.t) + '</span>';
+    CAA.ponerPicto(m.querySelector('.img'), it);
+    c.appendChild(m);
+  });
+  c.scrollLeft = c.scrollWidth;
+}
+function anadir(it) { if (frase.length >= 10) frase.shift(); frase.push(it); pintarFrase(); }
+document.getElementById('decir').onclick = function () { if (frase.length) CAA.hablar(textoFrase()); };
+document.getElementById('borrar').onclick = function () { frase.pop(); pintarFrase(); };
+document.getElementById('limpiar').onclick = function () { frase = []; pintarFrase(); };
+
+var PISTAS = [
+  'Antes del <b>¡YA!</b>, haz una pausa larga y espera: que te mire, se mueva o pulse el semáforo. Esa espera es una oportunidad para comunicar.',
+  'Si pide solo «coche», dale uno y amplía: «QUIERO + COCHE + ROJO». No hace falta que lo repita.',
+  'Cuando baje, comenta tú en el tablero: «¡RÁPIDO!», «¡ABAJO!». Modelar es señalar mientras hablas.',
+  'Suelta dos coches a la vez y pregunta: «¿Cuál ha llegado PRIMERO?». Señala tú la respuesta si no la sabe.',
+  'Haz que un coche se quede parado arriba a propósito: «¡Oh! ¿Dónde está?». Los «errores» del adulto dan mucho que decir.',
+  'Ofrece «¿OTRA VEZ?» y espera. Si no responde, modela tú «OTRA VEZ» y vuelve a soltarlo.'
+];
+var iPista = 0;
+function nuevaPista() { iPista = (iPista + 1) % PISTAS.length; document.getElementById('m-pista').innerHTML = '💡 ' + PISTAS[iPista]; }
+var semOcupado = false;
+document.getElementById('m-semaforo').onclick = function () {
+  if (semOcupado) return; semOcupado = true;
+  var s = document.getElementById('m-semaforo'), r = document.getElementById('m-rotulo');
+  CAA.scan.pausar(3200);
+  semaforo(s.querySelectorAll('.luz'), r).then(function () {
+    var b = s.getBoundingClientRect(); CAA.fiesta(b.left + b.width / 2, b.top, ['🏎️', '💨', '⭐'], 10);
+    return espera(2200);
+  }).then(function () {
+    s.querySelectorAll('.luz').forEach(function (l) { l.classList.remove('on'); });
+    r.textContent = '¿Preparados?'; semOcupado = false;
+  });
+};
+document.getElementById('ir-madera').onclick = function () { frase = []; pintarFrase(); pintarTablero(); iPista = Math.floor(Math.random() * PISTAS.length) - 1; nuevaPista(); mostrar('madera'); };
+document.getElementById('m-salir').onclick = function () { mostrar('inicio'); };
+
+/* ════════════════ Modo rampa en la pantalla ════════════════
+   Coordenadas en «unidades»: la pista mide 100 × 120. */
+var RAMPAS = [
+  { a: [90, 30], b: [10, 41], c: '#E8794A' }, { a: [10, 53], b: [90, 64], c: '#9FD6BD' },
+  { a: [90, 76], b: [10, 87], c: '#7C9CB8' }, { a: [10, 99], b: [90, 110], c: '#9FCFE8' }
+];
+var SUELO = 113.5, ARRIBA = 6;
+var PLAZAS = [36, 50, 64, 78];          // aparcamiento abajo (el primero, más lejos: no se cruzan)
+var SALIDAS = [80, 63, 46, 30];         // posiciones en la plataforma de arriba
+function sobre(r, x) { var t = (x - r.a[0]) / (r.b[0] - r.a[0]); return r.a[1] + t * (r.b[1] - r.a[1]) - 2.3; }
+function recorrido(x0, plaza) {
+  var p = [[x0, ARRIBA], [92, ARRIBA]];
+  p.push([86, sobre(RAMPAS[0], 86)], [14, sobre(RAMPAS[0], 14)]);
+  p.push([14, sobre(RAMPAS[1], 14)], [86, sobre(RAMPAS[1], 86)]);
+  p.push([86, sobre(RAMPAS[2], 86)], [14, sobre(RAMPAS[2], 14)]);
+  p.push([14, sobre(RAMPAS[3], 14)], [86, sobre(RAMPAS[3], 86)]);
+  p.push([93, SUELO], [plaza, SUELO]);
+  return p;
+}
+var NIVELES = {
+  libre: 'Elige un coche, rápido o despacio, y pulsa ¡Ya! para que baje. Sin aciertos ni errores: para pedir y comentar.',
+  colores: 'La voz pide un coche por su color («lanza el coche azul»). Si se equivoca, aparece la muestra de color como ayuda.',
+  donde: 'Aparece un coche arriba o abajo y se pregunta «¿dónde está?». Se responde con ARRIBA o ABAJO.',
+  orden: 'Bajan dos coches, uno detrás de otro. Después: «¿qué coche ha llegado primero?» o «¿… el último?».',
+  contar: 'Bajan de 1 a 4 coches. Después: «¿cuántos coches han bajado?».'
+};
+var op = Object.assign({ nivel: 'libre' }, CAA.leer('caa-coches') || {});
+function pintarOp() {
+  document.querySelectorAll('#op-nivel button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === op.nivel ? 'true' : 'false'); });
+  document.getElementById('op-nivel-ayuda').textContent = NIVELES[op.nivel];
+}
+document.getElementById('op-nivel').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { op.nivel = b.dataset.v; CAA.guardar('caa-coches', op); pintarOp(); } });
+
+var pista = document.getElementById('pista'), coches = {}, vel = 'rapido', ocupado = false;
+(function construirPista() {
+  var svg = '<svg viewBox="0 0 100 120" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;z-index:2" aria-hidden="true">';
+  RAMPAS.forEach(function (r) {
+    svg += '<line x1="' + r.a[0] + '" y1="' + (r.a[1] + 1) + '" x2="' + r.b[0] + '" y2="' + (r.b[1] + 1) + '" stroke="rgba(0,0,0,.15)" stroke-width="4.6" stroke-linecap="round"/>';
+    svg += '<line x1="' + r.a[0] + '" y1="' + r.a[1] + '" x2="' + r.b[0] + '" y2="' + r.b[1] + '" stroke="' + r.c + '" stroke-width="4.6" stroke-linecap="round"/>';
+  });
+  pista.insertAdjacentHTML('beforeend', svg + '</svg>');
+  COLORES.forEach(function (c) {
+    var d = document.createElement('div'); d.className = 'coche'; d.hidden = true; d.innerHTML = cocheSVG(c.c);
+    pista.appendChild(d); coches[c.k] = { el: d, k: c.k, plaza: -1 };
+  });
+})();
+function situar(k, x, y, izq) {
+  var el = coches[k].el; el.getAnimations().forEach(function (a) { a.cancel(); });
+  el.hidden = false; el.style.left = x + '%'; el.style.top = (y / 1.2) + '%'; el.style.rotate = '0deg'; el.style.scale = izq ? '-1 1' : '1 1';
+}
+function esconder(k) { coches[k].el.hidden = true; coches[k].plaza = -1; }
+function aparecerArriba(k, x) {
+  situar(k, x, ARRIBA);
+  coches[k].el.animate([{ translate: '-50% -260%', opacity: 0 }, { translate: '-50% -100%', opacity: 1 }], { duration: 380, easing: 'cubic-bezier(.3,1.4,.5,1)' });
+  toc();
+}
+function plazaLibre() { for (var i = 0; i < PLAZAS.length; i++) if (!Object.keys(coches).some(function (k) { return coches[k].plaza === i; })) return i; return 0; }
+function orientacion(p, q) {
+  var dx = q[0] - p[0], dy = q[1] - p[1];
+  return dx >= 0 ? { r: Math.atan2(dy, dx) * 180 / Math.PI, s: '1 1' } : { r: -Math.atan2(dy, -dx) * 180 / Math.PI, s: '-1 1' };
+}
+/* Baja un coche por las cuatro rampas y lo aparca abajo. Devuelve una promesa. */
+function bajar(k, x0) {
+  var c = coches[k], ip = plazaLibre(); c.plaza = ip;
+  var pts = recorrido(x0, PLAZAS[ip]), v = vel === 'rapido' ? 0.085 : 0.035;
+  // tramos: rodar (índice par) y caer (impar); el último tramo (suelo) es rodar
+  var tiempos = [0], tipos = [];
+  for (var i = 0; i < pts.length - 1; i++) {
+    var p = pts[i], q = pts[i + 1], cae = (i % 2 === 1);
+    var len = Math.hypot(q[0] - p[0], q[1] - p[1]);
+    tipos.push(cae ? 'cae' : 'rueda');
+    tiempos.push(tiempos[i] + (cae ? 240 : len / v * (i === 0 ? 0.8 : 1)));
+  }
+  var total = tiempos[tiempos.length - 1], kf = [];
+  pts.forEach(function (p, i) {
+    var o = (i < pts.length - 1 && tipos[i] === 'rueda') ? orientacion(p, pts[i + 1]) : orientacion(pts[i - 1], p);
+    kf.push({ offset: tiempos[i] / total, left: p[0] + '%', top: (p[1] / 1.2) + '%', rotate: o.r.toFixed(1) + 'deg', scale: o.s, easing: tipos[i] === 'cae' ? 'ease-in' : (i === 0 ? 'ease-in' : 'linear') });
+  });
+  situar(k, pts[0][0], pts[0][1]);
+  var an = c.el.animate(kf, { duration: total, easing: 'linear', fill: 'forwards' });
+  // golpecitos al caer en cada rampa
+  tipos.forEach(function (t, i) { if (t === 'cae') setTimeout(toc, tiempos[i + 1]); });
+  return an.finished.then(function () {
+    var u = pts[pts.length - 1];
+    an.cancel(); situar(k, u[0], u[1], true);
+    c.el.classList.remove('llega'); void c.el.offsetWidth; c.el.classList.add('llega');
+  });
+}
+function luces(on) { document.querySelectorAll('#luces i').forEach(function (l, i) { l.classList.toggle('on', on === i); }); }
+function cuentaAtras() {
+  var L = document.querySelectorAll('#luces i');
+  return semaforo(L, null).then(function () { setTimeout(function () { luces(-1); }, 900); });
+}
+
+/* ── Panel ── */
+function msg(html, aviso) { var m = document.getElementById('v-msg'); m.innerHTML = '<span>' + html + '</span>'; m.classList.toggle('aviso', !!aviso); }
+var ultimaFrase = '';
+function decir(t) { ultimaFrase = t; CAA.hablar(t); }
+document.getElementById('v-repetir').onclick = function () { if (ultimaFrase) CAA.hablar(ultimaFrase); };
+function pintarGaraje(alElegir) {
+  var g = document.getElementById('garaje'); g.innerHTML = '';
+  COLORES.forEach(function (c) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'elige scan'; b.dataset.k = c.k; b.dataset.decir = 'El coche ' + c.k;
+    b.setAttribute('aria-label', 'Coche ' + c.k);
+    b.innerHTML = cocheSVG(c.c) + '<span>' + c.k + '</span>';
+    b.onclick = function () { if (!ocupado) alElegir(c.k, b); };
+    g.appendChild(b);
+  });
+}
+function verPanel(garaje, controles, respuestas) {
+  document.getElementById('garaje').hidden = !garaje; document.getElementById('rotulo-garaje').hidden = !garaje;
+  document.getElementById('controles').hidden = !controles;
+  document.getElementById('respuestas').hidden = !respuestas;
+  CAA.scan.reiniciar();
+}
+document.querySelectorAll('.vel').forEach(function (b) {
+  b.onclick = function () { vel = b.dataset.vel; pintarVel(); CAA.hablar(b.dataset.decir); };
+});
+function pintarVel() { document.querySelectorAll('.vel').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.vel === vel ? 'true' : 'false'); }); }
+var btnYa = document.getElementById('v-ya'), alYa = null;
+function permitirYa(f) { alYa = f; btnYa.disabled = !f; }
+btnYa.onclick = function () { if (!alYa || ocupado) return; var f = alYa; permitirYa(null); f(); };
+function todosAlGaraje() { Object.keys(coches).forEach(esconder); luces(-1); }
+
+/* ── Serie de 8 (juegos con respuesta) ── */
+var RONDAS = 8, aciertos = 0, ultimo = null, gen = 0;
+function congelar(g) { return g !== gen ? new Promise(function () {}) : null; }
+function pintarMarcador() {
+  var m = document.getElementById('marcador'); m.innerHTML = ''; m.hidden = op.nivel === 'libre';
+  for (var i = 0; i < RONDAS; i++) { var s = document.createElement('span'); if (i < aciertos) s.className = 'ok'; m.appendChild(s); }
+}
+function acierto(siguiente) {
+  aciertos++; pintarMarcador();
+  var b = pista.getBoundingClientRect(); CAA.fiesta(b.left + b.width / 2, b.top + b.height / 2, ['🏎️', '⭐', '✨', '🏁'], 16);
+  CAA.sonido('exito'); CAA.scan.pausar(2600);
+  var g = gen;
+  return espera(2300).then(function () { if (g !== gen) return; if (aciertos >= RONDAS) fin(); else siguiente(); });
+}
+function fin() { mostrar('fin'); CAA.fiesta(null, null, ['🏎️', '🏁', '⭐', '🎉'], 26); CAA.sonido('exito'); CAA.hablar('¡Muy bien! Carrera terminada'); }
+function azar(a, evitar) { var b = a.filter(function (x) { return x !== evitar; }); b = b.length ? b : a; return b[Math.floor(Math.random() * b.length)]; }
+function mezclar(a) { return a.slice().sort(function () { return Math.random() - .5; }); }
+function lanzar(lista) {      // lista de colores ya colocados arriba, en orden de salida
+  ocupado = true; var g = gen;
+  return cuentaAtras().then(function () {
+    return Promise.all(lista.map(function (k, i) {
+      return espera(i * (vel === 'rapido' ? 900 : 1600)).then(function () { return bajar(k, SALIDAS[i]); });
+    }));
+  }).then(function () { return congelar(g) || (ocupado = false); });
+}
+
+/* ── Juego libre ── */
+var arribaK = null;
+function rondaLibre() {
+  verPanel(true, true, false); pintarGaraje(function (k) {
+    if (arribaK && arribaK !== k) esconder(arribaK);
+    if (coches[k].plaza >= 0) coches[k].plaza = -1;
+    arribaK = k; aparecerArriba(k, SALIDAS[0]);
+    msg('El coche <b>' + k + '</b>. ¿Preparados?'); decir('El coche ' + k);
+    permitirYa(function () {
+      var k2 = arribaK; arribaK = null;
+      lanzar([k2]).then(function () {
+        var t = azar(vel === 'rapido' ? ['¡Qué rápido!', '¡Ha llegado abajo!', '¡Guau!'] : ['¡Qué despacio!', '¡Ha llegado abajo!', '¡Muy bien!']);
+        msg(t + ' ¿Otra vez?'); decir(t + ' ¿Otra vez?');
+      });
+    });
+  });
+  permitirYa(null); msg('Elige un coche'); decir('Elige un coche');
+}
+
+/* ── Colores ── */
+function rondaColores() {
+  todosAlGaraje(); verPanel(true, true, false); permitirYa(null);
+  var obj = azar(COLORES.map(function (c) { return c.k; }), ultimo); ultimo = obj;
+  var pedir = function (ayuda) { msg('Lanza el coche <b>' + obj + '</b>' + (ayuda ? ' <span class="muestra" style="background:' + col(obj).c + '"></span>' : '')); };
+  pedir(false); decir('Lanza el coche ' + obj);
+  pintarGaraje(function (k, b) {
+    if (arribaK) return;
+    if (k !== obj) {
+      b.classList.remove('mal'); void b.offsetWidth; b.classList.add('mal');
+      pedir(true); decir('Ese es el ' + k + '. Busca el coche ' + obj); return;
+    }
+    arribaK = k; b.classList.add('ok'); aparecerArriba(k, SALIDAS[0]);
+    msg('¡Sí! El coche <b>' + k + '</b>. Pulsa «¡Ya!»'); decir('¡Sí! El coche ' + k + '. ¿Preparados?');
+    permitirYa(function () { arribaK = null; lanzar([k]).then(function () { acierto(rondaColores); }); });
+  });
+}
+
+/* ── Arriba / abajo ── */
+function celdaResp(it, ok, alOk, alMal) {
+  var c = CAA.celda(it);
+  c.onclick = function () {
+    if (ocupado) return;
+    if (ok) { c.classList.add('ok'); alOk(); } else { c.classList.remove('mal'); void c.offsetWidth; c.classList.add('mal'); alMal(); }
+  };
+  return c;
+}
+function rondaDonde() {
+  todosAlGaraje(); verPanel(false, false, true); permitirYa(null);
+  var k = azar(COLORES.map(function (c) { return c.k; })), lugar = azar(['arriba', 'abajo'], ultimo); ultimo = lugar;
+  if (Math.random() < .35) lugar = Math.random() < .5 ? 'arriba' : 'abajo';
+  if (lugar === 'arriba') aparecerArriba(k, SALIDAS[1]);
+  else { coches[k].plaza = 1; situar(k, PLAZAS[1], SUELO, true); coches[k].el.classList.remove('llega'); void coches[k].el.offsetWidth; coches[k].el.classList.add('llega'); toc(); }
+  msg('¿Dónde está el coche <b>' + k + '</b>?'); decir('¿Dónde está el coche ' + k + '? ¿Arriba o abajo?');
+  var r = document.getElementById('respuestas'); r.innerHTML = '';
+  [{ t: 'arriba', e: '⬆️', k: 'lugar' }, { t: 'abajo', e: '⬇️', k: 'lugar' }].forEach(function (it) {
+    r.appendChild(celdaResp(it, it.t === lugar, function () {
+      msg('¡Sí! Está <b>' + lugar + '</b>.'); decir('¡Sí! Está ' + lugar);
+      if (lugar === 'arriba') espera(900).then(function () { msg('¡Y ahora… abajo!'); return lanzar([k]); }).then(function () { acierto(rondaDonde); });
+      else acierto(rondaDonde);
+    }, function () {
+      var el = coches[k].el; el.classList.remove('llega'); void el.offsetWidth; el.classList.add('llega');
+      msg('Mira bien dónde está el coche', true); decir('Mira bien. ¿Dónde está el coche?');
+    }));
+  });
+  CAA.scan.reiniciar();
+}
+
+/* ── Primero / último ── */
+function rondaOrden() {
+  todosAlGaraje(); verPanel(false, true, false);
+  var dos = mezclar(COLORES.map(function (c) { return c.k; })).slice(0, 2);
+  dos.forEach(function (k, i) { aparecerArriba(k, SALIDAS[i]); });
+  msg('Mira la carrera. Pulsa «¡Ya!»'); decir('Mira la carrera. ¿Preparados?');
+  permitirYa(function () {
+    lanzar(dos).then(function () {
+      var preg = Math.random() < .5 ? 'primero' : 'último', bien = preg === 'primero' ? dos[0] : dos[1];
+      msg('¿Qué coche ha llegado <b>' + preg + '</b>?'); decir('¿Qué coche ha llegado ' + preg + '?');
+      var r = document.getElementById('respuestas'); r.innerHTML = '';
+      mezclar(dos).forEach(function (k) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'elige scan'; b.dataset.decir = 'El coche ' + k;
+        b.innerHTML = cocheSVG(col(k).c) + '<span>' + k + '</span>';
+        b.onclick = function () {
+          if (k === bien) { b.classList.add('ok'); msg('¡Sí! El <b>' + k + '</b> ha llegado ' + preg + '.'); decir('¡Sí! El coche ' + k + ' ha llegado ' + preg); acierto(rondaOrden); }
+          else { b.classList.remove('mal'); void b.offsetWidth; b.classList.add('mal'); msg('Ese ha llegado ' + (preg === 'primero' ? 'el último' : 'el primero') + '. ¿Y el ' + preg + '?', true); decir('Ese ha llegado ' + (preg === 'primero' ? 'el último' : 'el primero')); }
+        };
+        r.appendChild(b);
+      });
+      verPanel(false, false, true);
+    });
+  });
+}
+
+/* ── Contar ── */
+var NUMS = ['', 'uno', 'dos', 'tres', 'cuatro'];
+function rondaContar() {
+  todosAlGaraje(); verPanel(false, true, false);
+  var n = 1 + Math.floor(Math.random() * 4); if (n === ultimo) n = n % 4 + 1; ultimo = n;
+  var lista = mezclar(COLORES.map(function (c) { return c.k; })).slice(0, n);
+  lista.forEach(function (k, i) { aparecerArriba(k, SALIDAS[i]); });
+  msg('Cuenta los coches que bajan'); decir('Cuenta los coches que bajan. ¿Preparados?');
+  permitirYa(function () {
+    lanzar(lista).then(function () {
+      msg('¿Cuántos coches han bajado?'); decir('¿Cuántos coches han bajado?');
+      var r = document.getElementById('respuestas'); r.innerHTML = '';
+      [1, 2, 3, 4].forEach(function (x) {
+        var c = celdaResp({ t: NUMS[x], k: 'describe', sinPicto: true }, x === n, function () {
+          msg('¡Sí! <b>' + NUMS[n] + '</b> ' + (n === 1 ? 'coche' : 'coches') + '.'); decir('¡Sí! ' + (n === 1 ? 'Un coche' : NUMS[n] + ' coches')); acierto(rondaContar);
+        }, function () { msg('Cuenta otra vez los coches de abajo', true); decir('Cuenta otra vez los coches de abajo'); });
+        c.classList.add('num'); c.querySelector('.img').textContent = x; c.dataset.decir = NUMS[x];
+        r.appendChild(c);
+      });
+      verPanel(false, false, true);
+    });
+  });
+}
+
+var RONDA = { libre: rondaLibre, colores: rondaColores, donde: rondaDonde, orden: rondaOrden, contar: rondaContar };
+function empezarVirtual() {
+  gen++;
+  aciertos = 0; ultimo = null; arribaK = null; ocupado = false; pintarMarcador(); pintarVel();
+  todosAlGaraje(); mostrar('virtual'); RONDA[op.nivel]();
+}
+document.getElementById('ir-virtual').onclick = empezarVirtual;
+document.getElementById('v-salir').onclick = function () { gen++; todosAlGaraje(); permitirYa(null); mostrar('inicio'); };
+document.getElementById('fin-otra').onclick = empezarVirtual;
+document.getElementById('fin-inicio').onclick = function () { mostrar('inicio'); };
+
+/* ════════════════ Imprimir: tablero ════════════════ */
+document.getElementById('ir-imprimir').onclick = function () {
+  var z = document.getElementById('impresion');
+  z.innerHTML = '<div class="hoja"><h1>Los coches · Tablero para pedir y comentar</h1><div class="imp-tablero"></div>' +
+    '<p class="imp-pie" style="font-size:9pt;color:#333">Tablero para modelar y practicar con el juego: no sustituye al comunicador del niño.</p>' +
+    '<p class="imp-pie">Pictogramas: Sergio Palao · ARASAAC (Gobierno de Aragón) · CC BY-NC-SA · © Creado por Inma Merino Rus · manosconmuchoquecontar.github.io</p></div>';
+  var it = z.querySelector('.imp-tablero');
+  NUCLEO.forEach(function (f) { f.forEach(function (x) { var c = CAA.celda(x); c.classList.remove('scan'); it.appendChild(c); }); });
+  var t0 = Date.now();
+  (function esperar() {
+    var pend = [].some.call(it.querySelectorAll('[data-picto-key]'), function (e) { return !e.querySelector('img'); });
+    if (pend && Date.now() - t0 < 4000) { setTimeout(esperar, 200); return; }
+    setTimeout(function () { window.print(); }, 150);
+  })();
+};
+
+/* «Volver» de la barra: desde una pantalla del juego regresa al menú del juego */
+CAA.alVolver(function () { return document.getElementById('inicio').hidden; }, function () {
+  if (!document.getElementById('madera').hidden) document.getElementById('m-salir').onclick();
+  else if (!document.getElementById('virtual').hidden) document.getElementById('v-salir').onclick();
+  else document.getElementById('fin-inicio').onclick();
+});
+
+pintarOp();
+</script>
+</body>
+</html>

@@ -404,6 +404,20 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     .btn-ya { padding: 6px; font-size: 1.1rem; }
     .respuestas .picto { height: calc((100vh - 100px) * .24); }
   }
+  /* ── Botones grandes y separados en el árbol en pantalla (tablet y ordenador; acceso con mirada) ── */
+  @media (min-width: 901px) and (min-height: 521px) {
+    #virtual { grid-template-columns: minmax(0, 1fr) minmax(360px, 1.2fr); gap: .6rem 2rem; max-width: 1500px; }
+    .col-panel { gap: clamp(10px, 1.8vh, 20px); }
+    .canicas { grid-template-columns: 1fr 1fr; gap: clamp(14px, 2.6vh, 26px); }
+    .elige { aspect-ratio: auto; height: calc((100vh - 520px) / 2); min-height: 90px; max-height: 190px; border-width: 3px; border-radius: 22px; font-size: clamp(15px, 2.1vh, 22px); }
+    .elige .bolita { width: auto !important; height: 55%; }
+    .respuestas { gap: clamp(14px, 2.6vh, 26px); grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .respuestas .picto, .respuestas .elige { height: calc((100vh - 420px) / 2); min-height: 110px; max-height: 220px; }
+    .respuestas:has(.elige) { grid-template-columns: 1fr 1fr; }
+    .controles { gap: clamp(14px, 2.6vh, 26px); }
+    .controles .vel, .btn-ya { min-height: 84px; border-width: 3px; }
+    .controles .vel { font-size: 17px; } .controles .vel .e { font-size: 32px; }
+  }
 </style>
 </head>
 <body>

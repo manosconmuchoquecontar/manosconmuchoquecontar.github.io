@@ -379,6 +379,17 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
     .pizza { width: min(64vh, 34vw); }
     .btn-lista { padding: 6px 22px; font-size: 1rem; }
   }
+  /* ── Botones grandes y separados en la pizza en pantalla (tablet y ordenador; acceso con mirada) ── */
+  @media (min-width: 901px) and (min-height: 521px) {
+    #virtual { grid-template-columns: minmax(190px, 250px) 1fr minmax(320px, 38vw); max-width: 1600px; gap: .8rem 1.6rem; }
+    .pizza { width: min(52vh, 32vw, 460px); }
+    #v-ingr { gap: clamp(14px, 2.6vh, 26px); align-self: stretch; }
+    #v-ingr .picto { height: calc((100vh - 230px) / 3); min-height: 120px; max-height: 230px; border-width: 3px; border-radius: 22px; }
+    #v-ingr .picto .img { flex: 1; }
+    #v-ingr .picto .txt { font-size: clamp(16px, 2.2vh, 24px); }
+    #v-acc { gap: 1.4rem; }
+    #v-acc button { padding: 16px 36px; font-size: 1.35rem; }
+  }
 </style>
 </head>
 <body>

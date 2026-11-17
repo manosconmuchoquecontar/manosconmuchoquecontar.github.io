@@ -73,6 +73,7 @@
   a.card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
   .card-thumb { height: 170px; position: relative; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
   .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .card-thumb img.foto-juguete { object-fit: contain; background: #fff; padding: 10px; }
   .area-badge { position: absolute; top: 15px; left: 15px; padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: white; }
   .soon { position: absolute; top: 15px; right: 15px; padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; background: var(--ink); color: white; }
   .card.proximamente { opacity: .72; }
@@ -195,9 +196,9 @@ var recursos = [
   { titulo: "Creador de cuentos", descripcion: "Crea cuentos adaptados con sus personajes favoritos, fotos y pictogramas, y léelos con el tablero.", area: "alfabetizacion", emoji: "✏️", url: "caa/lectura_compartida.html#crear" },
   { titulo: "El xilófono de las letras", descripcion: "Lectoescritura con música: contar sílabas a golpes de xilófono, reconocer letras y leer sílabas tocando las láminas.", area: "alfabetizacion", emoji: "🎵", url: "caa/xilofono.html" },
   { titulo: "Abecedario accesible", descripcion: "Teclado de letras grande, con voz y con opción de barrido para escribir.", area: "alfabetizacion", emoji: "🔤", url: "caa/abecedario.html" },
-  { titulo: "La pizzería", descripcion: "Pedir ingredientes con el tablero, contar y seguir recetas: con la pizza de madera, en la pantalla o imprimiendo las tarjetas.", area: "modelado", emoji: "🍕", url: "caa/pizzeria.html" },
-  { titulo: "Los coches", descripcion: "Una rampa de coches para pedir y comentar («quiero el coche rojo», «¡otra vez!») y aprender colores, arriba/abajo, primero/último y a contar: con la rampa de madera, en la pantalla o imprimiendo el tablero.", area: "modelado", emoji: "🏎️", url: "caa/coches.html" },
-  { titulo: "El árbol de canicas", descripcion: "Una canica que baja de hoja en hoja para pedir y comentar, trabajar arriba/abajo y la espera, los colores y los números del 1 al 19. Eliges qué trabajar: con el árbol de madera, en la pantalla o imprimiendo el tablero.", area: "modelado", emoji: "🌳", url: "caa/arbol.html" },
+  { titulo: "La pizzería", descripcion: "Pedir ingredientes con el tablero, contar y seguir recetas: con la pizza de madera, en la pantalla o imprimiendo las tarjetas.", area: "modelado", emoji: "🍕", url: "caa/pizzeria.html", imagen: "caa/img/pizzeria.webp", juguete: true },
+  { titulo: "Los coches", descripcion: "Una rampa de coches para pedir y comentar («quiero el coche rojo», «¡otra vez!») y aprender colores, arriba/abajo, primero/último y a contar: con la rampa de madera, en la pantalla o imprimiendo el tablero.", area: "modelado", emoji: "🏎️", url: "caa/coches.html", imagen: "caa/img/coches.webp", juguete: true },
+  { titulo: "El árbol de canicas", descripcion: "Una canica que baja de hoja en hoja para pedir y comentar, trabajar arriba/abajo y la espera, los colores y los números del 1 al 19. Eliges qué trabajar: con el árbol de madera, en la pantalla o imprimiendo el tablero.", area: "modelado", emoji: "🌳", url: "caa/arbol.html", imagen: "caa/img/arbol.webp", juguete: true },
   { titulo: "Agenda visual", descripcion: "Agendas y secuencias con pictogramas o fotos: la mañana, ir al baño, lavarse las manos… Para usar en pantalla o imprimir.", area: "anticipacion", emoji: "📅", url: "caa/agenda.html" },
   { titulo: "Primeros pasos con la CAA", descripcion: "Guía de una página para familias que empiezan: qué es, cómo se usa y qué esperar.", area: "familias", emoji: "🧭", url: "caa/primeros_pasos.html" },
   { titulo: "Mitos y dudas frecuentes", descripcion: "¿Va a dejar de hablar? ¿Es demasiado pequeño? Respuestas claras y basadas en la evidencia.", area: "familias", emoji: "💡", url: "caa/mitos.html" },
@@ -220,7 +221,7 @@ function render() {
   var lista = recursos.filter(function (r) { return !filtro || r.area === filtro; });
   document.getElementById("grid").innerHTML = lista.map(function (r) {
     var thumb = r.imagen
-      ? '<img src="' + esc(r.imagen) + '" alt="" loading="lazy">'
+      ? '<img src="' + esc(r.imagen) + '" alt=""' + (r.juguete ? ' class="foto-juguete"' : '') + ' loading="lazy">'
       : '<span aria-hidden="true">' + (r.emoji || "💬") + '</span>';
     var inner =
       '<div class="card-thumb bg-' + r.area + '">' + thumb +

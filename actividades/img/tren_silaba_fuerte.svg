@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDE9FE"/><stop offset="1" stop-color="#FFF8F0"/></linearGradient></defs>
+  <rect width="640" height="400" fill="url(#cielo)"/>
+  <circle cx="560" cy="70" r="34" fill="#FBBF24" opacity=".9"/>
+  <rect x="0" y="300" width="640" height="100" fill="#D9F2E6"/>
+  <g fill="#8D6E63"><rect x="0" y="292" width="640" height="6"/></g>
+  <g fill="#6D4C41">
+    <rect x="10" y="298" width="20" height="10"/><rect x="60" y="298" width="20" height="10"/><rect x="110" y="298" width="20" height="10"/><rect x="160" y="298" width="20" height="10"/><rect x="210" y="298" width="20" height="10"/><rect x="260" y="298" width="20" height="10"/><rect x="310" y="298" width="20" height="10"/><rect x="360" y="298" width="20" height="10"/><rect x="410" y="298" width="20" height="10"/><rect x="460" y="298" width="20" height="10"/><rect x="510" y="298" width="20" height="10"/><rect x="560" y="298" width="20" height="10"/><rect x="610" y="298" width="20" height="10"/>
+  </g>
+  <!-- locomotora -->
+  <g transform="translate(30,170)">
+    <rect x="58" y="22" width="60" height="68" rx="8" fill="#7C3AED"/><rect x="68" y="32" width="40" height="26" rx="5" fill="#DDD6FE"/>
+    <rect x="12" y="50" width="56" height="40" rx="10" fill="#A78BFA"/><rect x="24" y="22" width="16" height="30" rx="3" fill="#4C1D95"/>
+    <path d="M2 90 L16 72 L16 90Z" fill="#FBBF24"/><rect x="8" y="88" width="114" height="10" rx="4" fill="#4C1D95"/>
+    <circle cx="34" cy="106" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/><circle cx="96" cy="106" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/>
+    <circle cx="32" cy="8" r="9" fill="#fff" opacity=".85"/><circle cx="18" cy="-8" r="7" fill="#fff" opacity=".6"/>
+  </g>
+  <!-- vagones: ca - MIÓN -->
+  <g font-family="Nunito, Arial, sans-serif" font-weight="800" text-anchor="middle">
+    <rect x="162" y="245" width="14" height="7" fill="#6B7280"/>
+    <rect x="176" y="170" width="170" height="110" rx="16" fill="#0284C7"/><text x="261" y="245" font-size="58" fill="#fff">ca</text>
+    <circle cx="216" cy="285" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/><circle cx="306" cy="285" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/>
+    <rect x="346" y="245" width="14" height="7" fill="#6B7280"/>
+    <rect x="360" y="170" width="220" height="110" rx="16" fill="#E11D48" stroke="#FFE07A" stroke-width="8"/><text x="470" y="245" font-size="58" fill="#fff">mión</text>
+    <circle cx="410" cy="285" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/><circle cx="530" cy="285" r="13" fill="#374151" stroke="#9CA3AF" stroke-width="4"/>
+    <text x="470" y="150" font-size="44">🙋</text>
+    <text x="470" y="112" font-size="30" fill="#E11D48">¡PUM!</text>
+    <text x="261" y="340" font-size="20" fill="#D97706">PENÚLTIMA</text>
+    <text x="470" y="340" font-size="20" fill="#E11D48">ÚLTIMA · AGUDA</text>
+  </g>
+</svg>

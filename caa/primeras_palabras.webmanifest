@@ -1,0 +1,17 @@
+{
+  "name": "Mis primeras palabras",
+  "short_name": "Primeras palabras",
+  "description": "Tablero de primeras palabras (más, no, ayuda, se acabó) para empezar a comunicar. Manos con Mucho que Contar.",
+  "lang": "es",
+  "start_url": "primeras_palabras.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#F7FBFA",
+  "theme_color": "#2A9D8F",
+  "icons": [
+    { "src": "img/primeras-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/primeras-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "img/primeras-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

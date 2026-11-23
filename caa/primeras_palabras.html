@@ -1046,14 +1046,15 @@ body.caa-contraste .caa-letra, body.caa-contraste .caa-barra .btn-icono { backgr
 <script>
 CAA.init({ titulo: 'Mis primeras palabras', horizontal: true, bienvenida: false, barrido: true });
 
-/* Palabras en su orden fijo: MÁS siempre la primera y SE ACABÓ siempre la última */
+/* Palabras en su orden fijo: MÁS siempre la primera y SE ACABÓ siempre la última.
+   (No usar el campo «id»: en las celdas «id» es el número del pictograma de ARASAAC) */
 var PALABRAS = [
-  { id: 'mas', t: 'más', e: '➕', k: 'describe', etapa: 1 },
-  { id: 'otravez', t: 'otra vez', e: '🔁', k: 'describe', etapa: 3 },
-  { id: 'si', t: 'sí', e: '👍', k: 'social', etapa: 3 },
-  { id: 'no', t: 'no', e: '🚫', k: 'no', etapa: 2 },
-  { id: 'ayuda', t: 'ayuda', b: 'ayudar', e: '🆘', k: 'social', etapa: 2 },
-  { id: 'acabo', t: 'se acabó', b: 'terminado', e: '✋', k: 'social', etapa: 1 }
+  { clave: 'mas', t: 'más', e: '➕', k: 'describe', etapa: 1 },
+  { clave: 'otravez', t: 'otra vez', e: '🔁', k: 'describe', etapa: 3 },
+  { clave: 'si', t: 'sí', e: '👍', k: 'social', etapa: 3 },
+  { clave: 'no', t: 'no', e: '🚫', k: 'no', etapa: 2 },
+  { clave: 'ayuda', t: 'ayuda', b: 'ayudar', e: '🆘', k: 'social', etapa: 2 },
+  { clave: 'acabo', t: 'se acabó', b: 'terminado', e: '✋', k: 'social', etapa: 1 }
 ];
 var op = Object.assign({ etapa: '2' }, CAA.leer('caa-primeras') || {});
 
@@ -1097,7 +1098,19 @@ btn.addEventListener('pointerdown', empezarMantener);
 btn.addEventListener('click', function (e) { e.preventDefault(); });
 btn.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirPanel(); } });
 function abrirPanel() { $('aviso-mantener').hidden = true; btn.classList.remove('cargando'); modoNino(false); pintarEtapas(); }
-$('cerrar-panel').onclick = function () { modoNino(true); };
+$('cerrar-panel').onclick = function () {
+  modoNino(true);
+  /* Al volver al tablero se pone a pantalla completa y en horizontal (si el móvil lo permite; en iPhone no se puede desde el navegador) */
+  var d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (pedir && !(document.fullscreenElement || document.webkitFullscreenElement)) {
+    try { var pr = pedir.call(d, { navigationUI: 'hide' }); if (pr && pr.then) pr.then(function () { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); }).catch(function () {}); } catch (e) {}
+  }
+};
+/* Al elegir otro pictograma (✏️ en Ajustes) se esconde el panel para poder tocar las casillas; al terminar, vuelve */
+new MutationObserver(function () {
+  var eligiendo = document.body.classList.contains('caa-eligiendo');
+  if (!document.body.classList.contains('modo-nino')) $('panel').hidden = eligiendo;
+}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 function pintarEtapas() { document.querySelectorAll('#etapas button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === op.etapa ? 'true' : 'false'); }); }
 $('etapas').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; op.etapa = b.dataset.v; CAA.guardar('caa-primeras', op); pintarEtapas(); pintar(); });
